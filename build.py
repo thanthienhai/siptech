@@ -123,17 +123,23 @@ def short_title(t):
 
 # ---------- layout ----------
 
-LOGO = ('<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--ink)"/>'
-        '<path d="M8 22h5v-4h5v-4h5v-4" fill="none" stroke="var(--amber)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
-        '<circle cx="23" cy="10" r="2.4" fill="var(--amber)"/></svg>')
+LOGO = ('<svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="0.75" y="0.75" width="22.5" height="22.5" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+        '<path d="M5 19h5v-5h5V9h4" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linecap="square"/></svg>')
+FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">')
+LADDER = ["Dùng AI thủ công", "Gọi AI qua API", "Tài liệu thành text", "Chia khối và chỉ mục", "Tìm kiếm",
+          "Trả lời có trích dẫn", "Đánh giá", "Công cụ (tool use)", "Quy trình nhiều bước", "Vận hành"]
+LADDER_FILES = ["cap-00-dung-ai-thu-cong", "cap-01-goi-api", "cap-02-tai-lieu-thanh-text", "cap-03-chia-khoi-va-chi-muc",
+                "cap-04-tim-kiem", "cap-05-tra-loi-co-trich-dan", "cap-06-danh-gia", "cap-07-cong-cu-tool",
+                "cap-08-quy-trinh-nhieu-buoc", "cap-09-van-hanh"]
 
 
 def page(title, body, depth, desc=None, active="", extra_head=""):
     r = "../" * depth
     d = html.escape(desc or f"{BRAND} - {TAGLINE}")
-    nav = [("bai-toan", "Bài toán", f"{r}index.html#bai-toan"), ("cach-lam", "Cách làm", f"{r}index.html#cach-lam"),
-           ("nen-tang", "Tài liệu nền", f"{r}index.html#nen-tang"), ("gioi-han", "Giới hạn", f"{r}index.html#gioi-han")]
-    links = "".join(f'<a href="{h}">{t}</a>' for _, t, h in nav)
+    nav = [("Bài toán", f"{r}index.html#bai-toan"), ("Cách làm", f"{r}index.html#cach-lam"),
+           ("Tài liệu nền", f"{r}index.html#nen-tang"), ("Giới hạn", f"{r}index.html#gioi-han")]
+    links = "".join(f'<a href="{h}">{t}</a>' for t, h in nav)
     full_title = title if title.startswith(BRAND) else f"{title} · {BRAND}"
     return f"""<!doctype html>
 <html lang="vi">
@@ -142,11 +148,12 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(full_title)}</title>
 <meta name="description" content="{d}">
-<meta name="theme-color" content="#0e3b3f">
+<meta name="theme-color" content="#0a0b0c">
 <meta property="og:title" content="{html.escape(full_title)}">
 <meta property="og:description" content="{d}">
 <meta property="og:type" content="website">
 <link rel="icon" href="{r}assets/favicon.svg" type="image/svg+xml">
+{FONTS}
 <link rel="stylesheet" href="{r}assets/style.css">
 {extra_head}
 </head>
@@ -154,9 +161,9 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
 <a class="skip" href="#main">Bỏ qua điều hướng</a>
 <header class="top">
   <div class="wrap bar">
-    <a class="brand" href="{r}index.html">{LOGO}<span><b>SIP</b>Tech</span></a>
-    <button class="menu" aria-label="Mở menu" aria-expanded="false" onclick="var n=document.getElementById('nav');var o=n.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav id="nav">{links}<a class="cta" href="{r}tong-quan.html">Đọc tổng quan</a></nav>
+    <a class="brand" href="{r}index.html">{LOGO}<span>SIP<b>TECH</b></span></a>
+    <button class="menu" aria-label="Mở menu" aria-expanded="false" onclick="var n=document.getElementById('nav');var o=n.classList.toggle('open');this.setAttribute('aria-expanded',o)">MENU</button>
+    <nav id="nav">{links}<a class="cta" href="{r}tong-quan.html">Tổng quan →</a></nav>
   </div>
 </header>
 <main id="main">
@@ -165,8 +172,8 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
 <footer class="foot">
   <div class="wrap">
     <div class="fcols">
-      <div><div class="brand sm">{LOGO}<span><b>SIP</b>Tech</span></div><p>{TAGLINE}.</p></div>
-      <div><h4>5 bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in GROUPS)}</div>
+      <div><div class="brand sm">{LOGO}<span>SIP<b>TECH</b></span></div><p>{TAGLINE}.</p></div>
+      <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in GROUPS)}</div>
       <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}</div>
     </div>
     <p class="legal">Nội dung là tài liệu nghiên cứu và hướng dẫn kỹ thuật, không phải tư vấn pháp lý hay tư vấn thuế.
@@ -191,7 +198,6 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
     body, toc = render_md(src_text)
     body = fix_links(body)
     r = "../" * depth
-    # bỏ H1 đầu (đã in ở đầu bài)
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
     toc_html = ""
     flat = []
@@ -204,8 +210,8 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
     if prev_next:
         p, n = prev_next
         pn = '<nav class="pn">' + (
-            f'<a class="prev" href="{r}{p[0]}"><small>← Cấp trước</small>{html.escape(p[1])}</a>' if p else "<span></span>") + (
-            f'<a class="next" href="{r}{n[0]}"><small>Cấp tiếp →</small>{html.escape(n[1])}</a>' if n else "<span></span>") + "</nav>"
+            f'<a class="prev" href="{r}{p[0]}"><small>← CẤP TRƯỚC</small>{html.escape(p[1])}</a>' if p else "<span></span>") + (
+            f'<a class="next" href="{r}{n[0]}"><small>CẤP TIẾP →</small>{html.escape(n[1])}</a>' if n else "<span></span>") + "</nav>"
     crumb_html = " / ".join(f'<a href="{r}{h}">{html.escape(t)}</a>' for t, h in crumbs)
     main = f"""
 <div class="wrap docgrid">
@@ -223,128 +229,129 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
 
 # ---------- home ----------
 
-def ladder_svg():
-    steps = []
-    for i in range(10):
-        h = 24 + i * 22
-        x = 10 + i * 40
-        y = 270 - h
-        op = 0.35 + i * 0.065
-        steps.append(f'<rect x="{x}" y="{y}" width="34" height="{h}" rx="5" fill="var(--sage)" opacity="{op:.2f}"/>'
-                     f'<text x="{x + 17}" y="{y + 20}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">{i}</text>')
-    return ('<svg viewBox="0 0 420 290" role="img" aria-label="Thang cấp độ từ 0 đến 9: mỗi cấp là một khối chạy được độc lập">'
-            + "".join(steps) +
-            '<path d="M20 240 L120 200 L220 150 L320 90 L400 30" fill="none" stroke="var(--amber)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 8"/>'
-            '<circle cx="400" cy="30" r="9" fill="var(--amber)"/>'
-            '<text x="10" y="284" font-size="12" fill="var(--hero-mute)">Dùng thủ công</text>'
-            '<text x="410" y="284" text-anchor="end" font-size="12" fill="var(--hero-mute)">Vận hành</text></svg>')
+def terminal():
+    rows = ""
+    for i, (name, f) in enumerate(zip(LADDER, LADDER_FILES)):
+        meter = "".join('<i class="on"></i>' if k <= i else "<i></i>" for k in range(10))
+        rows += f'<a class="trow" href="rag-tra-cuu-tai-lieu/{f}.html"><span class="tc">C{i}</span><span class="tn">{name}</span><span class="tm">{meter}</span></a>'
+    return f"""<div class="term" aria-label="Thang cấp độ C0 đến C9 của nhóm tra cứu tài liệu">
+  <div class="tbar"><span>siptech / ladder</span><span>rag-tra-cuu-tai-lieu</span></div>
+  <div class="tbody"><div class="cmd"><span class="ps">$</span> siptech ladder --problem rag</div>{rows}<div class="cmd"><span class="ps">$</span> <span class="caret"></span></div></div>
+</div>"""
+
+
+def sh(idx, title, sub=""):
+    s = f'<p class="sub">{sub}</p>' if sub else ""
+    return f'<div class="sh"><span class="idx">{idx}</span><h2>{title}</h2>{s}</div>'
 
 
 def home():
-    cards = ""
+    rows = ""
     for g in GROUPS:
-        cards += f"""
-<a class="card prob" href="{g['slug']}/index.html">
-  <div class="pbadge"><span>{g['code']}</span><em>{g['n']} cấp</em></div>
-  <h3>{g['name']}</h3>
-  <p class="ptag">{g['tag']}</p>
-  <p>{g['desc']}</p>
-  <div class="pout"><small>Đầu ra</small>{g['out']}</div>
-  <span class="go">Xem thang cấp →</span>
+        rows += f"""
+<a class="prow" href="{g['slug']}/index.html">
+  <span class="pcode">{g['code']}</span>
+  <span class="pmain"><b>{g['name']}</b><em>{g['tag']}</em></span>
+  <span class="pdesc">{g['desc']}</span>
+  <span class="pout"><small>ĐẦU RA</small>{g['out']}</span>
+  <span class="parrow">→</span>
 </a>"""
     order = {1: "Viết SOP", 2: "Khách hàng hoặc hồ sơ", 3: "Tra cứu tài liệu", 4: "Quy trình nhiều bước"}
     path = ""
     for s, label in order.items():
         gs = [g for g in GROUPS if g["step"] == s]
-        path += f'<li><b>{label}</b><span>{" · ".join(g["name"] for g in gs)}</span></li>'
+        path += f'<li><small>BƯỚC {s}</small><b>{label}</b><span>{" · ".join(g["name"] for g in gs)}</span></li>'
     stats = [
-        ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "MAP, arXiv 2512.04123"),
-        ("68%", "chạy tối đa 10 bước rồi chuyển cho người", "MAP, arXiv 2512.04123"),
-        ("<25%", "tỉ lệ đạt khi cùng một việc phải đúng 8 lần liên tiếp (pass^8) ở mô hình có pass^1 trên 60%", "τ-bench"),
-        ("36 → 12", "phút tiết kiệm người dùng tự ước so với thực đo trong thí nghiệm Copilot", "thí nghiệm có đối chứng"),
+        ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "MAP · arXiv 2512.04123"),
+        ("68%", "chạy tối đa 10 bước rồi chuyển cho người", "MAP · arXiv 2512.04123"),
+        ("&lt;25%", "tỉ lệ đạt khi cùng một việc phải đúng 8 lần liên tiếp (pass^8) ở mô hình có pass^1 trên 60%", "τ-bench"),
+        ("36→12", "phút tiết kiệm người dùng tự ước so với thực đo trong thí nghiệm Copilot", "thí nghiệm có đối chứng"),
     ]
     stat_html = "".join(f'<div class="stat"><b>{a}</b><p>{b}</p><small>{c}</small></div>' for a, b, c in stats)
     principles = [
-        ("1", "Khối nhỏ trước", "Mỗi cấp chạy được độc lập, có sản phẩm cầm đi được và tiêu chí đo được để biết khi nào mới lên cấp."),
-        ("2", "Hai đường", "Không code (Project, Gem, GPT tùy chỉnh) và code nhẹ (Python). Bắt đầu bằng công cụ đã có, không xây sản phẩm riêng."),
-        ("3", "Code giữ hàng rào", "Quy tắc tính được thì viết bằng code. Số liệu do code tính. Trích dẫn kiểm nguyên văn bằng code, không chỉ nhắc trong prompt."),
-        ("4", "Người duyệt điểm quan trọng", "Tiền, cam kết với khách và dữ liệu cá nhân đi qua điểm duyệt của người. AI đề xuất, người quyết định."),
-        ("5", "Đo trước khi tin", "Bộ ca mẫu có đáp án, đo trước và sau, khoảng tin cậy khi mẫu nhỏ. Năng suất tự ước thường cao hơn thực đo."),
+        ("P1", "Khối nhỏ trước", "Mỗi cấp chạy được độc lập, có sản phẩm cầm đi được và tiêu chí đo được để biết khi nào mới lên cấp."),
+        ("P2", "Hai đường", "Không code (Project, Gem, GPT tùy chỉnh) và code nhẹ (Python). Bắt đầu bằng công cụ đã có, không xây sản phẩm riêng."),
+        ("P3", "Code giữ hàng rào", "Quy tắc tính được thì viết bằng code. Số liệu do code tính. Trích dẫn kiểm nguyên văn bằng code, không chỉ nhắc trong prompt."),
+        ("P4", "Người duyệt điểm quan trọng", "Tiền, cam kết với khách và dữ liệu cá nhân đi qua điểm duyệt của người. AI đề xuất, người quyết định."),
+        ("P5", "Đo trước khi tin", "Bộ ca mẫu có đáp án, đo trước và sau, khoảng tin cậy khi mẫu nhỏ. Năng suất tự ước thường cao hơn thực đo."),
     ]
-    pr_html = "".join(f'<div class="pr"><span>{a}</span><h3>{b}</h3><p>{c}</p></div>' for a, b, c in principles)
+    pr_html = "".join(f'<div class="pr"><span>{a}</span><div><h3>{b}</h3><p>{c}</p></div></div>' for a, b, c in principles)
     base = "".join(
-        f'<a class="card base" href="{s}.html"><h3>{t}</h3><p>{d}</p><span class="go">Đọc →</span></a>' for s, t, d in ROOT_DOCS)
+        f'<a class="base" href="{s}.html"><code>{s}.md</code><h3>{t}</h3><p>{d}</p><span class="go">ĐỌC →</span></a>' for s, t, d in ROOT_DOCS)
+    problems = [
+        ("Chưa có quy trình", "Quy trình nằm trong đầu vài người làm giỏi và trong tin nhắn Zalo. AI không thể làm theo thứ chưa được viết ra, và sẽ tự điền chỗ trống mỗi lần một kiểu."),
+        ("Ít tiền, ít người kỹ thuật", "Không đủ ngân sách xây hệ thống từ đầu thành một sản phẩm độc lập. Cần đi bằng công cụ có sẵn và thêm code nhẹ ở đúng chỗ."),
+        ("Dùng AI chưa có kỷ luật", "Dán dữ liệu khách vào chat công khai, tin câu trả lời không kiểm, không đo hiệu quả. Đây là quan sát của nhóm soạn, được ủng hộ gián tiếp, chưa có số đo trên SME Việt Nam."),
+    ]
+    pb = "".join(f'<div class="cell"><span class="n">0{i+1}</span><h3>{a}</h3><p>{b}</p></div>' for i, (a, b) in enumerate(problems))
     body = f"""
 <section class="hero">
   <div class="wrap herogrid">
     <div>
-      <p class="eyebrow">{TAGLINE}</p>
-      <h1>Ứng dụng AI đúng cách, từ việc nhỏ nhất đến nghiệp vụ phức tạp</h1>
+      <p class="kicker">// {TAGLINE.upper()}</p>
+      <h1>Ứng dụng AI đúng cách, từ việc nhỏ nhất đến <span class="hl">nghiệp vụ phức tạp</span></h1>
       <p class="lead">Nhiều doanh nghiệp vừa và nhỏ đang dùng AI mỗi nơi một kiểu, chưa có quy trình và không đủ tiền xây hệ thống riêng.
       {BRAND} dẫn từng bước: dùng công cụ có sẵn như Claude, ChatGPT, Gemini trước, rồi mới đến API và code, kèm cách đo để biết khi nào nên đi tiếp.</p>
-      <div class="btns"><a class="btn pri" href="#bai-toan">Xem 5 bài toán</a><a class="btn ghost" href="tong-quan.html">Đọc tổng quan series</a></div>
-      <ul class="chips"><li>5 bài toán</li><li>{TOTAL} cấp độ</li><li>Có nguồn, có đo</li><li>Bối cảnh Việt Nam</li></ul>
+      <div class="btns"><a class="btn pri" href="#bai-toan">XEM 5 BÀI TOÁN →</a><a class="btn ghost" href="tong-quan.html">ĐỌC TỔNG QUAN</a></div>
     </div>
-    <div class="heroviz">{ladder_svg()}</div>
+    <div>{terminal()}</div>
   </div>
+  <div class="wrap"><div class="strip">
+    <div><small>BÀI TOÁN</small><b>5</b></div>
+    <div><small>CẤP ĐỘ</small><b>{TOTAL}</b></div>
+    <div><small>HAI ĐƯỜNG</small><b>không code / code nhẹ</b></div>
+    <div><small>QUY ƯỚC</small><b>[Nguồn] ≠ [Đề xuất]</b></div>
+  </div></div>
 </section>
 
 <section class="sec" id="van-de">
   <div class="wrap">
-    <h2>Vấn đề doanh nghiệp đang gặp</h2>
-    <div class="grid3">
-      <div class="card"><h3>Chưa có quy trình</h3><p>Quy trình nằm trong đầu vài người làm giỏi và trong tin nhắn Zalo. AI không thể làm theo thứ chưa được viết ra, và sẽ tự điền chỗ trống mỗi lần một kiểu.</p></div>
-      <div class="card"><h3>Ít tiền, ít người kỹ thuật</h3><p>Không đủ ngân sách xây hệ thống từ đầu thành một sản phẩm độc lập. Cần đi bằng công cụ có sẵn và thêm code nhẹ ở đúng chỗ.</p></div>
-      <div class="card"><h3>Dùng AI chưa có kỷ luật</h3><p>Dán dữ liệu khách vào chat công khai, tin câu trả lời không kiểm, không đo hiệu quả. Đây là quan sát của nhóm soạn, được ủng hộ gián tiếp, chưa có số đo trên SME Việt Nam.</p></div>
-    </div>
+    {sh("01", "Vấn đề doanh nghiệp đang gặp")}
+    <div class="cells c3">{pb}</div>
   </div>
 </section>
 
-<section class="band">
+<section class="sec" id="bang-chung">
   <div class="wrap">
-    <h2>Bằng chứng từ nơi đã làm thật</h2>
+    {sh("02", "Bằng chứng từ nơi đã làm thật", "Đều từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. Chi tiết trong <a href='nen-tang-bang-chung.html'>Nền tảng bằng chứng</a>.")}
     <div class="stats">{stat_html}</div>
-    <p class="fine">Đều từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. Chi tiết và cách đọc kết quả trong <a href="nen-tang-bang-chung.html">Nền tảng bằng chứng</a>.</p>
   </div>
 </section>
 
 <section class="sec" id="bai-toan">
   <div class="wrap">
-    <h2>5 bài toán, mỗi bài một thang cấp độ</h2>
-    <p class="sub">Mỗi bài toán đi từ dùng thủ công đến vận hành, mỗi cấp có sản phẩm, đường không code, đường code nhẹ, tiêu chí lên cấp và rủi ro.</p>
-    <div class="probs">{cards}</div>
+    {sh("03", "5 bài toán, mỗi bài một thang cấp độ", "Mỗi cấp có sản phẩm cầm đi được, đường không code, đường code nhẹ, tiêu chí lên cấp và rủi ro.")}
+    <div class="probs">{rows}</div>
   </div>
 </section>
 
-<section class="sec alt" id="cach-lam">
+<section class="sec" id="cach-lam">
   <div class="wrap">
-    <h2>Cách làm</h2>
+    {sh("04", "Cách làm")}
     <div class="prs">{pr_html}</div>
-    <div class="order">
-      <h3>Thứ tự gợi ý cho doanh nghiệp chưa có quy trình</h3>
-      <ol>{path}</ol>
-      <p class="fine">Đây là [Đề xuất] của nhóm soạn, không có nguồn đo.</p>
-    </div>
+    <h3 class="subh">Thứ tự gợi ý cho doanh nghiệp chưa có quy trình</h3>
+    <ol class="order">{path}</ol>
+    <p class="fine">[Đề xuất] của nhóm soạn, không có nguồn đo.</p>
   </div>
 </section>
 
 <section class="sec" id="nen-tang">
   <div class="wrap">
-    <h2>Tài liệu nền</h2>
+    {sh("05", "Tài liệu nền")}
     <div class="bases">{base}</div>
     <p class="fine">Bộ slide cho nhóm tra cứu tài liệu (33 slide, có hình minh họa):
     <a href="rag-tra-cuu-tai-lieu/RAG-tra-cuu-tai-lieu-C0-C9.pptx">tải file PowerPoint</a>.</p>
   </div>
 </section>
 
-<section class="sec alt" id="gioi-han">
-  <div class="wrap narrow">
-    <h2>Giới hạn của bộ tài liệu</h2>
+<section class="sec" id="gioi-han">
+  <div class="wrap">
+    {sh("06", "Giới hạn của bộ tài liệu")}
     <ul class="limits">
-      <li><b>Chưa có số đo trên SME Việt Nam.</b> Mọi bằng chứng định lượng đến từ tổ chức lớn hoặc nhóm kỹ thuật mạnh.</li>
-      <li><b>Pháp lý chưa xác minh toàn văn.</b> Luật, nghị định được tổng hợp từ nguồn thứ cấp. Đây không phải tư vấn pháp lý; cần luật sư hoặc đọc văn bản gốc trước khi áp dụng.</li>
-      <li><b>Ngưỡng và cỡ mẫu là đề xuất.</b> Ví dụ bộ 20-30 ca chỉ phát hiện hỏng, không đo chính xác. Mỗi file cấp tách rõ <b>[Nguồn]</b> và <b>[Đề xuất]</b>.</li>
-      <li><b>Công cụ thay đổi nhanh.</b> Tính năng, giá và điều khoản của Claude, ChatGPT, Gemini, Zalo, các phần mềm bán hàng cần kiểm lại trước khi dùng.</li>
+      <li><span>CHƯA ĐO</span><div><b>Chưa có số đo trên SME Việt Nam.</b> Mọi bằng chứng định lượng đến từ tổ chức lớn hoặc nhóm kỹ thuật mạnh.</div></li>
+      <li><span>PHÁP LÝ</span><div><b>Chưa xác minh toàn văn.</b> Luật, nghị định được tổng hợp từ nguồn thứ cấp. Đây không phải tư vấn pháp lý; cần luật sư hoặc đọc văn bản gốc trước khi áp dụng.</div></li>
+      <li><span>NGƯỠNG</span><div><b>Ngưỡng và cỡ mẫu là đề xuất.</b> Ví dụ bộ 20-30 ca chỉ phát hiện hỏng, không đo chính xác. Mỗi file cấp tách rõ [Nguồn] và [Đề xuất].</div></li>
+      <li><span>CÔNG CỤ</span><div><b>Thay đổi nhanh.</b> Tính năng, giá và điều khoản của Claude, ChatGPT, Gemini, Zalo, các phần mềm bán hàng cần kiểm lại trước khi dùng.</div></li>
     </ul>
   </div>
 </section>
@@ -360,27 +367,26 @@ def group_page(g, levels, readme_text):
     body, _ = render_md(readme_text)
     body = fix_links(body)
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
-    title = title_of(readme_text, g["name"])
     steps = ""
     for i, (fname, t, _) in enumerate(levels):
-        steps += (f'<a class="lv" href="{fname}.html"><span class="n">{i}</span><span class="t">{html.escape(short_title(t))}</span></a>')
+        steps += f'<a class="lv" href="{fname}.html"><span class="n">{g["code"][0]}{i}</span><span class="t">{html.escape(short_title(t))}</span><span class="a">→</span></a>'
     extra = ""
     if slug == "rag-tra-cuu-tai-lieu":
-        extra = '<a class="btn pri dl" href="RAG-tra-cuu-tai-lieu-C0-C9.pptx">Tải bộ slide PowerPoint (33 slide)</a>'
+        extra = '<a class="btn pri dl" href="RAG-tra-cuu-tai-lieu-C0-C9.pptx">TẢI SLIDE POWERPOINT (33) ↓</a>'
     main = f"""
 <section class="ghero"><div class="wrap">
-  <div class="crumb dark"><a href="{r}index.html">Trang chủ</a> / <a href="{r}index.html#bai-toan">Bài toán</a></div>
-  <p class="eyebrow">{g['code']} · {g['n']} cấp</p>
+  <div class="crumb"><a href="{r}index.html">~/siptech</a> / <a href="{r}index.html#bai-toan">bai-toan</a> / {slug}</div>
+  <p class="kicker">// {g['code']} · {g['n']} CẤP</p>
   <h1>{html.escape(g['name'])}</h1>
   <p class="lead">{g['tag']}. {g['desc']}</p>
-  <p class="outline"><small>Đầu ra</small> {g['out']}</p>
+  <p class="outline"><small>ĐẦU RA</small> {g['out']}</p>
   {extra}
 </div></section>
 <div class="wrap">
-  <h2 class="lvh">Thang cấp độ</h2>
+  <div class="sh"><span class="idx">//</span><h2>Thang cấp độ</h2></div>
   <div class="lvs">{steps}</div>
-  <div class="hr"></div>
-  <article class="doc inline"><div class="srcnote">Phần giới thiệu nhóm bài, nguyên văn từ <code>00-README.md</code>.</div>{body}</article>
+  <div class="sh"><span class="idx">//</span><h2>Giới thiệu nhóm bài</h2></div>
+  <article class="doc inline">{body}</article>
 </div>"""
     return page(g["name"], main, 1, desc=g["tag"] + ". " + g["desc"])
 
