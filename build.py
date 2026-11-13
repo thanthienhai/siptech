@@ -209,7 +209,7 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
     <div class="fcols">
       <div><div class="brand sm">{LOGO_REV}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
       <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in GROUPS)}</div>
-      <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}</div>
+      <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}bo-nhan-dien.html">Bộ nhận diện</a></div>
     </div>
     <p class="legal">Nội dung là tài liệu nghiên cứu và hướng dẫn kỹ thuật, không phải tư vấn pháp lý hay tư vấn thuế.
     Số liệu định lượng đến từ các nghiên cứu ở tổ chức lớn, chưa có nguồn nào đo trực tiếp trên SME Việt Nam.
@@ -452,6 +452,77 @@ def group_page(g, levels, readme_text):
 </div>"""
     return page(g["name"], main, 1, desc=g["tag"] + ". " + g["desc"])
 
+
+# ---------- trang bộ nhận diện ----------
+
+KIT = ROOT / "design" / "logo-kit"
+BRAND_PAGE = "bo-nhan-dien"
+
+
+def brand_page():
+    def tile(name, label, bg="", h=80, note=""):
+        png = ""
+        for cand in (f"{name}-1600.png", f"{name}-512.png", f"{name}-800.png"):
+            if (KIT / "png" / cand).exists():
+                png = f' · <a href="brand/png/{cand}" download>PNG</a>'
+                break
+        cls = {"dark": " dk", "blue": " bl"}.get(bg, "")
+        n = f"<small>{note}</small>" if note else ""
+        return (f'<figure class="bt{cls}"><div class="bi"><img src="brand/svg/{name}.svg" style="height:{h}px" alt="{html.escape(label)}"></div>'
+                f'<figcaption><b>{label}</b>{n}<span><a href="brand/svg/{name}.svg" download>SVG</a>{png}</span></figcaption></figure>')
+
+    def grp(eyebrow, title, sub, items):
+        return f'<section class="sec"><div class="wrap">{sh(eyebrow, title, sub)}<div class="bgrid">{"".join(items)}</div></div></section>'
+
+    icons = [tile("icon-color", "Màu (chính)", h=96), tile("icon-reverse", "Nền tối", "dark", 96),
+             tile("icon-black", "Một màu: đen", h=96), tile("icon-white", "Một màu: trắng", "blue", 96)]
+    avatars = [tile("avatar-circle", "Tròn, nền xanh đậm", h=110, note="Zalo, Facebook"),
+               tile("avatar-circle-blue", "Tròn, nền xanh dương", h=110, note="phương án phụ"),
+               tile("avatar-square", "Vuông, tràn viền", h=110, note="để nền tảng tự cắt")]
+    hz = [tile("lockup-horizontal-tagline-color", "Ngang + giới thiệu (chính)", h=64),
+          tile("lockup-horizontal-color", "Ngang", h=64),
+          tile("lockup-horizontal-tagline-reverse", "Ngang + giới thiệu, nền tối", "dark", 64),
+          tile("lockup-horizontal-reverse", "Ngang, nền tối", "dark", 64),
+          tile("lockup-horizontal-black", "Một màu: đen", h=64),
+          tile("lockup-horizontal-white", "Một màu: trắng", "blue", 64)]
+    st = [tile("lockup-stacked-tagline-color", "Dọc + giới thiệu", h=170), tile("lockup-stacked-color", "Dọc", h=140),
+          tile("lockup-stacked-tagline-reverse", "Dọc + giới thiệu, nền tối", "dark", 170),
+          tile("lockup-stacked-white", "Một màu: trắng", "blue", 140)]
+    wm = [tile("wordmark-color", "Chỉ chữ", h=52), tile("wordmark-reverse", "Chỉ chữ, nền tối", "dark", 52),
+          tile("wordmark-black", "Một màu: đen", h=52)]
+    soc = "".join(
+        f'<figure class="sw2"><img src="brand/social/{n}.png" alt="{n}" loading="lazy"><figcaption><b>{n}</b>'
+        f'<span><a href="brand/social/{n}.png" download>PNG</a> · <a href="brand/social/{n}.svg" download>SVG</a></span></figcaption></figure>'
+        for n in ("og-image-1200x630", "facebook-cover-1640x624", "linkedin-banner-1584x396"))
+    colors = [("#0b1f4d", "Xanh đậm", "nền, chữ SIP", "#fff"), ("#1d4ed8", "Xanh dương", "chữ Tech, nút bấm", "#fff"),
+              ("#ff7a3d", "Cam", "hai nút của chữ S", "#fff"), ("#8fb0ff", "Xanh nhạt", "chữ Tech trên nền tối", "#0b1f4d")]
+    cs = "".join(f'<div class="cw" style="background:{c};color:{t}"><b>{n}</b><span>{c} · {d}</span></div>' for c, n, d, t in colors)
+    body = f"""
+<section class="ghero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Trang chủ</a> <i>/</i> Bộ nhận diện</div>
+  <span class="pill">Thương hiệu</span>
+  <h1>Bộ nhận diện SIPTech</h1>
+  <p class="lead">Logo, ảnh đại diện, ảnh cho mạng xã hội và màu sắc. Chữ trong các tệp SVG đã chuyển thành đường nét nên không cần cài phông.</p>
+  <div class="btns"><a class="btn pri" href="brand/siptech-logo-kit.zip" download>Tải toàn bộ (.zip, 1,7 MB)</a></div>
+</div></section>
+{grp("Biểu tượng", "Khi không đủ chỗ cho chữ", "Favicon, bìa slide, con dấu.", icons)}
+{grp("Ảnh đại diện", "Zalo, Facebook, LinkedIn", "Nền tảng tự cắt tròn nên chữ S đã thu nhỏ để không bị mất nét.", avatars)}
+{grp("Bản ngang", "Bản dùng nhiều nhất", "Đầu trang web, chữ ký email, tiêu đề tài liệu.", hz)}
+{grp("Bản dọc", "Bìa tài liệu, bảng hiệu vuông", "", st)}
+{grp("Chỉ chữ", "Khi biểu tượng đã có bên cạnh", "", wm)}
+<section class="sec"><div class="wrap">{sh("Mạng xã hội", "Ảnh chia sẻ và ảnh bìa", "Ảnh chia sẻ link, ảnh bìa Facebook, banner LinkedIn.")}<div class="swgrid">{soc}</div></div></section>
+<section class="sec tint"><div class="wrap">{sh("Màu sắc và quy tắc", "Dùng cho nhất quán")}
+  <div class="cwgrid">{cs}</div>
+  <ul class="rules">
+    <li>Chừa quanh logo một khoảng trống bằng nửa chiều cao biểu tượng.</li>
+    <li>Cỡ nhỏ nhất: biểu tượng 16px; bản ngang không có dòng giới thiệu rộng 110px, có dòng giới thiệu rộng 220px.</li>
+    <li>Nền sáng dùng bản "Màu"; nền xanh đậm hoặc ảnh tối dùng bản "Nền tối"; in một màu dùng bản đen hoặc trắng.</li>
+    <li>Không đổi màu hai nút cam, không kéo giãn, không xoay, không thêm bóng đổ hay viền.</li>
+    <li>Chưa tra cứu nhãn hiệu: cần kiểm tra trùng lặp trước khi đăng ký hoặc in ấn hàng loạt.</li>
+  </ul></div></section>
+"""
+    return page("Bộ nhận diện", body, 0, desc="Logo, ảnh đại diện, ảnh mạng xã hội và màu sắc của SIPTech. Tải SVG, PNG hoặc cả bộ.")
+
 # ---------- build ----------
 
 def write(path, text):
@@ -466,6 +537,19 @@ def main():
     shutil.copytree(ASSETS, OUT / "assets")
 
     write(OUT / "index.html", home())
+    if KIT.exists():
+        shutil.copytree(KIT / "svg", OUT / "brand" / "svg")
+        shutil.copytree(KIT / "social", OUT / "brand" / "social")
+        (OUT / "brand" / "png").mkdir(parents=True)
+        for f in (KIT / "png").glob("*.png"):
+            if re.search(r"-(1600|512|800|1000)\.png$", f.name):
+                shutil.copy2(f, OUT / "brand" / "png" / f.name)
+        for f in ("favicon.svg", "favicon.ico"):
+            shutil.copy2(KIT / f, OUT / "brand" / f)
+        zp = ROOT / "design" / "siptech-logo-kit.zip"
+        if zp.exists():
+            shutil.copy2(zp, OUT / "brand" / zp.name)
+        write(OUT / f"{BRAND_PAGE}.html", brand_page())
     write(OUT / ".nojekyll", "")
 
     # tài liệu gốc
