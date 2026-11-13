@@ -61,7 +61,7 @@ ROOT_DOCS = [
     ("thuc-trang-sme-viet-nam", "Thực trạng SME Việt Nam", "Kiểm chứng giả thuyết \"vô tội vạ\" bằng bằng chứng gián tiếp."),
     ("an-toan-du-lieu-va-phap-ly-vn", "An toàn dữ liệu và pháp lý", "Dữ liệu nào được đưa vào AI; pháp luật Việt Nam (chưa xác minh toàn văn)."),
 ]
-ROOT_SRC = {"tong-quan": "00-README.md"}
+ROOT_SRC = {}
 
 # ---------- markdown ----------
 
@@ -88,15 +88,108 @@ def prep(text):
     return chr(10).join(out)
 
 
+PAGE_FILES = {"tong-quan": "tong-quan.html", "nen-tang": "nen-tang-bang-chung.html",
+              "thuc-trang": "thuc-trang-sme-viet-nam.html", "an-toan": "an-toan-du-lieu-va-phap-ly-vn.html"}
+LEVELS = {"doc": ("Đọc trực tiếp", "ok"), "tom": ("Chỉ đọc tóm tắt", "mid"), "thu": ("Qua nguồn thứ cấp", "mid"),
+          "chua": ("Chưa đọc được", "low"), "off": ("Nguồn chính thức", "ok")}
+VERIFY = {"ok": "Đã xác minh", "part": "Xác minh một phần", "no": "Chưa xác minh"}
+CONF = {"hi": "Tin cậy cao", "mid": "Tin cậy trung bình", "low": "Tin cậy thấp"}
+SRC_RE = re.compile(r":::sources\n(.*?)\n:::", re.S)
+CITE_RE = re.compile(r"\[\[((?:[a-z-]+:)?S\d+(?:\s*,\s*(?:[a-z-]+:)?S\d+)*)\]\]")
+VER_RE = re.compile(r"\[\[v:(ok|part|no)\]\]")
+CONF_RE = re.compile(r"\[\[c:(hi|mid|low)\]\]")
+
+
+def extract_sources(text):
+    """Khối :::sources: mỗi dòng 'S1 | Tiêu đề | Đơn vị, năm | URL (nhiều URL cách nhau dấu cách) | mức đọc | ghi chú'."""
+    found = []
+
+    def grab(m):
+        for line in m.group(1).strip().split("\n"):
+            parts = [x.strip() for x in line.split("|")]
+            if len(parts) < 3:
+                continue
+            parts += [""] * (6 - len(parts))
+            found.append(dict(id=parts[0], title=parts[1], meta=parts[2], urls=[u for u in parts[3].split() if u.startswith("http")],
+                              level=parts[4], note=parts[5]))
+        return "\n\nSIPSOURCES\n\n"
+
+    return SRC_RE.sub(grab, text), found
+
+
+def sources_html(sources):
+    items = []
+    for sc in sources:
+        lv = LEVELS.get(sc["level"])
+        badge = f'<em class="lvl lvl-{lv[1]}">{lv[0]}</em>' if lv else ""
+        urls = sc["urls"]
+        if urls:
+            links = " ".join(
+                f'<a href="{u}" target="_blank" rel="noopener">{"Mở nguồn" if len(urls) == 1 else "Nguồn " + str(i + 1)} ↗</a>'
+                for i, u in enumerate(urls))
+        else:
+            links = '<span class="nolink">chưa có đường dẫn</span>'
+        note = f'<p class="sn2">{html.escape(sc["note"])}</p>' if sc["note"] else ""
+        items.append(
+            f'<li class="src" id="{sc["id"].lower()}"><span class="sid">{sc["id"]}</span><div>'
+            f'<b>{html.escape(sc["title"])}</b><small>{html.escape(sc["meta"])}</small>'
+            f'<div class="srow">{badge}<span class="slinks">{links}</span></div>{note}</div></li>')
+    return '<ol class="srcs">' + "".join(items) + "</ol>"
+
+
+def apply_tokens(body, sources):
+    titles = {x["id"]: x["title"] for x in sources}
+    parts = re.split(r"(<pre.*?</pre>)", body, flags=re.S)
+
+    def cite(m):
+        out = []
+        for ref in re.split(r"\s*,\s*", m.group(1)):
+            page, _, sid = ref.rpartition(":")
+            href = f"{PAGE_FILES[page]}#{sid.lower()}" if page else f"#{sid.lower()}"
+            tip = titles.get(sid, "") if not page else ""
+            out.append(f'<a class="cite" href="{href}" title="{html.escape(tip, quote=True)}">Nguồn {sid}</a>')
+        return " ".join(out)
+
+    for i in range(0, len(parts), 2):
+        t = CITE_RE.sub(cite, parts[i])
+        t = VER_RE.sub(lambda m: f'<span class="vb vb-{m.group(1)}">{VERIFY[m.group(1)]}</span>', t)
+        t = CONF_RE.sub(lambda m: f'<span class="vb vb-c{m.group(1)}">{CONF[m.group(1)]}</span>', t)
+        parts[i] = t
+    return "".join(parts)
+
+
+def label_tables(body):
+    def one(m):
+        tbl = m.group(0)
+        heads = [re.sub(r"<[^>]+>", "", h).strip() for h in re.findall(r"<th[^>]*>(.*?)</th>", tbl, flags=re.S)]
+        if not heads:
+            return tbl
+
+        def row(rm):
+            idx = [0]
+
+            def td(tm):
+                lab = heads[idx[0]] if idx[0] < len(heads) else ""
+                idx[0] += 1
+                return f'<td data-label="{html.escape(lab, quote=True)}"{tm.group(1)}>'
+            return re.sub(r"<td([^>]*)>", td, rm.group(0))
+        return re.sub(r"<tr>.*?</tr>", row, tbl, flags=re.S).replace("<table>", '<table class="stack">', 1)
+    return re.sub(r"<table>.*?</table>", one, body, flags=re.S)
+
+
 def render_md(text):
     text = prep(text)
+    text, sources = extract_sources(text)
     md = markdown.Markdown(
-        extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list"],
+        extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list", "admonition", "meta"],
         extension_configs={"toc": {"slugify": gh_slug, "permalink": False, "toc_depth": "2-3"}},
     )
     body = md.convert(text)
-    toc = md.toc_tokens
-    return body, toc
+    body = body.replace("<p>SIPSOURCES</p>", sources_html(sources))
+    body = apply_tokens(body, sources)
+    body = label_tables(body)
+    render_md.meta = {k: " ".join(v) for k, v in getattr(md, "Meta", {}).items()}
+    return body, md.toc_tokens
 
 
 def fix_links(body):
@@ -117,7 +210,7 @@ def fix_links(body):
         return 'href="%s"' % (path + ("#" + frag if frag else ""))
     body = re.sub(r'href="([^"]+)"', repl, body)
     body = re.sub(r'<a href="(https?://[^"]+)"', r'<a href="\1" target="_blank" rel="noopener"', body)
-    body = body.replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
+    body = re.sub(r"<table([^>]*)>", lambda m: '<div class="tw"><table' + m.group(1) + ">", body).replace("</table>", "</table></div>")
     return body
 
 
@@ -237,9 +330,17 @@ def sidebar(items, current, r):
 
 def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_next, extra_top=""):
     body, toc = render_md(src_text)
+    meta = dict(getattr(render_md, "meta", {}))
     body = fix_links(body)
     r = "../" * depth
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
+    blog = kind == "root"
+    blog_cls = " blog" if blog else ""
+    if blog:
+        mins = max(1, round(len(re.findall(r"\w+", src_text)) / 190))
+        d = fmt_date(meta.get("date", ""))
+        extra_top = (f'<div class="byline"><span>SIPTech</span>' + (f"<span>Cập nhật {d}</span>" if d else "") +
+                     f"<span>{mins} phút đọc</span></div>" + extra_top)
     toc_html = ""
     flat = []
     for h in toc[0]["children"] if toc and toc[0]["level"] == 1 else toc:
@@ -255,9 +356,9 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
             f'<a class="next" href="{r}{n[0]}"><small>Cấp tiếp →</small>{html.escape(n[1])}</a>' if n else "<span></span>") + "</nav>"
     crumb_html = " <i>/</i> ".join(f'<a href="{r}{h}">{html.escape(t)}</a>' for t, h in crumbs)
     main = f"""
-<div class="wrap docgrid">
+<div class="wrap docgrid{blog_cls and " wide"}">
   <aside class="side"><div class="sidein">{sidebar(side_items, current, r)}</div></aside>
-  <article class="doc">
+  <article class="doc{blog_cls}">
     <div class="crumb">{crumb_html}</div>
     <h1>{html.escape(title)}</h1>
     {extra_top}
