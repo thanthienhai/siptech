@@ -1,6 +1,6 @@
 # SIPTech - Tư vấn giải pháp AI trong doanh nghiệp
 
-Website giới thiệu series "AI cho SME Việt Nam, từ khối nhỏ nhất đến nghiệp vụ phức tạp": 5 bài toán doanh nghiệp, 40 cấp độ, có nguồn và cách đo.
+Website giới thiệu series "AI cho SME Việt Nam, từ khối nhỏ nhất đến nghiệp vụ phức tạp": các bài toán doanh nghiệp (danh sách cập nhật liên tục), mỗi bài một thang cấp độ, có nguồn và cách đo.
 
 Site: https://thanthienhai.github.io/siptech/
 
@@ -10,6 +10,18 @@ Site: https://thanthienhai.github.io/siptech/
 - `build.py`: dựng `content/` thành HTML tĩnh trong `site/`.
 - `assets/`: CSS, favicon.
 - `.github/workflows/pages.yml`: tự dựng và triển khai lên GitHub Pages khi push vào `main`.
+
+## Thêm bài toán mới
+
+Mỗi thư mục trong `content/` có `meta.json` là một bài toán. Site tự đếm số bài toán, số cấp độ, tự thêm vào trang chủ, trang "Tất cả bài toán", menu và chân trang.
+
+```bash
+python new_problem.py ten-thu-muc "Tên bài toán" --status draft
+# sửa content/ten-thu-muc/meta.json, viết 00-README.md và cap-00-*.md, cap-01-*.md ...
+git add -A && git commit -m "Thêm bài toán" && git push
+```
+
+`meta.json` gồm: `name`, `code` (ví dụ `C0–C9`), `tag`, `desc`, `out`, `icon`, `tags` (cho ô tìm kiếm), `order` (thứ tự), `status` (`published` đã có / `draft` đang soạn / `planned` sắp ra), `updated` (YYYY-MM-DD), và tùy chọn `step`, `step_label` để xuất hiện trong "Thứ tự gợi ý". Bài toán chỉ có `meta.json` (chưa có file `cap-*.md`) hiển thị là thẻ "Sắp ra", chưa có trang. Thêm `"hidden": true` để ẩn.
 
 ## Dựng cục bộ
 

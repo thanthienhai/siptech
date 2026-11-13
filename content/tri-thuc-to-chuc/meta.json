@@ -1,0 +1,19 @@
+{
+  "name": "Tri thức tổ chức",
+  "code": "C0–C7",
+  "icon": "book",
+  "order": 10,
+  "step": 1,
+  "step_label": "Viết SOP",
+  "tag": "Giữ quy trình không nằm trong đầu một người",
+  "desc": "Biên bản họp, ghi âm tiếng Việt, SOP từ người làm giỏi, sổ đăng ký tài liệu, bàn giao khi nghỉ việc.",
+  "out": "Tài liệu và SOP đã duyệt",
+  "tags": [
+    "họp",
+    "sop",
+    "bàn giao",
+    "tài liệu"
+  ],
+  "status": "published",
+  "updated": "2026-11-11"
+}

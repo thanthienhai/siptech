@@ -1,0 +1,19 @@
+{
+  "name": "Kiểm tra hồ sơ, chứng từ",
+  "code": "K0–K7",
+  "icon": "file",
+  "order": 30,
+  "step": 2,
+  "step_label": "Khách hàng hoặc hồ sơ",
+  "tag": "Hóa đơn, hợp đồng, hồ sơ nhân sự",
+  "desc": "Chứng từ thành dữ liệu có nguồn, quy tắc thành mã, quy tắc mờ có hàng rào, đối chiếu ba bên.",
+  "out": "Danh sách lỗi có căn cứ",
+  "tags": [
+    "hóa đơn",
+    "hợp đồng",
+    "kế toán",
+    "nhân sự"
+  ],
+  "status": "published",
+  "updated": "2026-11-11"
+}

@@ -4,6 +4,7 @@ Chạy: python build.py        (cần: pip install markdown)
 Biến môi trường SITE_URL (tùy chọn) dùng cho canonical, ví dụ https://thanthienhai.github.io/siptech
 """
 import html
+import json
 import os
 import re
 import shutil
@@ -21,30 +22,38 @@ SITE_URL = os.environ.get("SITE_URL", "").rstrip("/")
 BRAND = "SIPTech"
 TAGLINE = "Tư vấn giải pháp AI trong doanh nghiệp"
 
-GROUPS = [
-    dict(slug="tri-thuc-to-chuc", name="Tri thức tổ chức", code="C0–C7", n=8,
-         tag="Giữ quy trình không nằm trong đầu một người",
-         desc="Biên bản họp, ghi âm tiếng Việt, SOP từ người làm giỏi, sổ đăng ký tài liệu, bàn giao khi nghỉ việc.",
-         out="Tài liệu và SOP đã duyệt", step=1),
-    dict(slug="xu-ly-yeu-cau-khach", name="Xử lý yêu cầu khách hàng", code="C0–C6", n=7,
-         tag="Zalo, email, đổi trả, khiếu nại theo SOP",
-         desc="Soạn trả lời có duyệt, phân loại và mức khẩn, tra đơn chỉ đọc, hành động ghi qua phiếu duyệt.",
-         out="Bản nháp trả lời, quyết định, hành động có duyệt", step=2),
-    dict(slug="kiem-tra-ho-so-theo-quy-tac", name="Kiểm tra hồ sơ, chứng từ", code="K0–K7", n=8,
-         tag="Hóa đơn, hợp đồng, hồ sơ nhân sự",
-         desc="Chứng từ thành dữ liệu có nguồn, quy tắc thành mã, quy tắc mờ có hàng rào, đối chiếu ba bên.",
-         out="Danh sách lỗi có căn cứ", step=2),
-    dict(slug="rag-tra-cuu-tai-lieu", name="Tra cứu tài liệu nội bộ", code="C0–C9", n=10,
-         tag="Hỏi đáp trên bảng giá, chính sách, hợp đồng",
-         desc="Từ dùng AI thủ công, gọi API, tách văn bản, chia khối, tìm kiếm, đến trả lời có trích dẫn và vận hành.",
-         out="Câu trả lời có trích dẫn nguyên văn", step=3),
-    dict(slug="quy-trinh-nhieu-buoc", name="Quy trình nhiều bước", code="Q0–Q6", n=7,
-         tag="Một việc đi qua nhiều người, nhiều hệ thống",
-         desc="Vẽ quy trình và đo nền, tự động hóa thường, định tuyến, báo cáo định kỳ, chuỗi bước có điểm duyệt.",
-         out="Quy trình chạy tự động, có số đo trước/sau", step=4),
-]
+STATUS = {"published": "Đã có", "draft": "Đang soạn", "planned": "Sắp ra"}
+
+
+def load_groups():
+    """Mỗi thư mục trong content/ có meta.json là một bài toán. Thêm bài toán = thêm thư mục."""
+    groups = []
+    for meta in sorted(CONTENT.glob("*/meta.json")):
+        d = json.loads(meta.read_text(encoding="utf-8"))
+        if d.get("hidden"):
+            continue
+        d["slug"] = meta.parent.name
+        d["n"] = len(list(meta.parent.glob("cap-*.md")))
+        d.setdefault("status", "published" if d["n"] else "planned")
+        for k, v in (("order", 999), ("icon", "layers"), ("updated", ""), ("code", ""), ("out", ""), ("tags", []),
+                     ("tag", ""), ("desc", ""), ("step", None), ("step_label", "")):
+            d.setdefault(k, v)
+        d["has_pages"] = d["n"] > 0
+        groups.append(d)
+    groups.sort(key=lambda g: (g["order"], g["name"]))
+    return groups
+
+
+GROUPS = load_groups()
+NUM = len(GROUPS)
 TOTAL = sum(g["n"] for g in GROUPS)
 GROUP_BY_SLUG = {g["slug"]: g for g in GROUPS}
+
+
+def fmt_date(iso):
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})$", iso or "")
+    return f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else ""
+
 
 ROOT_DOCS = [
     ("tong-quan", "Tổng quan series", "Ý tưởng cốt lõi, mục lục, điều rút ra, giới hạn, việc phải kiểm trước khi xuất bản."),
@@ -143,11 +152,8 @@ ICONS = {
 
 def ic(name, size=22):
     return (f'<svg class="ic" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-            f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
+            f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS.get(name, ICONS['layers'])}</svg>')
 
-
-GROUP_ICON = {"tri-thuc-to-chuc": "book", "xu-ly-yeu-cau-khach": "chat", "kiem-tra-ho-so-theo-quy-tac": "file",
-              "rag-tra-cuu-tai-lieu": "search", "quy-trinh-nhieu-buoc": "flow"}
 
 S_D = "M44 20C44 12 33 11 27 14C20 18 21 26 30 30C39 34 44 38 41 45C38 52 27 52 20 46"
 
@@ -167,7 +173,7 @@ FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="
 def page(title, body, depth, desc=None, active="", extra_head=""):
     r = "../" * depth
     d = html.escape(desc or f"{BRAND} - {TAGLINE}")
-    nav = [("Bài toán", f"{r}index.html#bai-toan"), ("Cách làm", f"{r}index.html#cach-lam"),
+    nav = [("Bài toán", f"{r}bai-toan.html"), ("Cách làm", f"{r}index.html#cach-lam"),
            ("Tài liệu nền", f"{r}index.html#nen-tang"), ("Lưu ý", f"{r}index.html#gioi-han")]
     links = "".join(f'<a href="{h}">{t}</a>' for t, h in nav)
     full_title = title if title.startswith(BRAND) else f"{title} · {BRAND}"
@@ -208,7 +214,7 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
   <div class="wrap">
     <div class="fcols">
       <div><div class="brand sm">{LOGO_REV}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
-      <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in GROUPS)}</div>
+      <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in [x for x in GROUPS if x["has_pages"]][:6])}<a href="{r}bai-toan.html"><b>Xem tất cả ({NUM})</b></a></div>
       <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}bo-nhan-dien.html">Bộ nhận diện</a></div>
     </div>
     <p class="legal">Nội dung là tài liệu nghiên cứu và hướng dẫn kỹ thuật, không phải tư vấn pháp lý hay tư vấn thuế.
@@ -264,6 +270,28 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
 
 # ---------- home ----------
 
+def pcard(g):
+    pages = g["has_pages"]
+    tag = "a" if pages else "div"
+    href = f' href="{g["slug"]}/index.html"' if pages else ""
+    meta = " · ".join(x for x in (g["code"], f'{g["n"]} cấp' if g["n"] else "") if x)
+    upd = f'<span class="upd">Cập nhật {fmt_date(g["updated"])}</span>' if g["updated"] else ""
+    go = f'<span class="go">Xem lộ trình {ic("arrow", 16)}</span>' if pages else '<span class="go soon">Đang chuẩn bị nội dung</span>'
+    out = f'<span class="pout">{ic("check", 16)}<span>{g["out"]}</span></span>' if g["out"] else ""
+    hay = html.escape(" ".join([g["name"], g["tag"], g["desc"], g["out"]] + list(g["tags"])).lower(), quote=True)
+    return f"""
+<{tag} class="pcard st-{g['status']}"{href} data-status="{g['status']}" data-hay="{hay}">
+  <div class="phead"><span class="pico">{ic(g['icon'], 26)}</span><span class="badge b-{g['status']}">{STATUS.get(g['status'], g['status'])}</span></div>
+  <span class="pmeta">{meta}</span>
+  <h3>{g['name']}</h3>
+  <p class="ptag">{g['tag']}</p>
+  <p>{g['desc']}</p>
+  {out}
+  {upd}
+  {go}
+</{tag}>"""
+
+
 def flow_card():
     steps = [
         ("chat", "Khách nhắn Zalo", "“Đơn của tôi đã giao chưa?”", "Khách", ""),
@@ -286,29 +314,21 @@ def sh(eyebrow, title, sub=""):
 
 
 def home():
-    cards = ""
-    for g in GROUPS:
-        cards += f"""
-<a class="pcard" href="{g['slug']}/index.html">
-  <span class="pico">{ic(GROUP_ICON[g['slug']], 26)}</span>
-  <span class="pmeta">{g['code']} · {g['n']} cấp</span>
-  <h3>{g['name']}</h3>
-  <p class="ptag">{g['tag']}</p>
-  <p>{g['desc']}</p>
-  <span class="pout">{ic('check', 16)}<span>{g['out']}</span></span>
-  <span class="go">Xem lộ trình {ic('arrow', 16)}</span>
-</a>"""
+    shown = sorted([g for g in GROUPS if g["has_pages"]], key=lambda g: g["order"])
+    shown = sorted(shown, key=lambda g: g["updated"], reverse=True)[:5]
+    cards = "".join(pcard(g) for g in sorted(shown, key=lambda g: g["order"]))
     cards += f"""
 <a class="pcard ctacard" href="#cach-lam">
   <h3>Chưa biết bắt đầu từ đâu?</h3>
   <p>Doanh nghiệp chưa có quy trình nên bắt đầu bằng việc viết SOP. Xem thứ tự gợi ý cho từng giai đoạn.</p>
   <span class="go">Xem thứ tự gợi ý {ic('arrow', 16)}</span>
 </a>"""
-    order = {1: "Viết SOP", 2: "Khách hàng hoặc hồ sơ", 3: "Tra cứu tài liệu", 4: "Quy trình nhiều bước"}
-    path = ""
-    for s, label in order.items():
-        gs = [g for g in GROUPS if g["step"] == s]
-        path += f'<li><span class="sn">{s}</span><b>{label}</b><span>{" · ".join(g["name"] for g in gs)}</span></li>'
+    steps = {}
+    for g in GROUPS:
+        if g["step"] is not None and g["has_pages"]:
+            steps.setdefault(g["step"], {"label": g["step_label"] or g["name"], "names": []})["names"].append(g["name"])
+    path = "".join(f'<li><span class="sn">{i + 1}</span><b>{v["label"]}</b><span>{" · ".join(v["names"])}</span></li>'
+                   for i, (k, v) in enumerate(sorted(steps.items())))
     stats = [
         ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
         ("68%", "chạy tối đa 10 bước rồi chuyển cho người", "Nghiên cứu MAP · arXiv 2512.04123"),
@@ -340,7 +360,7 @@ def home():
       <h1>Đưa AI vào doanh nghiệp <span class="hl">đúng cách</span>: từng bước, đo được, an toàn</h1>
       <p class="lead">Nhiều doanh nghiệp vừa và nhỏ đang dùng AI mỗi nơi một kiểu, chưa có quy trình và không đủ ngân sách xây hệ thống riêng.
       {BRAND} đi từ việc nhỏ nhất với công cụ có sẵn như Claude, ChatGPT, Gemini, rồi mới đến API và code, kèm cách đo để biết khi nào nên đi tiếp.</p>
-      <div class="btns"><a class="btn pri" href="#bai-toan">Xem 5 bài toán</a><a class="btn ghost" href="tong-quan.html">Đọc tổng quan</a></div>
+      <div class="btns"><a class="btn pri" href="#bai-toan">Xem các bài toán</a><a class="btn ghost" href="tong-quan.html">Đọc tổng quan</a></div>
       <ul class="checks">
         <li>{ic('check', 18)}Mỗi cấp có sản phẩm cầm đi được</li>
         <li>{ic('check', 18)}Có đường không cần code</li>
@@ -350,7 +370,7 @@ def home():
     <div>{flow_card()}</div>
   </div>
   <div class="wrap"><div class="facts">
-    <div><b>5</b><span>bài toán doanh nghiệp</span></div>
+    <div><b>{NUM}</b><span>bài toán, thêm mới liên tục</span></div>
     <div><b>{TOTAL}</b><span>cấp độ từ dễ đến khó</span></div>
     <div><b>2</b><span>đường: không code và code nhẹ</span></div>
     <div><b>A–D</b><span>4 hạng quyền cho công cụ, từ chỉ đọc đến có hậu quả</span></div>
@@ -374,8 +394,9 @@ def home():
 
 <section class="sec" id="bai-toan">
   <div class="wrap">
-    {sh("Bài toán", "5 bài toán doanh nghiệp, mỗi bài một lộ trình", "Mỗi cấp có sản phẩm cầm đi được, đường không code, đường code nhẹ, tiêu chí lên cấp và rủi ro cần tránh.")}
+    {sh("Bài toán", "Các bài toán doanh nghiệp, mỗi bài một lộ trình", f"Hiện có {NUM} bài toán và danh sách được bổ sung liên tục. Mỗi cấp có sản phẩm cầm đi được, đường không code, đường code nhẹ, tiêu chí lên cấp và rủi ro cần tránh.")}
     <div class="pgrid">{cards}</div>
+    <p class="allp"><a class="btn ghost" href="bai-toan.html">Xem tất cả {NUM} bài toán {ic('arrow', 16)}</a></p>
   </div>
 </section>
 
@@ -419,14 +440,14 @@ def home():
 </section>
 """
     return page(f"{BRAND} - {TAGLINE}", body, 0,
-                desc="Series hướng dẫn doanh nghiệp vừa và nhỏ ứng dụng AI từ công cụ có sẵn đến quy trình nhiều bước: 5 bài toán, 40 cấp độ, có nguồn và cách đo.")
+                desc="Series hướng dẫn doanh nghiệp vừa và nhỏ ứng dụng AI từ công cụ có sẵn đến quy trình nhiều bước: nhiều bài toán, cập nhật liên tục, có nguồn và cách đo.")
 
 # ---------- group landing ----------
 
 def group_page(g, levels, readme_text):
     slug = g["slug"]
     r = "../"
-    body, _ = render_md(readme_text)
+    body, _ = render_md(readme_text or "")
     body = fix_links(body)
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
     steps = ""
@@ -437,8 +458,8 @@ def group_page(g, levels, readme_text):
         extra = '<a class="btn pri dl" href="RAG-tra-cuu-tai-lieu-C0-C9.pptx">Tải bộ slide PowerPoint (33 slide)</a>'
     main = f"""
 <section class="ghero"><div class="wrap">
-  <div class="crumb"><a href="{r}index.html">Trang chủ</a> <i>/</i> <a href="{r}index.html#bai-toan">Bài toán</a></div>
-  <div class="gtop"><span class="pico big">{ic(GROUP_ICON[slug], 32)}</span><span class="pill">{g['code']} · {g['n']} cấp</span></div>
+  <div class="crumb"><a href="{r}index.html">Trang chủ</a> <i>/</i> <a href="{r}bai-toan.html">Bài toán</a></div>
+  <div class="gtop"><span class="pico big">{ic(g['icon'], 32)}</span><span class="pill">{g['code']} · {g['n']} cấp</span>{('<span class="upd2">Cập nhật ' + fmt_date(g['updated']) + '</span>') if g['updated'] else ''}</div>
   <h1>{html.escape(g['name'])}</h1>
   <p class="lead">{g['tag']}. {g['desc']}</p>
   <p class="outline">{ic('check', 18)}<span><b>Đầu ra:</b> {g['out']}</span></p>
@@ -523,6 +544,54 @@ def brand_page():
 """
     return page("Bộ nhận diện", body, 0, desc="Logo, ảnh đại diện, ảnh mạng xã hội và màu sắc của SIPTech. Tải SVG, PNG hoặc cả bộ.")
 
+
+# ---------- trang tất cả bài toán ----------
+
+def all_page():
+    cnt = {k: sum(1 for g in GROUPS if g["status"] == k) for k in STATUS}
+    chips = f'<button class="chip on" data-f="all">Tất cả <b>{NUM}</b></button>' + "".join(
+        f'<button class="chip" data-f="{k}">{v} <b>{cnt[k]}</b></button>' for k, v in STATUS.items() if cnt[k])
+    ordered = sorted(GROUPS, key=lambda g: (g["updated"] or ""), reverse=True)
+    cards = "".join(pcard(g) for g in ordered)
+    body = f"""
+<section class="ghero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Trang chủ</a> <i>/</i> Bài toán</div>
+  <span class="pill">Danh sách cập nhật liên tục</span>
+  <h1>Tất cả bài toán</h1>
+  <p class="lead">Hiện có {NUM} bài toán, {TOTAL} cấp độ. Bài toán mới được thêm theo thời gian; thẻ nào đang soạn hoặc sắp ra sẽ ghi rõ trạng thái.</p>
+</div></section>
+<section class="sec"><div class="wrap">
+  <div class="tools">
+    <label class="srch">{ic('search', 18)}<input id="q" type="search" placeholder="Tìm theo tên, việc cần làm, từ khóa..." autocomplete="off"></label>
+    <div class="chips2" role="group" aria-label="Lọc theo trạng thái">{chips}</div>
+  </div>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div class="pgrid" id="plist">{cards}</div>
+  <p class="empty" id="empty" hidden>Không có bài toán khớp. Thử từ khóa khác hoặc chọn "Tất cả".</p>
+</div></section>
+<script>
+(function(){{
+  var q=document.getElementById('q'),list=document.getElementById('plist'),cards=[].slice.call(list.children),
+      chips=[].slice.call(document.querySelectorAll('.chip')),empty=document.getElementById('empty'),count=document.getElementById('count'),f='all';
+  function norm(t){{return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');}}
+  function run(){{
+    var t=norm(q.value.trim()),n=0;
+    cards.forEach(function(c){{
+      var ok=(f==='all'||c.dataset.status===f)&&(!t||norm(c.dataset.hay).indexOf(t)>-1);
+      c.hidden=!ok; if(ok)n++;
+    }});
+    empty.hidden=n>0; count.textContent='Đang hiển thị '+n+' / '+cards.length+' bài toán';
+  }}
+  q.addEventListener('input',run);
+  chips.forEach(function(b){{b.addEventListener('click',function(){{
+    chips.forEach(function(x){{x.classList.remove('on')}}); b.classList.add('on'); f=b.dataset.f; run();
+  }})}});
+  run();
+}})();
+</script>
+"""
+    return page("Tất cả bài toán", body, 0, desc=f"{NUM} bài toán doanh nghiệp ứng dụng AI, cập nhật liên tục: lộ trình theo cấp, đường không code và code nhẹ.")
+
 # ---------- build ----------
 
 def write(path, text):
@@ -537,6 +606,7 @@ def main():
     shutil.copytree(ASSETS, OUT / "assets")
 
     write(OUT / "index.html", home())
+    write(OUT / "bai-toan.html", all_page())
     if KIT.exists():
         shutil.copytree(KIT / "svg", OUT / "brand" / "svg")
         shutil.copytree(KIT / "social", OUT / "brand" / "social")
@@ -563,13 +633,15 @@ def main():
 
     # các nhóm
     for g in GROUPS:
+        if not g["has_pages"]:
+            continue
         gdir = CONTENT / g["slug"]
         levels = []
         for f in sorted(gdir.glob("cap-*.md")):
             text = f.read_text(encoding="utf-8")
             levels.append((f.stem, title_of(text, f.stem), text))
         assert len(levels) == g["n"], (g["slug"], len(levels), g["n"])
-        readme = (gdir / "00-README.md").read_text(encoding="utf-8")
+        readme = (gdir / "00-README.md").read_text(encoding="utf-8") if (gdir / "00-README.md").exists() else ""
         write(OUT / g["slug"] / "index.html", group_page(g, levels, readme))
         side = [("%s/index.html" % g["slug"], "Tổng quan nhóm bài", None)] + [
             (f"{g['slug']}/{fn}.html", f"{i}. {short_title(t)}", None) for i, (fn, t, _) in enumerate(levels)]

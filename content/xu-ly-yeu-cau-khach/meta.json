@@ -1,0 +1,19 @@
+{
+  "name": "Xử lý yêu cầu khách hàng",
+  "code": "C0–C6",
+  "icon": "chat",
+  "order": 20,
+  "step": 2,
+  "step_label": "Khách hàng hoặc hồ sơ",
+  "tag": "Zalo, email, đổi trả, khiếu nại theo SOP",
+  "desc": "Soạn trả lời có duyệt, phân loại và mức khẩn, tra đơn chỉ đọc, hành động ghi qua phiếu duyệt.",
+  "out": "Bản nháp trả lời, quyết định, hành động có duyệt",
+  "tags": [
+    "khách hàng",
+    "zalo",
+    "cskh",
+    "khiếu nại"
+  ],
+  "status": "published",
+  "updated": "2026-11-11"
+}

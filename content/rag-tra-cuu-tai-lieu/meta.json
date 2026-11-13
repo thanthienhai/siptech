@@ -1,0 +1,19 @@
+{
+  "name": "Tra cứu tài liệu nội bộ",
+  "code": "C0–C9",
+  "icon": "search",
+  "order": 40,
+  "step": 3,
+  "step_label": "Tra cứu tài liệu",
+  "tag": "Hỏi đáp trên bảng giá, chính sách, hợp đồng",
+  "desc": "Từ dùng AI thủ công, gọi API, tách văn bản, chia khối, tìm kiếm, đến trả lời có trích dẫn và vận hành.",
+  "out": "Câu trả lời có trích dẫn nguyên văn",
+  "tags": [
+    "rag",
+    "tìm kiếm",
+    "trích dẫn",
+    "api"
+  ],
+  "status": "published",
+  "updated": "2026-11-11"
+}

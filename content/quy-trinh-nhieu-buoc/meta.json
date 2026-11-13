@@ -1,0 +1,19 @@
+{
+  "name": "Quy trình nhiều bước",
+  "code": "Q0–Q6",
+  "icon": "flow",
+  "order": 50,
+  "step": 4,
+  "step_label": "Quy trình nhiều bước",
+  "tag": "Một việc đi qua nhiều người, nhiều hệ thống",
+  "desc": "Vẽ quy trình và đo nền, tự động hóa thường, định tuyến, báo cáo định kỳ, chuỗi bước có điểm duyệt.",
+  "out": "Quy trình chạy tự động, có số đo trước/sau",
+  "tags": [
+    "quy trình",
+    "báo cáo",
+    "tự động hóa",
+    "phê duyệt"
+  ],
+  "status": "published",
+  "updated": "2026-11-11"
+}
