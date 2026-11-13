@@ -149,9 +149,17 @@ def ic(name, size=22):
 GROUP_ICON = {"tri-thuc-to-chuc": "book", "xu-ly-yeu-cau-khach": "chat", "kiem-tra-ho-so-theo-quy-tac": "file",
               "rag-tra-cuu-tai-lieu": "search", "quy-trinh-nhieu-buoc": "flow"}
 
-LOGO = ('<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--brand)"/>'
-        '<path d="M8 23h5v-5h5v-5h6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
-        '<circle cx="24" cy="9" r="2.4" fill="var(--accent)"/></svg>')
+S_D = "M44 20C44 12 33 11 27 14C20 18 21 26 30 30C39 34 44 38 41 45C38 52 27 52 20 46"
+
+
+def _logo(tile, fg):
+    return ('<svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="%s"/>'
+            '<path d="%s" fill="none" stroke="%s" stroke-width="5.5" stroke-linecap="round"/>'
+            '<circle cx="44" cy="20" r="5" fill="#ff7a3d"/><circle cx="20" cy="46" r="5" fill="#ff7a3d"/></svg>') % (tile, S_D, fg)
+
+
+LOGO = _logo("#0b1f4d", "#fff")
+LOGO_REV = _logo("#fff", "#0b1f4d")
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">')
 
@@ -163,6 +171,7 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
            ("Tài liệu nền", f"{r}index.html#nen-tang"), ("Lưu ý", f"{r}index.html#gioi-han")]
     links = "".join(f'<a href="{h}">{t}</a>' for t, h in nav)
     full_title = title if title.startswith(BRAND) else f"{title} · {BRAND}"
+    og_img = (f'<meta property="og:image" content="{SITE_URL}/assets/og-image.png"><meta name="twitter:card" content="summary_large_image">' if SITE_URL else "")
     return f"""<!doctype html>
 <html lang="vi">
 <head>
@@ -176,6 +185,9 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
 <meta property="og:description" content="{d}">
 <meta property="og:type" content="website">
 <link rel="icon" href="{r}assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{r}assets/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="{r}assets/apple-touch-icon.png">
+{og_img}
 {FONTS}
 <link rel="stylesheet" href="{r}assets/style.css">
 {extra_head}
@@ -195,7 +207,7 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
 <footer class="foot">
   <div class="wrap">
     <div class="fcols">
-      <div><div class="brand sm">{LOGO}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
+      <div><div class="brand sm">{LOGO_REV}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
       <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in GROUPS)}</div>
       <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}</div>
     </div>
