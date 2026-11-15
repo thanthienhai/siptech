@@ -38,7 +38,7 @@ def load_groups():
         d["n"] = len(list(meta.parent.glob("cap-*.md")))
         d.setdefault("status", "published" if d["n"] else "planned")
         for k, v in (("order", 999), ("icon", "layers"), ("updated", ""), ("code", ""), ("out", ""), ("tags", []),
-                     ("tag", ""), ("desc", ""), ("step", None), ("step_label", "")):
+                     ("tag", ""), ("desc", ""), ("step", None), ("step_label", ""), ("step_note", "")):
             d.setdefault(k, v)
         d["has_pages"] = d["n"] > 0
         groups.append(d)
@@ -515,10 +515,13 @@ def home():
     steps = {}
     for g in GROUPS:
         if g["step"] is not None and g["has_pages"]:
-            steps.setdefault(g["step"], {"label": g["step_label"] or g["name"], "names": []})["names"].append(
-                f'<a href="{g["slug"]}/index.html">{g["name"]}</a>')
-    path = "".join(f'<li><span class="sn">{i + 1}</span><b>{v["label"]}</b><span class="stl">{" · ".join(v["names"])}</span></li>'
-                   for i, (k, v) in enumerate(sorted(steps.items())))
+            st = steps.setdefault(g["step"], {"label": g["step_label"] or g["name"], "note": "", "chips": []})
+            st["note"] = st["note"] or g["step_note"]
+            st["chips"].append(f'<a class="rchip" href="{g["slug"]}/index.html">{g["name"]}<small>{g["n"]} cấp</small></a>')
+    path = "".join(
+        f'<li class="rs"><span class="rn">{i + 1}</span><div class="rc"><b>{v["label"]}</b>'
+        + (f'<p>{v["note"]}</p>' if v["note"] else "") + f'<div class="rchips">{"".join(v["chips"])}</div></div></li>'
+        for i, (k, v) in enumerate(sorted(steps.items())))
     stats = [
         ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
         ("68%", "chạy tối đa 10 bước rồi chuyển cho người", "Nghiên cứu MAP · arXiv 2512.04123"),
@@ -544,12 +547,12 @@ def home():
          "Ví dụ: Cấp C6, đánh giá", "rag-tra-cuu-tai-lieu/cap-06-danh-gia.html"),
     ]
     pr_html = "".join(
-        f'<article class="pc"><div class="ptop"><span class="pnum">0{n}</span><span class="pico sm">{ic(i, 20)}</span></div>'
-        f'<h3>{b}</h3><p>{c}</p><a class="plink" href="{href}">{label} {ic("arrow", 15)}</a></article>'
+        f'<article class="pc"><div class="ptop"><span class="pnum">0{n}</span></div>'
+        f'<h3>{b}</h3><p>{c}</p><a class="plink" href="{href}">{label} →</a></article>'
         for n, (i, b, c, label, href) in enumerate(principles, 1))
     pr_html += ('<a class="pc pc-ev" href="nen-tang-bang-chung.html"><h3>Vì sao là năm nguyên tắc này?</h3>'
                 '<p>Chúng rút ra từ những hệ thống AI đã chạy thật trong năm bài báo SIPTech đã đọc kỹ, không phải lý thuyết suông.</p>'
-                f'<span class="plink">Xem bằng chứng {ic("arrow", 15)}</span></a>')
+                '<span class="plink">Xem bằng chứng →</span></a>')
     base = "".join(
         f'<a class="base" href="{s}.html"><h3>{t}</h3><p>{d}</p><span class="go">Đọc {ic("arrow", 16)}</span></a>' for s, t, d in ROOT_DOCS)
     problems = [
@@ -611,7 +614,7 @@ def home():
     {sh("Cách làm", "Năm nguyên tắc xuyên suốt")}
     <div class="prs3">{pr_html}</div>
     <h3 class="subh">Thứ tự gợi ý cho doanh nghiệp chưa có quy trình</h3>
-    <ol class="order">{path}</ol>
+    <ol class="road">{path}</ol>
     <p class="fine">Đây là đề xuất của SIPTech, chưa có nguồn đo.</p>
   </div>
 </section>
