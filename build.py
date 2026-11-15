@@ -14,6 +14,8 @@ from pathlib import Path
 
 import markdown
 
+import lesson
+
 ROOT = Path(__file__).parent
 CONTENT = ROOT / "content"
 ASSETS = ROOT / "assets"
@@ -72,6 +74,31 @@ def gh_slug(value, sep):
 
 
 LIST_RE = re.compile(r"^\s*([-*+]|\d+[.)])\s+")
+
+
+def dedent_fences(text):
+    """python-markdown không nhận khối mã thụt lề (trong danh sách): đưa về sát lề trái."""
+    lines, out, i = text.split(chr(10)), [], 0
+    while i < len(lines):
+        l = lines[i]
+        m = re.match(r"^([ ]+)(```|~~~)", l)
+        if not m:
+            out.append(l)
+            i += 1
+            continue
+        n = len(m.group(1))
+        if out and out[-1].strip():
+            out.append("")
+        j = i
+        while True:
+            seg = lines[j]
+            out.append(seg[n:] if seg.startswith(" " * n) else seg.lstrip())
+            j += 1
+            if j >= len(lines) or (j > i and lines[j - 1].strip().startswith(m.group(2)) and j - 1 > i):
+                break
+        out.append("")
+        i = j
+    return chr(10).join(out)
 
 
 def prep(text):
@@ -161,7 +188,7 @@ def apply_tokens(body, sources):
 def label_tables(body):
     def one(m):
         tbl = m.group(0)
-        heads = [re.sub(r"<[^>]+>", "", h).strip() for h in re.findall(r"<th[^>]*>(.*?)</th>", tbl, flags=re.S)]
+        heads = [re.sub(r"\[\[[^]]*\]\]", "", re.sub(r"<[^>]+>", "", h)).strip() for h in re.findall(r"<th[^>]*>(.*?)</th>", tbl, flags=re.S)]
         if not heads:
             return tbl
 
@@ -178,7 +205,11 @@ def label_tables(body):
 
 
 def render_md(text):
-    text = prep(text)
+    rel = getattr(render_md, "rel", "") or ""
+    render_md.info = {"date": ""}
+    if "/" in rel:
+        text, render_md.info = lesson.preprocess(text, rel)
+    text = prep(dedent_fences(text))
     text, sources = extract_sources(text)
     md = markdown.Markdown(
         extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list", "admonition", "meta"],
@@ -188,6 +219,7 @@ def render_md(text):
     body = body.replace("<p>SIPSOURCES</p>", sources_html(sources))
     body = apply_tokens(body, sources)
     body = label_tables(body)
+    body = lesson.post(body)
     render_md.meta = {k: " ".join(v) for k, v in getattr(md, "Meta", {}).items()}
     return body, md.toc_tokens
 
@@ -203,7 +235,7 @@ def fix_links(body):
             if path.endswith("00-README"):
                 path = path[: -len("00-README")]
                 path = path + ("" if path.endswith("/") or path == "" else "/")
-                path = path or "tong-quan"
+                path = path or "index"
                 if path.endswith("/"):
                     path += "index"
             path += ".html"
@@ -221,7 +253,8 @@ def title_of(text, fallback):
 
 def short_title(t):
     t = re.sub(r"^(Cấp\s+\w+\s*(\(\w+\))?\s*[:\-—]\s*|[CKQ]\d\s*[—:\-]\s*)", "", t)
-    return t
+    t = re.sub(r"\s*\([ -~]+\)", "", t)  # bỏ chú thích tiếng Anh trong ngoặc
+    return t.strip()
 
 # ---------- layout ----------
 
@@ -308,11 +341,11 @@ def page(title, body, depth, desc=None, active="", extra_head=""):
     <div class="fcols">
       <div><div class="brand sm">{LOGO_REV}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
       <div><h4>Bài toán</h4>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in [x for x in GROUPS if x["has_pages"]][:6])}<a href="{r}bai-toan.html"><b>Xem tất cả ({NUM})</b></a></div>
-      <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}bo-nhan-dien.html">Bộ nhận diện</a></div>
+      <div><h4>Tài liệu nền</h4>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}tu-dien.html">Từ điển thuật ngữ</a><a href="{r}bo-nhan-dien.html">Bộ nhận diện</a></div>
     </div>
     <p class="legal">Nội dung là tài liệu nghiên cứu và hướng dẫn kỹ thuật, không phải tư vấn pháp lý hay tư vấn thuế.
     Số liệu định lượng đến từ các nghiên cứu ở tổ chức lớn, chưa có nguồn nào đo trực tiếp trên SME Việt Nam.
-    Các ngưỡng gắn nhãn [Đề xuất] là thiết kế của nhóm soạn.</p>
+    Các ngưỡng gắn nhãn Đề xuất là thiết kế của nhóm soạn.</p>
   </div>
 </footer>
 </body>
@@ -328,12 +361,19 @@ def sidebar(items, current, r):
     return "".join(out)
 
 
-def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_next, extra_top=""):
+LEGEND = ('<p class="legend">Cách đọc các nhãn nhỏ trong bài: <span class="tg tg-src">Có nguồn</span> điều được nêu trong tài liệu gốc; '
+          '<span class="tg tg-prop">Đề xuất</span> ý kiến hoặc thiết kế của SIPTech; <span class="tg tg-ill">Minh họa</span> ví dụ giả định. '
+          'Gặp từ lạ? Rê chuột lên từ có gạch chấm, hoặc mở <a href="{r}tu-dien.html">Từ điển thuật ngữ</a>.</p>')
+
+
+def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_next, extra_top="", pos=None):
     body, toc = render_md(src_text)
     meta = dict(getattr(render_md, "meta", {}))
+    info = dict(getattr(render_md, "info", {}))
     body = fix_links(body)
     r = "../" * depth
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
+    body = lesson.glossary_wrap(body, r)
     blog = kind == "root"
     blog_cls = " blog" if blog else ""
     if blog:
@@ -341,19 +381,35 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
         d = fmt_date(meta.get("date", ""))
         extra_top = (f'<div class="byline"><span>SIPTech</span>' + (f"<span>Cập nhật {d}</span>" if d else "") +
                      f"<span>{mins} phút đọc</span></div>" + extra_top)
+    if kind == "level" and pos:
+        mins = max(1, round(len(re.findall(r"\w+", src_text)) / 190))
+        d = fmt_date(info.get("date", ""))
+        extra_top = (f'<div class="byline"><span><a href="{r}{pos[3]}/index.html">{html.escape(pos[2])}</a></span>'
+                     f"<span>Bài {pos[0] + 1} trong {pos[1]}</span><span>khoảng {mins} phút đọc</span>"
+                     + (f"<span>Cập nhật {d}</span>" if d else "") + "</div>" + LEGEND.replace("{r}", r) + extra_top)
     toc_html = ""
     flat = []
     for h in toc[0]["children"] if toc and toc[0]["level"] == 1 else toc:
-        flat.append(h)
+        if not lesson.AUTH_RE.search(h["name"]):
+            flat.append(h)
     if len(flat) >= 3:
         toc_html = '<aside class="otp"><h4>Trong bài này</h4>' + "".join(
             f'<a href="#{t["id"]}">{html.escape(t["name"])}</a>' for t in flat) + "</aside>"
     pn = ""
     if prev_next:
         p, n = prev_next
-        pn = '<nav class="pn">' + (
-            f'<a class="prev" href="{r}{p[0]}"><small>← Cấp trước</small>{html.escape(p[1])}</a>' if p else "<span></span>") + (
-            f'<a class="next" href="{r}{n[0]}"><small>Cấp tiếp →</small>{html.escape(n[1])}</a>' if n else "<span></span>") + "</nav>"
+        home = f"{r}{crumbs[-1][1]}"
+        if p:
+            prev_html = f'<a class="prev" href="{r}{p[0]}"><small>← Bài trước</small>{html.escape(p[1])}</a>'
+        else:
+            prev_html = f'<a class="prev" href="{home}"><small>← Quay lại</small>Tổng quan nhóm bài</a>'
+        if n:
+            q = f"<em>{html.escape(n[2])}</em>" if len(n) > 2 and n[2] else ""
+            next_html = f'<a class="next" href="{r}{n[0]}"><small>Bài tiếp theo →</small>{html.escape(n[1])}{q}</a>'
+        else:
+            next_html = (f'<a class="next" href="{r}bai-toan.html"><small>Bạn đã học hết nhóm bài này →</small>'
+                         f"Chọn bài toán tiếp theo<em>Xem danh sách các bài toán để học tiếp</em></a>")
+        pn = '<nav class="pn">' + prev_html + next_html + "</nav>"
     crumb_html = " <i>/</i> ".join(f'<a href="{r}{h}">{html.escape(t)}</a>' for t, h in crumbs)
     main = f"""
 <div class="wrap docgrid{blog_cls and " wide"}">
@@ -548,9 +604,12 @@ def home():
 def group_page(g, levels, readme_text):
     slug = g["slug"]
     r = "../"
+    render_md.rel = f"{slug}/00-README.md"
     body, _ = render_md(readme_text or "")
+    render_md.rel = ""
     body = fix_links(body)
     body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
+    body = lesson.glossary_wrap(body, r)
     steps = ""
     for i, (fname, t, _) in enumerate(levels):
         steps += f'<a class="lv" href="{fname}.html"><span class="n">{i}</span><span class="t">{html.escape(short_title(t))}</span><span class="a">{ic("arrow", 18)}</span></a>'
@@ -693,6 +752,21 @@ def all_page():
 """
     return page("Tất cả bài toán", body, 0, desc=f"{NUM} bài toán doanh nghiệp ứng dụng AI, cập nhật liên tục: lộ trình theo cấp, đường không code và code nhẹ.")
 
+
+# ---------- từ điển ----------
+
+def glossary_page():
+    body = f"""
+<section class="ghero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Trang chủ</a> <i>/</i> Từ điển thuật ngữ</div>
+  <span class="pill">Dành cho người mới</span>
+  <h1>Từ điển thuật ngữ</h1>
+  <p class="lead">Giải thích bằng lời thường những từ hay gặp trong các bài giảng. Trong bài, từ nào có gạch chấm bên dưới thì rê chuột lên để xem nghĩa ngắn.</p>
+</div></section>
+<section class="sec"><div class="wrap"><div class="gloss" style="max-width:860px">{lesson.glossary_html()}</div></div></section>
+"""
+    return page("Từ điển thuật ngữ", body, 0, desc="Giải thích bằng lời thường các thuật ngữ AI trong bài giảng của SIPTech: prompt, API, token, RAG, agent...")
+
 # ---------- build ----------
 
 def write(path, text):
@@ -708,6 +782,8 @@ def main():
 
     write(OUT / "index.html", home())
     write(OUT / "bai-toan.html", all_page())
+    write(OUT / "tu-dien.html", glossary_page())
+    lesson.init(CONTENT, GROUPS, ROOT_DOCS)
     if KIT.exists():
         shutil.copytree(KIT / "svg", OUT / "brand" / "svg")
         shutil.copytree(KIT / "social", OUT / "brand" / "social")
@@ -748,10 +824,14 @@ def main():
             (f"{g['slug']}/{fn}.html", f"{i}. {short_title(t)}", None) for i, (fn, t, _) in enumerate(levels)]
         for i, (fn, t, text) in enumerate(levels):
             prev = (f"{g['slug']}/{levels[i-1][0]}.html", short_title(levels[i-1][1])) if i > 0 else None
-            nxt = (f"{g['slug']}/{levels[i+1][0]}.html", short_title(levels[i+1][1])) if i < len(levels) - 1 else None
+            nxt = (f"{g['slug']}/{levels[i+1][0]}.html", short_title(levels[i+1][1]),
+                   lesson.question_of(levels[i+1][2])) if i < len(levels) - 1 else None
             crumbs = [("Trang chủ", "index.html"), (g["name"], f"{g['slug']}/index.html")]
+            render_md.rel = f"{g['slug']}/{fn}.md"
             write(OUT / g["slug"] / f"{fn}.html",
-                  doc_page("level", text, t, 1, side, f"{g['slug']}/{fn}.html", crumbs, (prev, nxt)))
+                  doc_page("level", text, t, 1, side, f"{g['slug']}/{fn}.html", crumbs, (prev, nxt),
+                           pos=(i, len(levels), g["name"], g["slug"])))
+            render_md.rel = ""
         for extra in gdir.iterdir():
             if extra.suffix.lower() in (".pptx", ".pdf", ".xlsx", ".docx", ".zip"):
                 shutil.copy2(extra, OUT / g["slug"] / extra.name)
