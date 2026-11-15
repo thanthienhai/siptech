@@ -101,6 +101,15 @@ def dedent_fences(text):
     return chr(10).join(out)
 
 
+def blank_before_admonitions(text):
+    out = []
+    for l in text.split(chr(10)):
+        if l.startswith("!!!") and out and out[-1].strip():
+            out.append("")
+        out.append(l)
+    return chr(10).join(out)
+
+
 def prep(text):
     """GitHub cho phép danh sách ngay sau đoạn văn; python-markdown thì cần dòng trống."""
     out, fence, prev = [], False, ""
@@ -209,7 +218,7 @@ def render_md(text):
     render_md.info = {"date": ""}
     if "/" in rel:
         text, render_md.info = lesson.preprocess(text, rel)
-    text = prep(dedent_fences(text))
+    text = prep(blank_before_admonitions(dedent_fences(text)))
     text, sources = extract_sources(text)
     md = markdown.Markdown(
         extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list", "admonition", "meta"],
