@@ -36,6 +36,7 @@ Bản gốc để so sánh (đừng sửa): `C:\Users\PC\Coding\thienthan\MM\AI-
 ## Cú pháp có thể dùng (bộ dựng site hỗ trợ)
 
 - Hộp: `!!! tip "Nói đơn giản"`, `!!! note "Lưu ý"`, `!!! warning "Cẩn thận"`; nội dung thụt 4 dấu cách.
+- Hộp `!!!` đặt ở lề trái, có một dòng trống ngay phía trước, không đặt bên trong mục danh sách.
 - Bảng Markdown, danh sách, **đậm**, *nghiêng*.
 - Không dùng HTML thô.
 

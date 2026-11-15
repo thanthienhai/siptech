@@ -2,35 +2,52 @@
 
 Ngày soạn: 2026-11-11. **[Nguồn]** = điều tài liệu nói; **[Đề xuất]** = thiết kế của nhóm soạn; **[Thao tác]** = hay đổi, có ngày tra.
 
+!!! tip "Tóm tắt nhanh"
+    Trước khi nghĩ đến AI, hãy xem phần nào của quy trình làm được bằng **luật cố định** kiểu "nếu ... thì ...". Bài này hướng dẫn bạn dựng một luồng tự động chạy hằng ngày, **không dùng AI**: biểu mẫu nhận yêu cầu, bảng luật chuyển đúng người, nhắc khi quá hạn, và có nhật ký để biết luồng đang chạy hay hỏng. Sau bài, công ty bạn có một luồng chạy được, có người chịu trách nhiệm. Dừng ở đây cũng đã có lợi.
+
 ## 1) Mục tiêu và người đọc
 
-**Người đọc:** người phụ trách vận hành, kế toán, hoặc "người giỏi Excel" của công ty. Biết công thức bảng tính; code là tùy chọn.
+**Bài này dành cho ai:** người phụ trách vận hành, kế toán, hoặc "người giỏi Excel" của công ty. Bạn biết công thức bảng tính là đủ; biết code thì tốt nhưng là tùy chọn.
 
-**Sau cấp này có:** một luồng tự động chạy hằng ngày cho 1-2 bước nhãn **Quy tắc** từ Q0. Ví dụ: biểu mẫu có trường bắt buộc → ghi vào bảng → chuyển đúng người theo luật → nhắc khi quá hạn.
+**Bạn cần chuẩn bị:**
+- Kết quả của cấp Q0: danh sách các bước của quy trình, trong đó có một vài bước đã được gắn nhãn **Quy tắc** (bước làm được bằng luật cố định).
+- Một công cụ để dựng luồng, chọn trong bảng ở mục 3.2 (ví dụ Google Forms với Google Sheets, hoặc Lark, hoặc Make, hoặc n8n).
+- Một người chịu trách nhiệm: người nhận cảnh báo khi luồng bị lỗi (xem mục 3.1).
 
-**Thứ chạy được độc lập:** luồng tự động đó, kèm nhật ký chạy và một người chịu trách nhiệm. Không có AI. Nếu dừng ở đây, công ty vẫn có lợi.
+**Sau bài này bạn sẽ có:** một luồng tự động chạy hằng ngày cho 1 đến 2 bước nhãn **Quy tắc** từ Q0. Ví dụ: biểu mẫu có trường bắt buộc, rồi ghi vào bảng, rồi chuyển đúng người theo luật, rồi nhắc khi quá hạn.
+
+**Thứ bạn cầm đi được sau bài:** luồng tự động đó, kèm nhật ký chạy (mỗi lần chạy ghi lại một dòng) và một người chịu trách nhiệm. Luồng này **không có AI** và chạy được độc lập. Nếu dừng ở đây, công ty vẫn có lợi.
 
 ## 2) Câu hỏi cấp này trả lời / lỗi của Q0
 
 **Câu hỏi:** "Phần nào của quy trình làm được bằng luật cố định, để khỏi trả tiền và khỏi chịu rủi ro của AI?"
 
-**Lỗi Q0 để lại:** đã biết bước nào chép tay, chờ ký, quên nhắc; nhưng vẫn làm tay.
+**Lỗi Q0 để lại:** chúng ta đã biết bước nào đang chép tay, bước nào chờ ký, bước nào hay quên nhắc; nhưng vẫn đang làm tay.
 
 **Lý do không nhảy thẳng lên AI:**
+
 - **[Nguồn]** So sánh có kiểm soát (arXiv 2509.04198): RPA (UiPath) thành công 10/10 lần ở cả 3 bài thử; agent dùng máy tính (Claude Sonnet 4) thành công 0/1, 9/10 và 6/10, và chậm hơn có ý nghĩa thống kê (ví dụ bài hóa đơn: 20 giây so với 202,8 giây). Điểm mạnh của agent: dựng nhanh hơn (≈15 phút so với ≈240 phút ở bài hóa đơn). Tác giả kết luận agent chưa sẵn sàng cho luồng quan trọng. Giới hạn: 3 bài thử, 1 người dựng RPA, 1 công cụ mỗi loại.
 - **[Nguồn]** τ-bench (arXiv 2406.12045): cùng một việc chạy 8 lần, gpt-4o thành công cả 8 lần ở dưới 25% số việc bán lẻ. Luật cố định thì cho cùng kết quả mỗi lần.
 - **[Nguồn]** Anthropic "Building effective agents" (nhóm RAG đã đọc): tìm giải pháp đơn giản nhất, chỉ tăng độ phức tạp khi cần.
 
+!!! tip "Nói đơn giản"
+    RPA là phần mềm "robot" làm theo kịch bản cố định, như bấm chuột và gõ phím thay người. Agent là AI tự nhìn màn hình rồi tự quyết định thao tác. Trong thử nghiệm trên, robot theo kịch bản làm đúng và nhanh; AI dựng nhanh hơn nhưng chạy không ổn định bằng. Vì vậy hễ việc nào viết được thành luật thì nên dùng luật trước.
+
 ## 3) Kiến thức nền
 
 ### 3.1 Ba khối của mọi luồng tự động [Đề xuất]
-1. **Kích hoạt (trigger):** biểu mẫu được nộp; dòng mới trong bảng; giờ định kỳ; sự kiện từ phần mềm (webhook).
+1. **Kích hoạt (trigger):** điều gì làm luồng bắt đầu chạy. Ví dụ: biểu mẫu được nộp; dòng mới trong bảng; giờ định kỳ; sự kiện từ phần mềm (webhook, là một "tín hiệu" mà phần mềm này tự gửi sang phần mềm khác khi có việc mới).
 2. **Luật:** điều kiện "nếu ... thì ..." viết được ra giấy.
-3. **Hành động:** ghi dòng, gửi thông báo, tạo việc, gọi API.
+3. **Hành động:** luồng làm gì khi luật khớp. Ví dụ: ghi dòng, gửi thông báo, tạo việc, gọi API (API là "cổng" để một phần mềm nhờ phần mềm khác làm việc hoặc lấy dữ liệu).
 
 Thêm hai thứ bắt buộc: **nhật ký** (mỗi lần chạy ghi một dòng) và **người chịu trách nhiệm** (ai nhận cảnh báo khi luồng lỗi).
 
+!!! tip "Nói đơn giản"
+    Hãy nghĩ đến một bảo vệ cổng: "khi có xe đến (kích hoạt), nếu là xe khách thì mở cổng trái, nếu là xe hàng thì mở cổng phải (luật), rồi ghi sổ (hành động và nhật ký)". Luồng tự động chỉ là bản số hóa của quy tắc đó, cộng thêm một người biết ai sẽ chịu trách nhiệm khi cổng kẹt.
+
 ### 3.2 Công cụ SME Việt Nam hay dùng [Thao tác, tra 2026-11-11]
+
+Bảng dưới đây cho biết mỗi công cụ hợp với ai, giới hạn đã xác minh, và lưu ý về dữ liệu. (SME là doanh nghiệp vừa và nhỏ. "Hạn mức" là mức tối đa nhà cung cấp cho phép dùng.)
 
 | Công cụ | Hợp với | Giới hạn đã xác minh | Lưu ý dữ liệu [Đề xuất] |
 |---|---|---|---|
@@ -41,7 +58,10 @@ Thêm hai thứ bắt buộc: **nhật ký** (mỗi lần chạy ghi một dòng
 | n8n tự host | Có người biết dựng máy chủ; muốn dữ liệu ở máy mình | Community (Sustainable Use License) miễn phí khi chỉ người trong tổ chức tạo/sửa workflow; không bán lại n8n như dịch vụ [Nguồn: FAQ giấy phép] | Dữ liệu ở máy chủ mình chọn; tự lo cập nhật bảo mật, sao lưu |
 | Automation sẵn trong phần mềm bán hàng/kế toán | Luồng chỉ trong một phần mềm | Tùy phần mềm; **chưa kiểm** từng hãng | Không thêm chặng dữ liệu |
 
-Khả năng kết nối phần mềm SME (đã xác minh một phần, xem `00-README.md` mục 5): KiotViet có Public API cho đơn, hóa đơn, hàng hóa, khách hàng; Haravan có webhook ký HMAC; MISA AMIS Kế toán cho phép đẩy chứng từ qua API; Sapo chưa tìm được tài liệu chính thức.
+!!! tip "Nói đơn giản"
+    Apps Script là cách viết một đoạn chương trình ngắn ngay trong Google Sheets. "Trigger" là điều kiện làm nó chạy. "Operation" của Make là một lần một bước nhỏ (module) chạy xong, nên luồng càng nhiều bước và chạy càng nhiều lần thì càng tốn hạn mức. "Bearer token" là một chuỗi mật mã để chứng minh bạn có quyền gửi dữ liệu vào. "Tự host" nghĩa là tự cài phần mềm lên máy chủ của mình thay vì dùng bản của nhà cung cấp. Bạn không cần nhớ hết các giới hạn; chỉ cần biết mỗi công cụ đều có trần, và nên kiểm lại trước khi chọn vì các con số này hay đổi.
+
+Khả năng kết nối phần mềm SME (đã xác minh một phần, xem `00-README.md` mục 5): KiotViet có Public API cho đơn, hóa đơn, hàng hóa, khách hàng; Haravan có webhook ký HMAC (HMAC là một chữ ký điện tử để bên nhận biết tín hiệu đúng là do Haravan gửi); MISA AMIS Kế toán cho phép đẩy chứng từ qua API; Sapo chưa tìm được tài liệu chính thức.
 
 ### 3.3 Cạm bẫy của automation thường [Đề xuất]
 - **Luồng chạy ngầm, không ai xem.** Lỗi im lặng nhiều tuần. Cần cảnh báo khi lỗi và khi "không chạy" (ví dụ cả ngày không có dòng mới).
@@ -49,38 +69,45 @@ Khả năng kết nối phần mềm SME (đã xác minh một phần, xem `00-R
 - **Quyền rộng.** Kết nối Make/Zapier với "toàn bộ Gmail/Drive". Cấp quyền hẹp nhất có thể.
 - **Phụ thuộc người dựng.** Người dựng nghỉ việc, không ai sửa được. Ghi sơ đồ và lưu ở nơi chung.
 
+!!! tip "Nói đơn giản"
+    Bốn cạm bẫy này đều là chuyện "không ai để ý": luồng hỏng mà không ai biết, một việc chạy hai lần, cấp chìa khóa cả nhà cho một ứng dụng chỉ cần mở một phòng, và chỉ một người hiểu cách luồng chạy. Cách phòng chung là có nhật ký, có cảnh báo, cấp quyền vừa đủ và ghi lại sơ đồ ở chỗ cả nhóm xem được.
+
 ## 4) Chuỗi bài nhỏ
 
+Sáu bài thực hành dưới đây làm theo thứ tự. Mỗi bài nêu việc cần làm, thứ bạn có sau bài, và (nếu có) lỗi hay gặp để tránh.
+
 ### Bài Q1.1 — Biểu mẫu thay tin nhắn
-- **Làm:** chuyển yêu cầu đang gửi qua Zalo thành biểu mẫu (Google Forms, Lark Form, hoặc biểu mẫu trong phần mềm) với trường bắt buộc, danh sách chọn (dự án, loại chi phí), kiểm định dạng (số tiền là số, ngày hợp lệ).
-- **Sản phẩm:** biểu mẫu + bảng nhận dữ liệu có cột `ma_phieu`, `trang_thai`, `nguoi_xu_ly`, `han`.
-- **Lỗi:** để ô "ghi chú" tự do thay cho trường có cấu trúc; không có mã phiếu.
+- **Việc cần làm:** chuyển yêu cầu đang gửi qua Zalo thành biểu mẫu (Google Forms, Lark Form, hoặc biểu mẫu trong phần mềm) với trường bắt buộc, danh sách chọn (dự án, loại chi phí), kiểm định dạng (số tiền là số, ngày hợp lệ).
+- **Bạn có sau bài:** biểu mẫu + bảng nhận dữ liệu có cột `ma_phieu`, `trang_thai`, `nguoi_xu_ly`, `han`. (Đây là các cột: mã phiếu, trạng thái, người xử lý, hạn.)
+- **Lỗi hay gặp:** để ô "ghi chú" tự do thay cho trường có cấu trúc; không có mã phiếu.
 
 ### Bài Q1.2 — Định tuyến bằng luật
-- **Làm:** bảng tra "loại yêu cầu → người nhận", "số tiền > X → thêm người duyệt". Luật nằm ở **một bảng** người quản lý sửa được, không nằm rải trong code.
-- **Sản phẩm:** bảng luật + luồng gửi thông báo cho người nhận (email, Lark, Zalo nhóm nội bộ).
-- **Lỗi:** chép số hạn mức cứng vào nhiều chỗ; không có người dự phòng khi người nhận nghỉ.
+- **Việc cần làm:** lập bảng tra "loại yêu cầu → người nhận", "số tiền > X → thêm người duyệt". (Định tuyến là chuyển yêu cầu đến đúng người.) Luật nằm ở **một bảng** người quản lý sửa được, không nằm rải trong code.
+- **Bạn có sau bài:** bảng luật + luồng gửi thông báo cho người nhận (email, Lark, Zalo nhóm nội bộ).
+- **Lỗi hay gặp:** chép số hạn mức cứng vào nhiều chỗ; không có người dự phòng khi người nhận nghỉ.
 
 ### Bài Q1.3 — Nhắc hạn và leo thang
-- **Làm:** trigger theo giờ quét các phiếu `cho_duyet` quá hạn; nhắc người xử lý; quá 2 lần thì báo cấp trên.
-- **Sản phẩm:** luồng nhắc + cột `so_lan_nhac`.
-- **Lỗi:** nhắc lúc nửa đêm; nhắc lặp vô hạn.
+- **Việc cần làm:** cho trigger theo giờ quét các phiếu `cho_duyet` (chờ duyệt) quá hạn; nhắc người xử lý; quá 2 lần thì báo cấp trên. (Leo thang là báo lên cấp cao hơn khi việc bị kẹt.)
+- **Bạn có sau bài:** luồng nhắc + cột `so_lan_nhac` (số lần đã nhắc).
+- **Lỗi hay gặp:** nhắc lúc nửa đêm; nhắc lặp vô hạn.
 
 ### Bài Q1.4 — Chuyển dữ liệu giữa hệ thống không chép tay
-- **Làm:** chọn một chặng chép tay (ví dụ đơn Haravan → Sheet kho, phiếu đã duyệt → chứng từ MISA). Dùng webhook/API hoặc xuất-nhập file theo lịch. Đối chiếu số dòng hai bên mỗi ngày.
-- **Sản phẩm:** luồng chuyển + bảng đối chiếu ngày (số dòng nguồn, số dòng đích, chênh).
-- **Lỗi:** không đối chiếu, mất đơn im lặng; dùng tài khoản admin cho kết nối.
+- **Việc cần làm:** chọn một chặng chép tay (ví dụ đơn Haravan → Sheet kho, phiếu đã duyệt → chứng từ MISA). Dùng webhook/API hoặc xuất-nhập file theo lịch. Đối chiếu số dòng hai bên mỗi ngày.
+- **Bạn có sau bài:** luồng chuyển + bảng đối chiếu ngày (số dòng nguồn, số dòng đích, chênh).
+- **Lỗi hay gặp:** không đối chiếu, mất đơn im lặng; dùng tài khoản admin cho kết nối.
 
 ### Bài Q1.5 — Nhật ký và cảnh báo
-- **Làm:** mỗi lần chạy ghi: thời điểm, luồng, `ma_phieu`, kết quả, lỗi. Gửi cảnh báo khi lỗi và khi 24 giờ không chạy.
-- **Sản phẩm:** tab "nhật ký" + quy tắc cảnh báo. Mẫu trường log xem `../rag-tra-cuu-tai-lieu/cap-09-van-hanh.md` bài 9.1 (bỏ các trường về mô hình).
-- **Lỗi:** ghi cả SĐT, địa chỉ khách vào nhật ký mà không che.
+- **Việc cần làm:** mỗi lần chạy ghi: thời điểm, luồng, `ma_phieu`, kết quả, lỗi. Gửi cảnh báo khi lỗi và khi 24 giờ không chạy. (Nhật ký, còn gọi là log, là cuốn sổ ghi lại mỗi lần luồng chạy.)
+- **Bạn có sau bài:** tab "nhật ký" + quy tắc cảnh báo. Mẫu trường log xem `../rag-tra-cuu-tai-lieu/cap-09-van-hanh.md` bài 9.1 (bỏ các trường về mô hình).
+- **Lỗi hay gặp:** ghi cả SĐT, địa chỉ khách vào nhật ký mà không che.
 
 ### Bài Q1.6 — Đo lại so với nền
-- **Làm:** sau 2 tuần, đo cùng cách như Q0.5. So sánh trung vị thời gian, số lỗi, thời gian chờ.
-- **Sản phẩm:** bảng trước/sau. Ghi cả thời gian dựng và bảo trì.
+- **Việc cần làm:** sau 2 tuần, đo cùng cách như Q0.5. So sánh trung vị thời gian (giá trị nằm giữa khi xếp các lần đo từ nhỏ đến lớn), số lỗi, thời gian chờ.
+- **Bạn có sau bài:** bảng trước/sau. Ghi cả thời gian dựng và bảo trì.
 
 ## 5) Đường không code vs có code; khi nào buộc chuyển
+
+Bài này có hai cách làm. Cách không code đủ để bắt đầu. Cách có code nhẹ cần một người biết lập trình, nhưng làm được những việc mà công cụ kéo thả khó làm.
 
 | | Không code | Có code nhẹ |
 |---|---|---|
@@ -88,9 +115,16 @@ Khả năng kết nối phần mềm SME (đã xác minh một phần, xem `00-R
 | Ưu | Dựng nhanh, người không biết code sửa được | Kiểm điều kiện phức tạp, đối chiếu, khóa chống trùng, nhật ký đầy đủ |
 | Nhược | Khó kiểm trùng; khó test; chi phí tăng theo số lần chạy (Make tính theo module chạy) | Cần người bảo trì |
 
+(Script là một đoạn chương trình ngắn. "Khóa chống trùng" là cách bảo đảm một việc không bị chạy hai lần cùng lúc.)
+
 **Buộc chuyển sang code [Đề xuất] khi:** cần chống chạy trùng tin cậy (khóa, mã duy nhất); cần đối chiếu dữ liệu giữa hai hệ thống; số operation trên Make/Zapier vượt gói và tiền tăng nhanh; luồng cần chạy lâu hơn giới hạn (Apps Script 6 phút/lần); cần test tự động khi sửa luật.
 
+!!! tip "Nói đơn giản"
+    Cứ bắt đầu bằng cách không code. Chỉ nhờ người biết code khi gặp một trong các tình huống ở trên, ví dụ luồng hay chạy trùng hoặc tiền trả cho Make/Zapier tăng nhanh.
+
 ## 6) Tiêu chí lên Q2 (đo được) [Đề xuất]
+
+Bạn có thể sang cấp Q2 khi đạt đủ các điều sau:
 
 1. ≥1 luồng tự động chạy ≥2 tuần với ≥95% lần chạy thành công theo nhật ký.
 2. Có cảnh báo lỗi đến một người cụ thể, đã thử cố ý làm lỗi một lần.
@@ -99,9 +133,11 @@ Khả năng kết nối phần mềm SME (đã xác minh một phần, xem `00-R
 
 ## 7) Ví dụ cho SME Việt Nam (giả định minh họa)
 
+Ba tình huống giả định dưới đây giúp bạn hình dung. Đây là ví dụ minh họa, không phải số đo thật.
+
 **a) Công ty xây lắp 30 người (tiếp Q0).** Google Form "Đề nghị thanh toán" với trường: dự án (chọn), loại chi phí (chọn), số tiền (số), ảnh chứng từ (tải lên), người đề nghị (email công ty). Apps Script trigger khi nộp: gán `ma_phieu`, tra bảng luật (dự án → trưởng công trình; > 20 triệu → thêm giám đốc), gửi email kèm link duyệt. Trigger mỗi sáng 8 giờ nhắc phiếu chờ > 2 ngày. Không AI. Kết quả giả định: thời gian chờ trung vị từ 4 ngày xuống 2 ngày; lỗi "thiếu thông tin" gần như hết vì trường bắt buộc.
 
-**b) Phòng khám nha 12 người, đặt lịch qua Zalo OA và điện thoại.** Luồng Lark Base: lễ tân nhập lịch hẹn vào Base; automation gửi nhắc cho bác sĩ phụ trách trước 1 ngày; lịch hủy tự đổi trạng thái ghế trống. Lưu ý: tên bệnh nhân + tình trạng răng là dữ liệu sức khỏe, thuộc nhóm nhạy cảm theo NĐ 356 (tóm tắt EY); không đưa vào AI, chỉ ghi mã bệnh nhân trong thông báo. Gửi tin nhắc cho bệnh nhân qua ZNS cần kiểm điều kiện, giá trên developers.zalo.me (chưa kiểm).
+**b) Phòng khám nha 12 người, đặt lịch qua Zalo OA và điện thoại.** Luồng Lark Base: lễ tân nhập lịch hẹn vào Base; automation gửi nhắc cho bác sĩ phụ trách trước 1 ngày; lịch hủy tự đổi trạng thái ghế trống. Lưu ý: tên bệnh nhân + tình trạng răng là dữ liệu sức khỏe, thuộc nhóm nhạy cảm theo NĐ 356 (tóm tắt EY); không đưa vào AI, chỉ ghi mã bệnh nhân trong thông báo. Gửi tin nhắn nhắc cho bệnh nhân qua ZNS (dịch vụ gửi tin nhắn theo mẫu của Zalo) cần kiểm điều kiện, giá trên developers.zalo.me (chưa kiểm).
 
 **c) Cửa hàng mỹ phẩm (tiếp Q0).** Webhook đơn mới từ Haravan → n8n tự host → ghi dòng vào Sheet kho và báo nhóm đóng gói. Bước 6 "chép sang Sheet theo dõi" đã bỏ ở Q0.
 
