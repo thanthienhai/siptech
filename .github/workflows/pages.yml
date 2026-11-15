@@ -22,7 +22,12 @@ jobs:
       - name: Build site
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          SITE_URL="https://${OWNER}.github.io/${{ github.event.repository.name }}" python build.py
+          if [ -f CNAME ]; then
+            SITE_URL="https://$(tr -d '[:space:]' < CNAME)"
+          else
+            SITE_URL="https://${OWNER}.github.io/${{ github.event.repository.name }}"
+          fi
+          SITE_URL="$SITE_URL" python build.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

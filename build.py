@@ -850,6 +850,8 @@ def main():
             shutil.copy2(zp, OUT / "brand" / zp.name)
         write(OUT / f"{BRAND_PAGE}.html", brand_page())
     write(OUT / ".nojekyll", "")
+    if (ROOT / "CNAME").exists():
+        shutil.copy2(ROOT / "CNAME", OUT / "CNAME")
 
     # tài liệu gốc
     root_side = [(f"{s}.html", t, None) for s, t, _ in ROOT_DOCS]
