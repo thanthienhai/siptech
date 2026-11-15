@@ -124,7 +124,6 @@ a{color:var(--brand)}
 .prs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .pr{display:grid;grid-template-columns:42px 1fr;gap:16px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px}
 .pr h3{font-size:18px;margin-bottom:6px}.pr p{margin:0;color:var(--mute);font-size:15px}
-.pr:last-child:nth-child(odd){grid-column:1/-1}
 .order{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
 .order li{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px;position:relative}
 .order li:not(:last-child)::after{content:"";position:absolute;top:36px;right:-17px;width:18px;height:2px;background:var(--line2);z-index:1}
@@ -364,3 +363,23 @@ a{color:var(--brand)}
 .pn em{display:block;font-style:italic;font-weight:400;color:var(--mute);font-size:13.5px;margin-top:6px;line-height:1.45}
 .pn .next em{text-align:right}
 .admonition.tip{background:#eefaf4;border-color:#c5ebd6}.admonition.tip .admonition-title{color:#0b7a53}
+
+/* năm nguyên tắc */
+.prs3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pc{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:24px;text-decoration:none;color:inherit;transition:transform .18s,box-shadow .18s,border-color .18s}
+.pc:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#b8caf5}
+.ptop{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.pnum{font:800 44px/1 var(--sans);letter-spacing:-.04em;color:#c9d9ff}
+.ptop .pico{margin:0}
+.pc h3{font-size:19px;margin-bottom:8px}
+.pc p{margin:0 0 18px;color:var(--mute);font-size:15px;line-height:1.6}
+.plink{margin-top:auto;display:inline-flex;align-items:center;gap:6px;font:600 14.5px var(--sans);color:var(--brand);text-decoration:none}
+.pc:hover .plink .ic{transform:translateX(3px)}.plink .ic{transition:transform .15s}
+.pc-ev{background:var(--navy);border-color:var(--navy);justify-content:center}
+.pc-ev h3{color:#fff;font-size:21px}.pc-ev p{color:#c9d6f2}.pc-ev .plink{color:#fff}
+.pc-ev:hover{border-color:var(--brand);background:#0f2a66}
+.stl{color:var(--mute);font-size:14px;line-height:1.7;display:block}
+.stl a{color:var(--brand);text-decoration:none;font-weight:500}.stl a:hover{text-decoration:underline}
+.order li{display:flex;flex-direction:column}
+@media (max-width:1060px){.prs3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.prs3{grid-template-columns:1fr}.pnum{font-size:36px}}

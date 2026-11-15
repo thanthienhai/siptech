@@ -515,8 +515,9 @@ def home():
     steps = {}
     for g in GROUPS:
         if g["step"] is not None and g["has_pages"]:
-            steps.setdefault(g["step"], {"label": g["step_label"] or g["name"], "names": []})["names"].append(g["name"])
-    path = "".join(f'<li><span class="sn">{i + 1}</span><b>{v["label"]}</b><span>{" · ".join(v["names"])}</span></li>'
+            steps.setdefault(g["step"], {"label": g["step_label"] or g["name"], "names": []})["names"].append(
+                f'<a href="{g["slug"]}/index.html">{g["name"]}</a>')
+    path = "".join(f'<li><span class="sn">{i + 1}</span><b>{v["label"]}</b><span class="stl">{" · ".join(v["names"])}</span></li>'
                    for i, (k, v) in enumerate(sorted(steps.items())))
     stats = [
         ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
@@ -526,13 +527,29 @@ def home():
     ]
     stat_html = "".join(f'<div class="stat"><b>{a}</b><p>{b}</p><small>{c}</small></div>' for a, b, c in stats)
     principles = [
-        ("layers", "Bắt đầu từ việc nhỏ", "Mỗi cấp chạy được độc lập, có sản phẩm cầm đi được và tiêu chí đo để biết khi nào mới lên cấp."),
-        ("chat", "Dùng công cụ sẵn có trước", "Claude, ChatGPT, Gemini cho người không code; Python nhẹ khi cần. Không phải xây sản phẩm riêng."),
-        ("lock", "Quy tắc quan trọng do code giữ", "Phép tính, kiểm trích dẫn, giới hạn quyền viết bằng code, không chỉ nhắc AI trong prompt."),
-        ("user", "Người duyệt điểm quan trọng", "Tiền, cam kết với khách và dữ liệu cá nhân đi qua điểm duyệt của người. AI đề xuất, người quyết định."),
-        ("bars", "Đo trước khi tin", "Bộ ca mẫu có đáp án, đo trước và sau. Năng suất tự ước thường cao hơn thực đo."),
+        ("layers", "Bắt đầu từ việc nhỏ",
+         "Mỗi cấp chạy được độc lập, có sản phẩm cầm đi được và tiêu chí đo để biết khi nào mới lên cấp.",
+         "Xem các lộ trình theo cấp", "bai-toan.html"),
+        ("chat", "Dùng công cụ sẵn có trước",
+         "Claude, ChatGPT, Gemini cho người không code; Python nhẹ khi cần. Không phải xây sản phẩm riêng.",
+         "Ví dụ: Cấp C0, dùng AI thủ công", "rag-tra-cuu-tai-lieu/cap-00-dung-ai-thu-cong.html"),
+        ("lock", "Quy tắc quan trọng do code giữ",
+         "Phép tính, kiểm trích dẫn, giới hạn quyền viết bằng code, không chỉ nhắc AI trong prompt.",
+         "Ví dụ: Cấp C5, kiểm trích dẫn bằng code", "rag-tra-cuu-tai-lieu/cap-05-tra-loi-co-trich-dan.html"),
+        ("user", "Người duyệt điểm quan trọng",
+         "Tiền, cam kết với khách và dữ liệu cá nhân đi qua điểm duyệt của người. AI đề xuất, người quyết định.",
+         "Ví dụ: Cấp C8, điểm duyệt của người", "rag-tra-cuu-tai-lieu/cap-08-quy-trinh-nhieu-buoc.html"),
+        ("bars", "Đo trước khi tin",
+         "Bộ ca mẫu có đáp án, đo trước và sau. Năng suất tự ước thường cao hơn thực đo.",
+         "Ví dụ: Cấp C6, đánh giá", "rag-tra-cuu-tai-lieu/cap-06-danh-gia.html"),
     ]
-    pr_html = "".join(f'<div class="pr"><span class="pico sm">{ic(i, 20)}</span><div><h3>{b}</h3><p>{c}</p></div></div>' for i, b, c in principles)
+    pr_html = "".join(
+        f'<article class="pc"><div class="ptop"><span class="pnum">0{n}</span><span class="pico sm">{ic(i, 20)}</span></div>'
+        f'<h3>{b}</h3><p>{c}</p><a class="plink" href="{href}">{label} {ic("arrow", 15)}</a></article>'
+        for n, (i, b, c, label, href) in enumerate(principles, 1))
+    pr_html += ('<a class="pc pc-ev" href="nen-tang-bang-chung.html"><h3>Vì sao là năm nguyên tắc này?</h3>'
+                '<p>Chúng rút ra từ những hệ thống AI đã chạy thật trong năm bài báo SIPTech đã đọc kỹ, không phải lý thuyết suông.</p>'
+                f'<span class="plink">Xem bằng chứng {ic("arrow", 15)}</span></a>')
     base = "".join(
         f'<a class="base" href="{s}.html"><h3>{t}</h3><p>{d}</p><span class="go">Đọc {ic("arrow", 16)}</span></a>' for s, t, d in ROOT_DOCS)
     problems = [
@@ -592,7 +609,7 @@ def home():
 <section class="sec tint" id="cach-lam">
   <div class="wrap">
     {sh("Cách làm", "Năm nguyên tắc xuyên suốt")}
-    <div class="prs">{pr_html}</div>
+    <div class="prs3">{pr_html}</div>
     <h3 class="subh">Thứ tự gợi ý cho doanh nghiệp chưa có quy trình</h3>
     <ol class="order">{path}</ol>
     <p class="fine">Đây là đề xuất của SIPTech, chưa có nguồn đo.</p>
