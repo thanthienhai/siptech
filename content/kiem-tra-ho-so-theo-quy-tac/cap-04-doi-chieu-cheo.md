@@ -3,61 +3,101 @@
 > Ngày soạn: 2026-11-11. **[Nguồn]** / **[Đề xuất]** như quy ước chung.
 > Đã có, không viết lại: công cụ đọc sổ, phân hạng quyền (`../rag-tra-cuu-tai-lieu/cap-07-cong-cu-tool.md`); quy trình đề nghị thanh toán dạng workflow (`../rag-tra-cuu-tai-lieu/cap-08-quy-trinh-nhieu-buoc.md` mục 7.c). File này viết phần **nối các chứng từ với nhau**.
 
+!!! tip "Tóm tắt nhanh"
+    Một hóa đơn nhìn đúng về hình thức vẫn có thể sai: tính giá cao hơn giá đã đặt, tính tiền hàng chưa giao, hoặc đã được thanh toán rồi. Những lỗi này chỉ lộ ra khi bạn đặt đơn mua, phiếu nhập kho và hóa đơn cạnh nhau. Bài này dạy cách so ba chứng từ theo từng dòng hàng, cách nối tên hàng của nhà cung cấp với mã hàng của mình, và cách đối chiếu với danh sách hóa đơn trên cổng thuế. Sau bài, bạn có bộ sổ, bảng ánh xạ và quy tắc đối chiếu để dùng hằng tuần.
+
 ## 1. Mục tiêu và người đọc
 
-**Người đọc:** kế toán công nợ, mua hàng, thủ kho; người code nhẹ.
+**Bài này dành cho ai:** kế toán công nợ, người mua hàng, thủ kho. Người biết code nhẹ sẽ làm được phần có mã; những người còn lại có thể làm bằng Excel (xem mục 5).
 
-**Sau cấp này có:**
-1. Đối chiếu ba bên theo từng dòng hàng: đơn mua (PO) - phiếu nhập kho - hóa đơn.
-2. **Bảng ánh xạ tên hàng** của nhà cung cấp sang mã hàng nội bộ, có người xác nhận.
-3. Đối chiếu danh sách hóa đơn mua vào trên cổng thuế với sổ của mình.
-4. Quy tắc về nhà cung cấp: MST khớp danh mục, thay đổi tài khoản ngân hàng thì người xác nhận.
+**Bạn cần chuẩn bị:**
+- Dữ liệu xuất từ phần mềm (hoặc lập tay bằng Excel): danh mục nhà cung cấp, đơn mua đang mở, phiếu nhập kho, hóa đơn đã ghi sổ (chi tiết ở Bài K4.1).
+- Danh mục hàng nội bộ của bạn (để dán cho AI đề xuất mã hàng ở Bài K4.2).
+- Hóa đơn của 3 tháng gần nhất, đã đọc ra dạng XML ở cấp K1 (XML là loại file chứa dữ liệu hóa đơn điện tử, máy đọc được).
+- Danh sách hóa đơn mua vào tải từ cổng hóa đơn điện tử (dạng Excel), cho Bài K4.6.
+
+**Sau bài này bạn sẽ có:**
+1. Cách đối chiếu ba bên theo từng dòng hàng: đơn mua (PO, viết tắt của "purchase order", tức đơn đặt hàng gửi nhà cung cấp) - phiếu nhập kho - hóa đơn.
+2. **Bảng ánh xạ tên hàng** (bảng "dịch" tên hàng trên hóa đơn của nhà cung cấp sang mã hàng nội bộ), có người xác nhận.
+3. Cách đối chiếu danh sách hóa đơn mua vào trên cổng thuế với sổ của mình.
+4. Quy tắc về nhà cung cấp: MST (mã số thuế) khớp danh mục, thay đổi tài khoản ngân hàng thì người xác nhận.
+
+**Thứ bạn cầm đi được sau bài:** thư mục `so/` gồm 4 file CSV (bảng dữ liệu đơn giản, mở được bằng Excel); file `anh_xa_hang.csv`; hàm đối chiếu ba bên; ba quy tắc nhà cung cấp `NCC-01`, `NCC-02`, `NCC-03`; và báo cáo tuần đối chiếu với cổng thuế.
 
 ## 2. Câu hỏi cấp này trả lời / lỗi của K2-K3
 
 *"Một hóa đơn đúng về hình thức vẫn có thể sai: tính giá cao hơn giá đặt, tính hàng chưa giao, hoặc đã thanh toán rồi. Làm sao bắt?"*
 
-Lỗi còn lại: K2 kiểm từng chứng từ một. Nhiều lỗi tốn tiền nhất chỉ thấy khi đặt hai, ba chứng từ cạnh nhau.
+Lỗi còn lại sau các cấp trước: K2 kiểm từng chứng từ một. Nhưng nhiều lỗi tốn tiền nhất chỉ thấy khi đặt hai, ba chứng từ cạnh nhau. Ví dụ, nhìn riêng tờ hóa đơn thì mọi thứ đều hợp lệ; chỉ khi so với đơn mua bạn mới thấy giá đã bị đẩy lên.
 
 ## 3. Kiến thức nền
 
 ### 3.1 Đối chiếu ba bên là gì [Đề xuất, mô tả thực hành phổ biến]
+
+Ba chứng từ, mỗi cái trả lời một câu hỏi khác nhau:
+
 - **Đơn mua:** đã đặt gì, giá nào, bao nhiêu.
 - **Phiếu nhập kho (hoặc biên bản giao nhận):** đã thực nhận bao nhiêu.
 - **Hóa đơn:** nhà cung cấp đòi tiền bao nhiêu.
-- Kiểm theo **từng dòng hàng**: đơn giá hóa đơn so với đơn mua; số lượng hóa đơn so với số đã nhận (cộng dồn nhiều đợt giao) và so với số đã đặt; đơn vị tính giống nhau.
-- Đối chiếu hai bên (đơn mua - hóa đơn) dùng cho dịch vụ không có phiếu nhập.
+
+Cách kiểm là so theo **từng dòng hàng**:
+- đơn giá trên hóa đơn so với đơn giá trên đơn mua;
+- số lượng trên hóa đơn so với số đã nhận (cộng dồn nếu giao nhiều đợt) và so với số đã đặt;
+- đơn vị tính phải giống nhau.
+
+Với dịch vụ không có phiếu nhập kho, ta chỉ đối chiếu hai bên (đơn mua - hóa đơn).
+
+!!! tip "Nói đơn giản"
+    Giống như bạn đi chợ rồi nhận hóa đơn. Bạn nhìn lại danh sách đã đặt, nhìn số hàng thật sự nhận được, rồi mới trả tiền. Ba thứ phải khớp nhau từng món, không chỉ khớp tổng tiền.
 
 ### 3.2 Bằng chứng
-- Ở FinDAS, quy tắc nối nhiều trường qua nhiều trang, có điều kiện, có tính toán; tác giả nêu đây là chỗ agent dễ bỏ sót ca biên và bịa giá trị không có căn cứ **[Nguồn: B1, mục 4.1]**.
+
+- Ở FinDAS (một nghiên cứu về agent, tức chương trình AI tự thực hiện nhiều bước), quy tắc nối nhiều trường qua nhiều trang, có điều kiện, có tính toán. Tác giả nêu đây là chỗ agent dễ bỏ sót ca biên (trường hợp đặc biệt ít gặp) và bịa giá trị không có căn cứ **[Nguồn: B1, mục 4.1]**.
 - Ở Erste, phần lớn kết quả "thiếu thông tin" đến từ các quy tắc dẫn sang tài liệu khác mà hệ thống không truy cập được **[Nguồn: B5]**. **[Đề xuất]** Quy tắc tra cứu chỉ chạy được khi có dữ liệu. Cần chuẩn bị sổ trước khi viết quy tắc.
-- ExtractBench có riêng nhãn thử thách "tham chiếu chéo, đối chiếu" trong nhóm tìm thông tin rải rác **[Nguồn: B2, phụ lục A]**; bài không báo điểm riêng cho nhãn này trong phần đã đọc.
+- ExtractBench (một bộ bài kiểm tra khả năng trích thông tin) có riêng nhãn thử thách "tham chiếu chéo, đối chiếu" trong nhóm tìm thông tin rải rác **[Nguồn: B2, phụ lục A]**; bài không báo điểm riêng cho nhãn này trong phần đã đọc.
 - **Không có số đo tin được về tỷ lệ ngoại lệ hay tỷ lệ "không chạm tay" của đối chiếu ba bên.** Các con số trên blog nhà cung cấp phần mềm mâu thuẫn nhau (xem mục 9). Không dùng các con số đó trong bài giảng.
 
+!!! tip "Nói đơn giản"
+    Đối chiếu nhiều chứng từ là việc khó với AI nếu bạn chỉ đưa chứng từ rồi hỏi "có sai không". Cái AI cần là dữ liệu đã được chuẩn bị sẵn (sổ), nếu không nó sẽ trả về "thiếu thông tin" hoặc đoán bừa.
+
 ### 3.3 Khó nhất không phải phép so, mà là khóa nối [Đề xuất]
+
+"Khóa nối" là thông tin chung giữa hai chứng từ để biết dòng này ứng với dòng kia.
+
 - Hóa đơn ghi tên hàng theo cách của người bán ("Thùng carton 5 lớp 60x40x40"). Đơn mua ghi mã nội bộ (`CT5`). Không có khóa chung thì không so được.
-- Cách làm: **bảng ánh xạ** (MST người bán, tên hàng trên hóa đơn) → mã hàng nội bộ. LLM được phép **đề xuất** ánh xạ cho dòng mới; người xác nhận một lần; từ đó code dùng bảng. Đây là chỗ LLM có ích mà không quyết định gì.
-- Số đơn mua trên hóa đơn: nhiều hóa đơn không ghi, hoặc ghi ở phần ghi chú. Nếu thiếu, đối chiếu theo (nhà cung cấp, khoảng ngày, mã hàng), và kết quả là `KHONG_RO` nếu có nhiều đơn mua ứng viên.
+- Cách làm: **bảng ánh xạ** (MST người bán, tên hàng trên hóa đơn) → mã hàng nội bộ. LLM (mô hình AI ngôn ngữ lớn, như ChatGPT hay Claude) được phép **đề xuất** ánh xạ cho dòng mới; người xác nhận một lần; từ đó code dùng bảng. Đây là chỗ LLM có ích mà không quyết định gì.
+- Số đơn mua trên hóa đơn: nhiều hóa đơn không ghi, hoặc ghi ở phần ghi chú. Nếu thiếu, đối chiếu theo (nhà cung cấp, khoảng ngày, mã hàng), và kết quả là `KHONG_RO` (nghĩa là "chưa rõ, cần người xem") nếu có nhiều đơn mua ứng viên.
 - **Dung sai** (cho phép lệch giá, lệch số lượng bao nhiêu) là quyết định của chủ doanh nghiệp, không phải của người viết code. Mặc định 0.
 
+!!! tip "Nói đơn giản"
+    Bảng ánh xạ giống một cuốn từ điển: bên trái là cách nhà cung cấp gọi món hàng, bên phải là cách công ty bạn gọi. AI được phép gợi ý dòng mới cho từ điển, nhưng một người phải gật đầu thì dòng đó mới được dùng. Còn dung sai là câu hỏi "lệch bao nhiêu thì còn chấp nhận", và chỉ chủ doanh nghiệp được trả lời.
+
 ### 3.4 Đối chiếu với cổng thuế
-- Hướng dẫn thứ cấp cho biết cổng hóa đơn điện tử cho tra cứu hóa đơn mua vào và xuất danh sách ra Excel hoặc XML **[Nguồn: V5, thứ cấp]**.
+
+- Hướng dẫn thứ cấp (tài liệu của bên thứ ba, không phải văn bản gốc của cơ quan thuế) cho biết cổng hóa đơn điện tử cho tra cứu hóa đơn mua vào và xuất danh sách ra Excel hoặc XML **[Nguồn: V5, thứ cấp]**.
 - **[Đề xuất]** Hai quy tắc có ích: (a) hóa đơn có trên cổng nhưng chưa có trong sổ (quên ghi nhận, hoặc hóa đơn lạ ghi tên công ty mình); (b) hóa đơn có trong sổ nhưng không thấy trên cổng (cần người tra lại). Không viết công cụ tự đăng nhập cổng thuế ở cấp này: rủi ro tài khoản, điều khoản sử dụng chưa đọc.
 
 ## 4. Chuỗi bài nhỏ
 
+Sáu bài thực hành dưới đây làm theo thứ tự. Mỗi bài có việc cần làm và thứ bạn có sau bài; một số bài có thêm lỗi hay gặp để tránh.
+
 ### Bài K4.1: Chuẩn bị sổ
-- **Làm:** xuất từ phần mềm (hoặc lập Excel): danh mục nhà cung cấp (MST, tên, tài khoản ngân hàng, ngày cập nhật); đơn mua đang mở theo dòng; phiếu nhập theo dòng; hóa đơn đã ghi sổ (MST, ký hiệu, số, số tiền, ngày thanh toán).
-- **Sản phẩm:** thư mục `so/` với 4 file CSV, có ngày xuất.
-- **Lỗi:** dùng sổ cũ; sổ không có số đơn mua trên phiếu nhập.
+- **Việc cần làm:** xuất từ phần mềm (hoặc lập Excel) bốn thứ: danh mục nhà cung cấp (MST, tên, tài khoản ngân hàng, ngày cập nhật); đơn mua đang mở theo dòng; phiếu nhập theo dòng; hóa đơn đã ghi sổ (MST, ký hiệu, số, số tiền, ngày thanh toán).
+- **Bạn có sau bài:** thư mục `so/` với 4 file CSV, có ngày xuất.
+- **Lỗi hay gặp:** dùng sổ cũ; sổ không có số đơn mua trên phiếu nhập.
 
 ### Bài K4.2: Bảng ánh xạ tên hàng
-- **Làm:** lấy tên hàng từ 3 tháng hóa đơn (đọc từ XML ở K1). Với mỗi cặp (MST người bán, tên hàng) chưa có trong bảng, cho LLM đề xuất mã hàng nội bộ từ danh mục hàng (dán danh mục). Người mua hàng xác nhận hoặc sửa. Lưu `anh_xa_hang.csv` có cột `nguoi_xac_nhan`, `ngay`.
-- **Sản phẩm:** bảng ánh xạ. Dòng nào chưa xác nhận thì quy tắc ba bên ra `KHONG_RO` cho dòng đó.
-- **Lỗi:** để LLM ánh xạ trực tiếp lúc kiểm, không lưu (mỗi lần một kết quả khác, xem B6 ở `cap-03`).
+- **Việc cần làm:** lấy tên hàng từ 3 tháng hóa đơn (đọc từ XML ở K1). Với mỗi cặp (MST người bán, tên hàng) chưa có trong bảng, cho LLM đề xuất mã hàng nội bộ từ danh mục hàng (dán danh mục vào cho nó xem). Người mua hàng xác nhận hoặc sửa. Lưu thành file `anh_xa_hang.csv` có cột `nguoi_xac_nhan` và `ngay`.
+- **Bạn có sau bài:** bảng ánh xạ. Dòng nào chưa xác nhận thì quy tắc ba bên ra `KHONG_RO` cho dòng đó.
+- **Lỗi hay gặp:** để LLM ánh xạ trực tiếp lúc kiểm, không lưu (mỗi lần một kết quả khác, xem B6 ở `cap-03`).
 
 ### Bài K4.3: Hàm đối chiếu ba bên
+- **Việc cần làm:** nhờ người biết lập trình (hoặc nhờ AI) chạy hàm mẫu dưới đây với sổ của bạn. Nếu bạn làm bằng Excel thì xem mục 5.
+
+**Đoạn mã dưới đây làm gì?** Nó nhận một đơn mua, danh sách các phiếu nhập kho (giao nhiều đợt thì cộng dồn) và một hóa đơn, rồi so từng dòng hàng. Nó kiểm số đơn mua và MST người bán có khớp không, mã hàng có trên đơn mua không, đơn vị tính có giống nhau không, đơn giá có lệch không, số lượng trên hóa đơn có vượt số đã nhập kho hoặc số đã đặt không. Mỗi lỗi có một mã `BB-00` đến `BB-06`. Bạn **không cần đọc hiểu từng dòng**; chỉ cần biết hàm này làm gì, và nhờ người biết code hoặc nhờ AI chạy giúp.
+
 - **Mã mẫu (đã chạy thử** 2026-11-11, `python -I -X utf8`, dữ liệu giả lập):
+
   ```python
   from decimal import Decimal as D
   DUNG_SAI_GIA = D("0"); DUNG_SAI_SL = D("0")    # chu doanh nghiep quyet
@@ -85,23 +125,33 @@ Lỗi còn lại: K2 kiểm từng chứng từ một. Nhiều lỗi tốn tiề
               loi.append(("BB-06", "SL tren HD vuot SL dat", f"{ma}: {d['sl']} vs {p['sl']}"))
       return loi
   ```
-  Kết quả thử: đơn mua 1.000 thùng giá 4.500 và 200 cuộn băng keo giá 11.500; nhập kho hai đợt (600 + 400 thùng; 180 cuộn); hóa đơn 1.000 thùng giá 4.500 và 200 cuộn giá 12.000. Hàm trả đúng hai lỗi: `BB-04 BK5: 12000 vs 11500` và `BB-05 BK5: 200 vs 180`. Dòng thùng carton giao hai đợt được cộng dồn, không báo nhầm.
+
+**Kết quả thử:** đơn mua 1.000 thùng giá 4.500 và 200 cuộn băng keo giá 11.500; nhập kho hai đợt (600 + 400 thùng; 180 cuộn); hóa đơn 1.000 thùng giá 4.500 và 200 cuộn giá 12.000. Hàm trả đúng hai lỗi: `BB-04 BK5: 12000 vs 11500` và `BB-05 BK5: 200 vs 180`. Dòng thùng carton giao hai đợt được cộng dồn, không báo nhầm.
+
+!!! tip "Nói đơn giản"
+    Ở ví dụ trên, nhà cung cấp tính 12.000 một cuộn trong khi bạn đặt giá 11.500, và tính tiền 200 cuộn trong khi kho mới nhận 180. Hàm chỉ ra đúng hai chỗ đó. Còn 1.000 thùng giao thành hai đợt (600 + 400) thì hàm cộng lại nên không báo nhầm.
+
 - **Chưa xử lý trong mẫu:** quy đổi đơn vị (thùng ↔ cái), hóa đơn gộp nhiều đơn mua, hàng trả lại, chiết khấu. Gặp các ca này thì trả `KHONG_RO`, đừng đoán.
 
 ### Bài K4.4: Trùng hóa đơn và đã thanh toán
-- **Làm:** mở rộng `HD-06` (K2): khóa chính (MST, ký hiệu, số); khóa phụ (MST, số tiền, ngày ±3 ngày) để bắt hóa đơn thay thế hoặc gửi lại dưới số khác. Khóa phụ khớp → `KHONG_RO` (người xem), không phải `LOI`.
-- **Lưu ý quy định:** cách xử lý hóa đơn sai sót, thay thế, điều chỉnh đã đổi theo NĐ 70/2025 và nay theo NĐ 254/2026 **[Nguồn: V1, V2, thứ cấp]**. Quy tắc trùng phải tính đến hóa đơn thay thế/điều chỉnh; đọc văn bản gốc trước khi viết.
+- **Việc cần làm:** mở rộng quy tắc `HD-06` (làm ở K2). Khóa chính (MST, ký hiệu, số) dùng để bắt hóa đơn trùng. Thêm khóa phụ (MST, số tiền, ngày ±3 ngày) để bắt hóa đơn thay thế hoặc hóa đơn gửi lại dưới số khác. Khóa phụ khớp thì trả `KHONG_RO` (để người xem), không phải `LOI`.
+- **Lưu ý quy định:** cách xử lý hóa đơn sai sót, thay thế, điều chỉnh đã đổi theo NĐ 70/2025 và nay theo NĐ 254/2026 **[Nguồn: V1, V2, thứ cấp]** (NĐ là viết tắt của Nghị định). Quy tắc trùng phải tính đến hóa đơn thay thế/điều chỉnh; đọc văn bản gốc trước khi viết. Đây là tài liệu kỹ thuật, không phải tư vấn pháp lý.
 
 ### Bài K4.5: Quy tắc nhà cung cấp
-- **Làm:** `NCC-01` MST trên hóa đơn có trong danh mục; `NCC-02` tên người bán trên hóa đơn khớp danh mục (so sau khi chuẩn hóa chữ hoa, dấu, "Công ty TNHH" ↔ "CTY TNHH"; khác → `KHONG_RO`); `NCC-03` **tài khoản nhận tiền trên đề nghị thanh toán khác tài khoản trong danh mục → luôn `LOI`, người gọi điện xác nhận với nhà cung cấp qua số điện thoại đã lưu, không qua số trên email**.
+- **Việc cần làm:** viết ba quy tắc:
+  1. `NCC-01`: MST trên hóa đơn có trong danh mục.
+  2. `NCC-02`: tên người bán trên hóa đơn khớp danh mục (so sau khi chuẩn hóa chữ hoa, dấu, "Công ty TNHH" ↔ "CTY TNHH"; khác thì `KHONG_RO`).
+  3. `NCC-03`: **tài khoản nhận tiền trên đề nghị thanh toán khác tài khoản trong danh mục thì luôn `LOI`; người gọi điện xác nhận với nhà cung cấp qua số điện thoại đã lưu, không qua số trên email**.
 - **Vì sao NCC-03 chặt [Đề xuất]:** đổi tài khoản nhận tiền là kiểu gian lận qua email phổ biến; đây là quyết định của người, không phải của máy.
 
 ### Bài K4.6: Đối chiếu với danh sách trên cổng thuế
-- **Làm:** mỗi tuần, người có quyền tải danh sách hóa đơn mua vào (Excel). Script so với sổ theo khóa (MST, ký hiệu, số). Xuất hai danh sách: "có trên cổng, chưa có trong sổ"; "có trong sổ, không thấy trên cổng".
-- **Sản phẩm:** `doi_chieu_cong_thue.py` + báo cáo tuần.
-- **Lỗi:** để script lưu mật khẩu cổng thuế.
+- **Việc cần làm:** mỗi tuần, người có quyền tải danh sách hóa đơn mua vào (Excel). Script (đoạn chương trình ngắn) so với sổ theo khóa (MST, ký hiệu, số). Xuất hai danh sách: "có trên cổng, chưa có trong sổ"; "có trong sổ, không thấy trên cổng".
+- **Bạn có sau bài:** `doi_chieu_cong_thue.py` + báo cáo tuần.
+- **Lỗi hay gặp:** để script lưu mật khẩu cổng thuế.
 
 ## 5. Đường không code vs có code; khi nào buộc chuyển
+
+Cách không code đủ dùng khi mới bắt đầu. Cách có code giúp máy làm thay những việc lặp lại.
 
 | | Không code | Có code |
 |---|---|---|
@@ -109,9 +159,13 @@ Lỗi còn lại: K2 kiểm từng chứng từ một. Nhiều lỗi tốn tiề
 | Ánh xạ tên hàng | Sheet ánh xạ, người điền | LLM đề xuất, người duyệt, code dùng |
 | Cổng thuế | Lọc Excel thủ công | Script so khóa |
 
+(`XLOOKUP` là hàm Excel tìm một giá trị trong bảng khác; `SUMIFS` là hàm cộng các số thỏa điều kiện, ở đây dùng để cộng số đã nhập qua nhiều đợt giao.)
+
 **Buộc chuyển sang code khi [Đề xuất]:** có giao hàng nhiều đợt thường xuyên; hơn khoảng 100 dòng hóa đơn mỗi tháng; hoặc hơn 1 kho.
 
 ## 6. Tiêu chí lên K5 (đo được) [Đề xuất]
+
+Bạn có thể sang cấp K5 khi đạt đủ các điều sau:
 
 1. Có 4 sổ ở K4.1, có ngày cập nhật, người chịu trách nhiệm.
 2. Ít nhất 90% dòng hàng trên hóa đơn của 3 tháng gần nhất có ánh xạ đã xác nhận (phần còn lại ra `KHONG_RO`).
@@ -120,6 +174,8 @@ Lỗi còn lại: K2 kiểm từng chứng từ một. Nhiều lỗi tốn tiề
 5. Đã chạy K4.6 ít nhất 4 tuần liên tiếp.
 
 ## 7. Ví dụ cho SME Việt Nam [Đề xuất, minh họa]
+
+(SME là doanh nghiệp nhỏ và vừa.) Ba tình huống giả định để bạn dễ hình dung:
 
 **a) Xưởng in bao bì, mua giấy cuộn từ 4 nhà cung cấp.** Giấy giao theo tấn, đơn mua đặt theo tấn, nhưng phiếu cân thực tế lệch vài chục kg mỗi cuộn. Chủ xưởng quyết dung sai số lượng (ví dụ ±0,5%) và ghi vào sổ quy tắc kèm tên người quyết; đơn giá dung sai 0. Bảng ánh xạ cần thiết vì mỗi nhà cung cấp gọi cùng loại giấy một tên khác.
 
