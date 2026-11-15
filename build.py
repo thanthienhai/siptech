@@ -102,11 +102,34 @@ def dedent_fences(text):
 
 
 def blank_before_admonitions(text):
-    out = []
-    for l in text.split(chr(10)):
-        if l.startswith("!!!") and out and out[-1].strip():
+    """Hộp !!! phải bắt đầu ở lề trái và có dòng trống phía trước; đưa hộp thụt lề (trong danh sách) về lề trái."""
+    lines, out, i = text.split(chr(10)), [], 0
+    while i < len(lines):
+        l = lines[i]
+        m = re.match(r"^( *)!!! ", l)
+        if not m:
+            out.append(l)
+            i += 1
+            continue
+        n = len(m.group(1))
+        if out and out[-1].strip():
             out.append("")
-        out.append(l)
+        out.append(l[n:])
+        i += 1
+        while i < len(lines):
+            seg = lines[i]
+            if seg.strip() == "":
+                nxt = next((x for x in lines[i + 1:] if x.strip()), "")
+                if nxt.startswith(" " * (n + 4)):
+                    out.append("")
+                    i += 1
+                    continue
+                break
+            if seg.startswith(" " * (n + 4)):
+                out.append(seg[n:])
+                i += 1
+            else:
+                break
     return chr(10).join(out)
 
 
