@@ -363,3 +363,4 @@ a{color:var(--brand)}
 .doc pre{font-size:13px}
 .pn em{display:block;font-style:italic;font-weight:400;color:var(--mute);font-size:13.5px;margin-top:6px;line-height:1.45}
 .pn .next em{text-align:right}
+.admonition.tip{background:#eefaf4;border-color:#c5ebd6}.admonition.tip .admonition-title{color:#0b7a53}

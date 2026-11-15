@@ -3,29 +3,44 @@
 > Ngày soạn: 2026-11-11. **[Nguồn]** = điều tài liệu nói; **[Đề xuất]** = thiết kế của nhóm soạn.
 > Phần dùng chung đã có ở nhóm RAG, không viết lại: bản giao việc 6 phần, Sổ prompt (`../rag-tra-cuu-tai-lieu/cap-00-dung-ai-thu-cong.md`); quy trình biên bản nhiều bước có cổng kiểm (`../rag-tra-cuu-tai-lieu/cap-08-quy-trinh-nhieu-buoc.md` mục 7.b).
 
+!!! tip "Tóm tắt nhanh"
+    Nhờ AI viết biên bản họp thì dễ, nhưng AI hay **bịa** hoặc **đoán** những chỗ nó không chắc. Bài này dạy một cách làm đơn giản, **không cần biết lập trình**: dùng một mẫu biên bản cố định, bắt AI **chép nguyên văn câu nói** làm bằng chứng cho từng việc, và để người chủ trì **duyệt bằng bảng kiểm** trước khi gửi đi.
+
 ## 1. Mục tiêu và người đọc
 
-**Người đọc:** chủ doanh nghiệp, trưởng nhóm, người hay phải "ghi lại cuộc họp". Không cần code.
+**Bài này dành cho ai:** chủ doanh nghiệp, trưởng nhóm, hoặc bất kỳ ai hay được giao "ghi lại cuộc họp". Bạn **không cần biết code**.
 
-**Sau cấp này:**
+**Bạn cần chuẩn bị:**
+- Một tài khoản có thể tạo Project (Claude) hoặc Gem (Gemini). Đây là tính năng cho bạn lưu sẵn chỉ dẫn để dùng lại, khỏi phải gõ lại mỗi cuộc họp.
+- Ghi chú tay (gõ lại thành chữ) của một vài cuộc họp gần đây để làm thử.
+- Một bảng tính Google Sheet hoặc Excel để làm sổ việc.
+
+**Sau bài này, bạn sẽ có:**
 1. Mọi cuộc họp định kỳ có biên bản theo **một mẫu cố định**.
-2. Mỗi việc cần làm có: ai, việc gì, hạn, **trạng thái** (đã chốt / mới đề xuất), và **câu trích nguyên văn** chứng minh.
-3. Người chủ trì duyệt biên bản trong 24 giờ trước khi gửi.
-4. Có số đo đơn giản: bao nhiêu việc bị sửa, bịa, sót.
+2. Mỗi việc cần làm ghi rõ: ai làm, làm gì, hạn khi nào, **trạng thái** (đã chốt hay mới đề xuất), và **một câu trích nguyên văn** để chứng minh việc đó có thật.
+3. Người chủ trì duyệt biên bản trong vòng 24 giờ, trước khi gửi cho mọi người.
+4. Một cách đo đơn giản để biết AI đang bịa, sót, hay làm sai bao nhiêu việc.
 
-**Sản phẩm cầm đi được:** mẫu biên bản 1 trang; một Project (Claude) hoặc Gem (Gemini) "Thư ký họp"; bảng kiểm 8 lỗi; sổ việc trên Google Sheet/Excel.
+**Thứ bạn cầm đi được sau bài:** mẫu biên bản 1 trang; một Project (Claude) hoặc Gem (Gemini) tên "Thư ký họp"; bảng kiểm 8 lỗi; và sổ việc trên Google Sheet hoặc Excel.
 
 ## 2. Câu hỏi cấp này trả lời
 
 *"Làm sao để mỗi cuộc họp để lại một danh sách việc đáng tin, không mất thêm nhiều thời gian?"*
 
-Đây là điểm xuất phát của nhóm. Lỗi thường thấy khi dùng AI "vô tội vạ" **[Đề xuất, quan sát]**: dán ghi chú vào chat, nhận về đoạn tóm tắt trôi chảy. Không ai kiểm. Ý kiến "hay là mình thử..." thành "Quyết định: ...". Việc không có người nhận vẫn được gán cho ai đó.
+Đây là bài đầu tiên của nhóm, vì ai cũng gặp: họp xong, mỗi người hiểu một kiểu, rồi việc rơi rụng.
+
+Khi dùng AI một cách tùy tiện **[Đề xuất, quan sát]**, chuyện thường xảy ra như sau. Bạn dán ghi chú họp vào khung chat và nhận về một đoạn tóm tắt đọc rất trôi chảy. Vì đọc trôi chảy nên không ai kiểm. Nhưng bên trong có thể có những lỗi nhỏ mà hậu quả không nhỏ: một ý kiến kiểu "hay là mình thử..." bị ghi thành "Quyết định: ...", hoặc một việc không ai nhận lại được gán cho một người cụ thể.
 
 ## 3. Kiến thức nền
 
+Trước khi làm, nên hiểu vì sao AI hay sai ở việc này. Phần dưới đây tóm tắt ba nghiên cứu và một thí nghiệm, đều giúp bạn đặt ra quy tắc làm việc.
+
+!!! note "Lưu ý khi đọc các số liệu"
+    Các nghiên cứu dưới đây làm trên bản ghi cuộc họp **tiếng Anh** hoặc dữ liệu **tổng hợp** (do máy tạo ra). Chưa có số đo nào trên cuộc họp tiếng Việt, nơi người ta hay dùng "anh/chị/em", tên tắt và tiếng lóng nghề. Hãy dùng chúng để biết **AI hay sai kiểu gì**, đừng dùng để suy ra tỷ lệ sai ở công ty bạn.
+
 ### 3.1 AI sai ở đâu khi đọc cuộc họp [Nguồn]
 
-Microsoft (arXiv 2608.20392) dò lỗi của trợ lý hỏi-đáp về cuộc họp trên 20 bản ghi tiếng Anh (AMI, ICSI, nghị viện), 3 mô hình. 1.049 lỗi được xếp thành 8 nhóm:
+Nhóm nghiên cứu của Microsoft (arXiv 2608.20392) đã thử "bắt lỗi" một trợ lý AI trả lời câu hỏi về cuộc họp. Họ dùng 20 bản ghi tiếng Anh (cuộc họp trong bộ dữ liệu AMI, ICSI và các phiên họp nghị viện) và 3 mô hình AI. Kết quả có 1.049 lỗi, được chia thành 8 nhóm:
 
 | Nhóm lỗi | Tỷ lệ | Ví dụ |
 |---|---|---|
@@ -38,68 +53,90 @@ Microsoft (arXiv 2608.20392) dò lỗi của trợ lý hỏi-đáp về cuộc h
 | Hiểu sai lý do | 4,0% | Gán lý do chi phí cho người nói vì thẩm mỹ |
 | Liệt kê người tham gia không có căn cứ | 3,3% | "A, B, C cùng đồng ý" |
 
-Mô hình mạnh nhất (GPT-5.2-chat) vẫn sai; lỗi đặc trưng của nó là **bịa việc cần làm** (15,8% số lỗi của nó). Đây là tỷ lệ lỗi khi **cố tình dò** (5,2% đến 15,3% câu hỏi dò ra lỗi, tùy mô hình), không phải tỷ lệ lỗi trung bình của một biên bản.
+Ngay cả mô hình mạnh nhất trong thí nghiệm (GPT-5.2-chat) vẫn sai; lỗi đặc trưng của nó là **bịa việc cần làm** (15,8% số lỗi của nó).
 
-### 3.2 Tách bước tốt hơn một prompt [Nguồn]
+Cần hiểu đúng con số này: đó là tỷ lệ lỗi khi các nhà nghiên cứu **cố tình đặt câu hỏi để dò lỗi** (cứ 100 câu hỏi dò thì có khoảng 5,2 đến 15,3 câu làm lộ lỗi, tùy mô hình). Đó **không phải** tỷ lệ lỗi trung bình của một biên bản bạn nhờ AI viết.
 
-FRAME (arXiv 2509.15901, 50 mẫu QMSum và 50 mẫu tổng hợp, GPT-4o): trích các sự kiện riêng lẻ, chọn cái quan trọng, lập dàn ý, rồi mới viết. Điểm bịa nội dung (thang 1-5, thấp là tốt) giảm từ 3 xuống 1 trên QMSum. Khi gộp mọi bước vào **một prompt**, điểm bỏ sót lên 4 (tệ hơn bản tách bước 3 điểm). Chấm bằng bộ chấm LLM (MESA), không phải người.
+!!! tip "Nói đơn giản"
+    AI không nói dối cố ý, nhưng nó có thói quen "lấp chỗ trống" cho câu chuyện nghe trọn vẹn. Vì vậy ba chỗ cần canh nhất là: **quyết định** (đã chốt thật chưa), **người phụ trách** (có ai nhận thật không) và **con số**.
+
+### 3.2 Tách bước tốt hơn một lệnh duy nhất [Nguồn]
+
+Nghiên cứu FRAME (arXiv 2509.15901) dùng 50 mẫu từ bộ QMSum và 50 mẫu tổng hợp, với GPT-4o. Cách làm của họ là chia việc thành các bước: trích các sự kiện riêng lẻ, chọn cái quan trọng, lập dàn ý, rồi mới viết biên bản. Kết quả: điểm "bịa nội dung" (thang 1 đến 5, **điểm càng thấp càng tốt**) giảm từ 3 xuống 1 trên bộ QMSum. Ngược lại, khi gộp mọi bước vào **một lệnh duy nhất**, điểm "bỏ sót" lên 4 (tệ hơn bản tách bước 3 điểm). Việc chấm điểm do một AI chấm (bộ chấm MESA), không phải người chấm.
+
+!!! tip "Nói đơn giản"
+    Giống như nhờ một nhân viên: bảo họ "gạch chân những câu quan trọng trước, rồi mới viết" sẽ cho kết quả ít sai hơn là bảo "tóm tắt đi" ngay từ đầu. Bài thực hành C0.3 áp dụng đúng ý này.
 
 ### 3.3 Danh sách người dự họp giúp gán đúng người [Nguồn]
 
-Otter.ai (arXiv 2610.29319, dữ liệu họp tổng hợp tiếng Anh): độ đúng khi gán người phụ trách việc tăng từ 0,524 lên 0,752 khi thêm văn bản nền (danh sách thành viên, email, slide); lên 0,792 khi thêm cả mẫu giọng. Không có danh sách tên, hệ thống tự "bịa" một cái tên nghe giống (ví dụ "Bevan" thay vì "Devon Ashby"). Tác giả nói rõ không khẳng định con số này chuyển được sang ghi âm thật.
+Nghiên cứu của Otter.ai (arXiv 2610.29319, dùng dữ liệu họp tổng hợp bằng tiếng Anh) cho thấy: độ đúng khi gán người phụ trách việc tăng từ 0,524 lên 0,752 khi cho AI thêm văn bản nền (danh sách thành viên, email, slide). Khi thêm cả mẫu giọng nói thì lên 0,792. Nếu không có danh sách tên, hệ thống tự "bịa" một cái tên nghe giống (ví dụ "Bevan" thay vì "Devon Ashby"). Tác giả nói rõ họ không khẳng định con số này đúng với ghi âm thật.
+
+!!! tip "Nói đơn giản"
+    Hãy đưa cho AI **danh sách người dự họp** trước khi nhờ nó viết biên bản. Việc này tốn một phút nhưng giảm đáng kể việc ghi nhầm tên.
 
 ### 3.4 Đừng tin cảm giác "tiết kiệm thời gian" [Nguồn]
 
-Slide thí nghiệm có đối chứng của Microsoft (Edelman, 5/2024; 147 người làm tự do trên Upwork, 4 tác vụ): tóm tắt cuộc họp Teams với Copilot nhanh hơn 19%, độ chính xác không thay đổi có ý nghĩa thống kê. Trên cả 4 tác vụ, người dùng nói Copilot tiết kiệm 36 phút; thí nghiệm đo được 12 phút. Đây là tài liệu nội bộ dạng slide của nhà cung cấp, không qua bình duyệt.
+Đây là slide của một thí nghiệm có nhóm đối chứng do Microsoft thực hiện (Edelman, 5/2024; 147 người làm tự do trên Upwork, làm 4 tác vụ). Với việc tóm tắt cuộc họp Teams bằng Copilot, người dùng làm nhanh hơn 19%, còn độ chính xác không thay đổi có ý nghĩa thống kê. Điều đáng chú ý: trên cả 4 tác vụ, người dùng **nói** Copilot tiết kiệm cho họ 36 phút, nhưng thí nghiệm **đo được** 12 phút. Lưu ý đây là tài liệu nội bộ dạng slide của nhà cung cấp, chưa qua bình duyệt.
+
+!!! tip "Nói đơn giản"
+    Cảm giác "AI giúp mình nhanh hơn nhiều" thường lớn hơn thực tế. Vì thế bài C0.6 dạy bạn **bấm giờ thật** thay vì ước chừng.
 
 ### 3.5 Ba quy tắc rút ra [Đề xuất]
 
 1. **Không trích được nguyên văn thì không phải việc đã chốt.**
 2. **Không ai nhận thì để trống**, không đoán.
-3. **Phân biệt "đã chốt" và "đề xuất"** ngay trong mẫu.
+3. **Phân biệt "đã chốt" và "đề xuất"** ngay trong mẫu biên bản.
 
 ## 4. Chuỗi bài nhỏ
 
+Sáu bài thực hành dưới đây làm theo thứ tự. Mỗi bài có: việc cần làm, thứ bạn có sau bài, và lỗi hay gặp để tránh.
+
 ### Bài C0.1: Mẫu biên bản 1 trang
-- **Thực hành:** dùng 5 phần cố định: (1) Thông tin họp (ngày, người chủ trì, người dự); (2) Quyết định đã chốt; (3) Việc cần làm: bảng `việc | người phụ trách | hạn | trạng thái | trích nguyên văn`; (4) Vấn đề còn treo; (5) Thông tin cần kiểm (con số, tên khách AI không chắc).
-- **Sản phẩm:** mẫu trên Google Docs/Word, ghim trong nhóm Zalo của phòng.
-- **Lỗi thường gặp:** mẫu có 15 mục, không ai điền; thiếu cột "trạng thái".
+- **Việc cần làm:** soạn một mẫu gồm 5 phần cố định: (1) Thông tin họp (ngày, người chủ trì, người dự); (2) Quyết định đã chốt; (3) Việc cần làm, dạng bảng `việc | người phụ trách | hạn | trạng thái | trích nguyên văn`; (4) Vấn đề còn treo; (5) Thông tin cần kiểm (con số, tên khách mà AI không chắc).
+- **Bạn có sau bài:** mẫu trên Google Docs hoặc Word, ghim trong nhóm Zalo của phòng để ai cũng thấy.
+- **Lỗi hay gặp:** mẫu có tới 15 mục nên không ai điền; hoặc thiếu cột "trạng thái".
 
 ### Bài C0.2: Chuẩn bị đầu vào
-- **Thực hành:** trước họp, ghi sẵn danh sách người dự (tên gọi trong họp: "chị Lan", "anh Tuấn kho") và chương trình 3-5 mục. Đầu vào cho AI là: ghi chú tay gõ lại, hoặc bản chép lời có sẵn (C1 nói cách làm ra bản chép lời).
-- **Sản phẩm:** khối "Bối cảnh họp" dán đầu mỗi lần chạy.
-- **Lỗi thường gặp:** chỉ dán bản ghi, không có danh sách tên (xem 3.3).
+- **Việc cần làm:** trước buổi họp, ghi sẵn danh sách người dự theo đúng cách gọi trong họp (ví dụ "chị Lan", "anh Tuấn kho") và chương trình họp 3 đến 5 mục. Thứ bạn đưa cho AI là ghi chú tay đã gõ lại, hoặc bản chép lời có sẵn (Cấp C1 sẽ chỉ cách tạo bản chép lời từ ghi âm).
+- **Bạn có sau bài:** một khối "Bối cảnh họp" để dán vào đầu mỗi lần nhờ AI viết biên bản.
+- **Lỗi hay gặp:** chỉ dán bản ghi mà không có danh sách tên (xem mục 3.3).
 
 ### Bài C0.3: Project/Gem "Thư ký họp" chạy 3 lượt
-- **Thực hành [Đề xuất, dựa trên 3.2]:** trong cùng một cuộc chat, làm ba lượt thay vì một lệnh "tóm tắt cuộc họp":
+- **Việc cần làm [Đề xuất, dựa trên 3.2]:** trong cùng một cuộc trò chuyện với AI, làm **ba lượt** thay vì một lệnh "tóm tắt cuộc họp":
   1. *Lượt 1:* "Liệt kê mọi câu có nội dung giao việc, chốt, hoặc con số. Mỗi dòng chép **nguyên văn** câu đó và tên người nói. Không diễn giải."
   2. *Lượt 2:* "Với từng dòng, gán nhãn: QUYẾT_ĐỊNH_ĐÃ_CHỐT / ĐỀ_XUẤT / VIỆC / THÔNG_TIN. Chỉ gán ĐÃ_CHỐT nếu có câu đồng ý rõ. Người phụ trách và hạn: chỉ ghi nếu có trong câu trích; không có thì ghi `null`."
   3. *Lượt 3:* "Điền mẫu biên bản. Không thêm gì không có ở lượt 2."
-- Đặt ba lượt này vào chỉ dẫn của Project/Gem. Tải mẫu biên bản làm tệp kiến thức.
-- **Sản phẩm:** Project/Gem dùng chung; trang hướng dẫn 5 dòng.
-- **Lỗi thường gặp:** để AI "tóm tắt cho gọn" trước khi trích, mất nguyên văn.
+- Cách đặt: chép ba lượt này vào phần chỉ dẫn của Project hoặc Gem, và tải mẫu biên bản lên làm tệp kiến thức. (Chữ `null` ở lượt 2 chỉ có nghĩa là "để trống".)
+- **Bạn có sau bài:** một Project hoặc Gem dùng chung cho cả nhóm, kèm trang hướng dẫn 5 dòng.
+- **Lỗi hay gặp:** để AI "tóm tắt cho gọn" trước khi trích, làm mất câu nguyên văn.
 
 ### Bài C0.4: Bảng kiểm 8 lỗi khi duyệt
-- **Thực hành:** người chủ trì duyệt bằng bảng kiểm lấy từ 3.1: câu trích có đúng trong bản ghi? đúng người nói? con số đúng? "đã chốt" có thật chốt? người phụ trách có thật nhận việc? hạn có ai nói? thứ tự đúng? có ai bị liệt kê thừa?
-- **Sản phẩm:** bảng kiểm dán cạnh Project.
-- **Lỗi thường gặp:** đọc lướt bản tóm tắt vì "đọc trôi chảy"; không mở bản ghi gốc.
+- **Việc cần làm:** người chủ trì duyệt biên bản bằng bảng kiểm lấy từ 8 nhóm lỗi ở mục 3.1. Tám câu hỏi cần trả lời: câu trích có đúng nằm trong bản ghi không? Đúng người nói không? Con số đúng không? "Đã chốt" có thật sự chốt không? Người phụ trách có thật nhận việc không? Hạn có ai nói ra không? Thứ tự đúng không? Có ai bị liệt kê thừa không?
+- **Bạn có sau bài:** bảng kiểm dán cạnh Project để dùng mỗi lần duyệt.
+- **Lỗi hay gặp:** đọc lướt bản tóm tắt vì "đọc trôi chảy"; không mở bản ghi gốc ra đối chiếu.
 
 ### Bài C0.5: Sổ việc và nhắc việc
-- **Thực hành:** chép bảng việc đã duyệt vào một Google Sheet chung: mã việc, ngày họp, người, hạn, trạng thái, link biên bản. Họp sau mở sổ trước, cập nhật trạng thái.
-- **Sản phẩm:** sổ việc. Đây là "bộ nhớ" đầu tiên của tổ chức.
-- **Lỗi thường gặp:** để việc chỉ nằm trong tin nhắn Zalo.
+- **Việc cần làm:** chép bảng việc đã duyệt vào một Google Sheet chung với các cột: mã việc, ngày họp, người, hạn, trạng thái, link biên bản. Đầu buổi họp sau, mở sổ trước và cập nhật trạng thái từng việc.
+- **Bạn có sau bài:** sổ việc. Đây là "bộ nhớ" đầu tiên của cả tổ chức.
+- **Lỗi hay gặp:** để việc chỉ nằm trong tin nhắn Zalo.
 
 ### Bài C0.6: Đo trên 5 cuộc họp
-- **Thực hành:** với 5 cuộc họp đầu, người chủ trì tự liệt kê việc **trước** khi đọc bản AI (làm đáp án). Đếm: việc AI bịa, việc AI bỏ sót, việc phải sửa người/hạn. Bấm giờ thời gian làm biên bản tay và bản AI + duyệt.
-- **Sản phẩm:** bảng đo 5 dòng. Với n=5, chỉ dùng để phát hiện hỏng, không để kết luận tỷ lệ (xem `../rag-tra-cuu-tai-lieu/cap-06-danh-gia.md` mục 3.2).
-- **Lỗi thường gặp:** đọc bản AI trước rồi mới làm đáp án (bị dẫn dắt).
+- **Việc cần làm:** với 5 cuộc họp đầu tiên, người chủ trì tự liệt kê các việc **trước** khi đọc bản AI viết (đó là "đáp án" của bạn). Sau đó đếm: việc AI bịa, việc AI bỏ sót, việc phải sửa người hoặc hạn. Bấm giờ thời gian làm biên bản bằng tay và thời gian làm bằng AI cộng với thời gian duyệt.
+- **Bạn có sau bài:** bảng đo 5 dòng. Với chỉ 5 cuộc họp, bảng này chỉ dùng để **phát hiện hỏng**, không dùng để kết luận tỷ lệ (xem `../rag-tra-cuu-tai-lieu/cap-06-danh-gia.md` mục 3.2).
+- **Lỗi hay gặp:** đọc bản AI trước rồi mới làm đáp án, nên bị dẫn dắt theo AI.
 
 ## 5. Đường không code vs có code
+
+Bài này có hai cách làm. Cách 1 không cần code, đủ dùng khi mới bắt đầu. Cách 2 cần một chút lập trình, để máy tự kiểm thay cho người.
 
 | | Không code | Có code nhẹ |
 |---|---|---|
 | Làm gì | Project/Gem 3 lượt; người duyệt bằng bảng kiểm | AI trả JSON danh sách việc; script kiểm trích dẫn, tên, hạn |
 | Hàng rào | Bảng kiểm do người làm | Code chặn: trích không có trong bản ghi, tên không có trong danh sách, hạn sai |
+
+(JSON là một cách viết danh sách có khung rõ ràng để máy đọc được. Script là một đoạn chương trình ngắn.)
+
+**Đoạn mã dưới đây làm gì?** Nó nhận danh sách việc mà AI đã soạn, rồi tự kiểm từng việc: câu trích có thật sự nằm trong bản ghi cuộc họp không, người phụ trách có trong danh sách người dự không, hạn có bị ghi trước ngày họp không, trạng thái đã ghi rõ chưa. Bạn **không cần đọc hiểu từng dòng**; chỉ cần biết ý nghĩa của nó, và nhờ một người biết lập trình (hoặc nhờ AI) chạy giúp khi bạn cần đến cấp độ này.
 
 **Mã mẫu (đã chạy thử, Python 3, `python -I -X utf8`, dữ liệu giả):**
 
@@ -136,25 +173,27 @@ def kiem_viec(viec_list, ban_ghi, nguoi_du, ngay_hop):
     return loi
 ```
 
-Kết quả chạy thử với 3 việc giả: việc 2 ("Anh Tuấn sẽ đổi nhà cung cấp bao bì", trong khi bản ghi nói "để tháng sau bàn tiếp") bị bắt `TRICH_KHONG_CO_TRONG_BAN_GHI`; việc 3 gán cho "Hùng" không dự họp bị bắt `NGUOI_KHONG_CO_TRONG_DANH_SACH` và `THIEU_HAN`. Đây đúng là hai lỗi "biến thảo luận thành quyết định" và "bịa việc" ở 3.1.
+**Kết quả chạy thử** với 3 việc giả: việc 2 ("Anh Tuấn sẽ đổi nhà cung cấp bao bì", trong khi bản ghi nói "để tháng sau bàn tiếp") bị bắt lỗi `TRICH_KHONG_CO_TRONG_BAN_GHI`; việc 3 gán cho "Hùng" (người không dự họp) bị bắt `NGUOI_KHONG_CO_TRONG_DANH_SACH` và `THIEU_HAN`. Đây đúng là hai lỗi "biến thảo luận thành quyết định" và "bịa việc" đã nói ở mục 3.1.
 
-**Giới hạn:** so chuỗi con đòi hỏi AI chép đúng từng chữ. Bản ghi do máy chép (C1) có lỗi chính tả thì AI có thể "sửa" khi trích, làm kiểm thất bại oan. Khi đó, báo cho người duyệt xem, không tự bỏ qua.
+**Giới hạn:** cách kiểm này đòi hỏi AI chép đúng **từng chữ** câu trích. Nếu bản ghi do máy chép lời (Cấp C1) có lỗi chính tả, AI có thể tự "sửa" khi trích, làm phép kiểm báo lỗi oan. Khi đó hãy báo cho người duyệt xem, đừng tự bỏ qua.
 
-**Khi nào buộc chuyển sang code [Đề xuất]:** (a) hơn khoảng 5 cuộc họp/tuần cần biên bản; (b) muốn tự đổ việc vào Sheet/phần mềm quản lý việc; (c) người duyệt bắt đầu bỏ qua bảng kiểm.
+**Khi nào nên chuyển sang code [Đề xuất]:** (a) có hơn khoảng 5 cuộc họp mỗi tuần cần biên bản; (b) muốn tự đổ việc vào Google Sheet hoặc phần mềm quản lý việc; (c) người duyệt bắt đầu bỏ qua bảng kiểm.
 
 ## 6. Tiêu chí lên cấp [Đề xuất]
 
-Lên C1 (hoặc C2) khi đủ:
-1. ≥ 4 tuần liên tục, mọi cuộc họp định kỳ có biên bản theo mẫu, được duyệt trong 24 giờ.
-2. Trên ≥ 10 cuộc họp có đáp án: không còn việc "đã chốt" nào bị bịa lọt qua người duyệt.
+Bạn có thể sang cấp tiếp theo (C1, hoặc C2) khi đạt đủ các điều sau:
+1. Liên tục ≥ 4 tuần, mọi cuộc họp định kỳ đều có biên bản theo mẫu và được duyệt trong 24 giờ.
+2. Trên ≥ 10 cuộc họp có đáp án để so: không còn việc "đã chốt" nào bị bịa mà lọt qua người duyệt.
 3. Sổ việc được cập nhật ở đầu mỗi cuộc họp sau.
-4. Có lý do cần ghi âm (ghi chú tay sót nhiều; họp dài; người ghi chú cũng phải phát biểu).
+4. Có lý do cần ghi âm: ghi chú tay sót nhiều, họp dài, hoặc người ghi chú cũng phải phát biểu.
 
 ## 7. Ví dụ cho SME Việt Nam [Đề xuất, minh họa, không phải số đo]
 
-- **Xưởng nội thất gỗ 40 người (Bình Dương), họp sản xuất sáng thứ Hai, 30 phút:** người dự: quản đốc, tổ trưởng sơn, tổ trưởng mộc, kho, kinh doanh. Việc điển hình: "lô bàn ăn đơn A giao trước ngày 20", "kiểm độ ẩm gỗ lô mới". Lỗi hay gặp: kinh doanh nói "khách muốn giao sớm", AI ghi thành "Quyết định: giao sớm". Bảng kiểm bắt được nhờ cột trạng thái.
-- **Chuỗi 3 phòng khám nha khoa, họp chuyên môn tháng:** việc điển hình: cập nhật quy trình vô trùng, lịch đào tạo. **Không** đưa tên bệnh nhân hay tình trạng sức khỏe vào bản ghi gửi AI (dữ liệu nhạy cảm, xem `../an-toan-du-lieu-va-phap-ly-vn.md` mục 3.1). Thay bằng mã ca trước khi dán.
-- **Công ty phân phối thiết bị điện 15 người, họp kinh doanh tuần:** nhiều con số (doanh số, công nợ). Quy tắc: mọi con số trong biên bản đánh dấu "cần kiểm" và đối chiếu với file Excel trước khi gửi (con số bịa là nhóm lỗi lớn thứ hai ở 3.1).
+Ba tình huống giả định để bạn dễ hình dung:
+
+- **Xưởng nội thất gỗ 40 người (Bình Dương), họp sản xuất sáng thứ Hai, 30 phút.** Người dự: quản đốc, tổ trưởng sơn, tổ trưởng mộc, kho, kinh doanh. Việc điển hình: "lô bàn ăn đơn A giao trước ngày 20", "kiểm độ ẩm gỗ lô mới". Lỗi hay gặp: bên kinh doanh nói "khách muốn giao sớm", AI lại ghi thành "Quyết định: giao sớm". Bảng kiểm bắt được lỗi này nhờ cột trạng thái.
+- **Chuỗi 3 phòng khám nha khoa, họp chuyên môn hằng tháng.** Việc điển hình: cập nhật quy trình vô trùng, lịch đào tạo. **Không** đưa tên bệnh nhân hay tình trạng sức khỏe vào bản ghi gửi AI (đây là dữ liệu nhạy cảm, xem `../an-toan-du-lieu-va-phap-ly-vn.md` mục 3.1). Hãy thay bằng mã ca trước khi dán.
+- **Công ty phân phối thiết bị điện 15 người, họp kinh doanh hằng tuần.** Có nhiều con số (doanh số, công nợ). Quy tắc: mọi con số trong biên bản đều đánh dấu "cần kiểm" và đối chiếu với file Excel trước khi gửi (con số bịa là nhóm lỗi lớn thứ hai ở mục 3.1).
 
 ## 8. Tài liệu tham khảo
 

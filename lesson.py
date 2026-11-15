@@ -281,7 +281,7 @@ def split_header(lines):
     hdr = []
     while i < len(lines):
         l = lines[i]
-        if l.startswith("## ") or l.startswith("# ") or l.strip() == "---":
+        if l.startswith("## ") or l.startswith("# ") or l.startswith("!!!") or l.strip() == "---":
             break
         if l.strip():
             hdr.append(re.sub(r"^>\s?", "", l).strip())
