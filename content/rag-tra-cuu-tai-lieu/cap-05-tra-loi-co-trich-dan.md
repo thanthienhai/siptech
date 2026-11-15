@@ -3,15 +3,27 @@
 > Trạng thái: bản nháp nghiên cứu, ngày truy cập nguồn 2026-11-11.
 > Quy ước: **[Nguồn]** = có trong nguồn đã đọc; **[Đề xuất]** = ý kiến nhóm biên soạn; **[Đã chạy thử]** / **[Chưa chạy thử]** cho code.
 
+!!! tip "Tóm tắt nhanh"
+    AI trả lời rất trôi chảy, nên nhân viên dễ tin ngay cả khi AI nói thêm điều tài liệu không hề viết. Bài này dạy cách bắt AI **chỉ trả lời từ đoạn tài liệu được đưa cho nó**, ghi rõ **lấy từ đâu** (mã tài liệu, mục, câu trích nguyên văn), và **nói "không đủ căn cứ"** khi tài liệu không có. Sau bài, bạn có một mẫu lệnh đã thử, một định dạng câu trả lời chuẩn, cách kiểm câu trích (bằng tay hoặc bằng code) và bảng điểm để đo AI đang trả lời có căn cứ đến đâu.
+
 ---
 
 ## 1) Mục tiêu và người đọc
 
-**Người đọc:** chủ/quản lý SME và người làm IT kiêm nhiệm; đã qua C4 (có công cụ tìm và bộ câu hỏi vàng có số đo recall@k).
+**Bài này dành cho ai:** chủ hoặc quản lý doanh nghiệp vừa và nhỏ (SME), và người làm IT kiêm nhiệm. Bạn không cần biết lập trình để làm đường "không code"; đường "có code" cần nhờ người biết code (hoặc nhờ AI) chạy giúp.
 
-**Mục tiêu:** AI chỉ trả lời từ các khối tìm được, **ghi rõ nguồn** (mã tài liệu, mục, trích nguyên văn), **từ chối** khi không đủ căn cứ, và doanh nghiệp có cách **đo** tỷ lệ trả lời có căn cứ.
+**Bạn cần chuẩn bị:**
+- Kết quả của Cấp 4 (C4): một công cụ tìm tài liệu và một **bộ câu hỏi vàng** (danh sách câu hỏi mẫu kèm đáp án đúng) đã có số đo recall@k. (recall@k cho biết: trong k đoạn tài liệu tìm về, có bao nhiêu phần trăm lần đã chứa đúng đoạn cần tìm.)
+- Một ít tài liệu thật của công ty, cắt thành các **khối** (mỗi khối là một đoạn nhỏ của tài liệu để AI đọc), để dán vào khung chat hoặc để công cụ ở C4 cấp cho AI.
+- Với đường có code: một người biết chạy chương trình Python, vì có một đoạn mã kiểm câu trích ở Bài 5.2.
 
-**Sản phẩm cầm đi được:** (a) một mẫu prompt "chỉ trả lời từ nguồn" đã thử; (b) định dạng câu trả lời chuẩn (câu trả lời + nguồn + trích nguyên văn hoặc "không đủ căn cứ"); (c) một script kiểm trích nguyên văn (đường code) hoặc quy trình kiểm tay (đường không code); (d) bảng điểm groundedness/từ chối đúng trên bộ câu hỏi vàng mở rộng.
+**Sau bài này bạn sẽ có:** AI chỉ trả lời từ các khối tìm được, **ghi rõ nguồn** (mã tài liệu, mục, trích nguyên văn), **từ chối** khi không đủ căn cứ, và doanh nghiệp có cách **đo** tỷ lệ trả lời có căn cứ.
+
+**Thứ bạn cầm đi được:**
+- (a) một mẫu prompt "chỉ trả lời từ nguồn" đã thử (prompt là đoạn chỉ dẫn bạn viết cho AI);
+- (b) định dạng câu trả lời chuẩn (câu trả lời + nguồn + trích nguyên văn hoặc "không đủ căn cứ");
+- (c) một script kiểm trích nguyên văn (đường code) hoặc quy trình kiểm tay (đường không code); script là một chương trình ngắn;
+- (d) bảng điểm groundedness (mức "có căn cứ") và từ chối đúng trên bộ câu hỏi vàng mở rộng.
 
 ---
 
@@ -19,51 +31,97 @@
 
 **Câu hỏi:** "AI nói thế, căn cứ ở đâu — và nếu tài liệu không nói thì AI có dám nói 'không biết' không?"
 
-**Lỗi của C4 dẫn đến C5:**
+**Lỗi của C4 dẫn đến C5:** ở cấp 4 chúng ta đã tìm được đúng đoạn tài liệu. Nhưng tìm đúng chưa đủ, vì còn bốn chuyện sau.
 - Tìm đúng khối nhưng AI vẫn "nói thêm" từ trí nhớ của nó (ví dụ bịa thời hạn bảo hành theo thông lệ).
 - Nhân viên không có cách kiểm: đọc câu trả lời trôi chảy thì tin.
 - Câu hỏi không có đáp án trong tài liệu vẫn nhận câu trả lời tự tin.
 - Hai tài liệu mâu thuẫn hoặc bản cũ lẫn bản mới mà AI chọn bừa.
+
+!!! tip "Nói đơn giản"
+    Hãy hình dung một nhân viên mới được giao cuốn sổ chính sách. Người giỏi sẽ mở sổ, chỉ vào đúng dòng và đọc lên. Người kém sẽ trả lời theo trí nhớ nghe rất tự tin. Bài này biến AI thành người thứ nhất, và cho bạn cách kiểm tra xem nó có thật sự chỉ vào đúng dòng không.
 
 ---
 
 ## 3) Kiến thức nền (ngắn, chính xác)
 
 ### 3.1 Bốn lớp bảo vệ, từ rẻ đến chặt
-1. **Prompt:** nói rõ chỉ dùng tài liệu cho trước, được phép nói "không biết", và nếu cần thì rút trích dẫn nguyên văn trước rồi mới trả lời. Anthropic nêu các kỹ thuật cơ bản: cho phép Claude nói "I don't know"; với tài liệu dài (>20k token) yêu cầu trích nguyên văn trước khi làm việc; yêu cầu trích dẫn cho mỗi khẳng định và rút lại khẳng định nếu không tìm được trích dẫn; hạn chế dùng kiến thức bên ngoài. Cùng trang cảnh báo các kỹ thuật này giảm đáng kể nhưng **không loại bỏ hoàn toàn** hallucination. **[Nguồn: Anthropic, "Reduce hallucinations"]**
-2. **Tính năng trích dẫn của nhà cung cấp (nếu có).** API Messages của Anthropic có tính năng Citations: bật trên tài liệu bạn đưa vào, phản hồi trả về trích đoạn kèm vị trí ký tự/trang; trường `cited_text` không tính vào token đầu ra; và nhà cung cấp nói trích dẫn "được đảm bảo có con trỏ hợp lệ" tới tài liệu đã cung cấp. Citations **không dùng chung** với structured outputs (API trả lỗi 400 nếu bật cả hai). **[Nguồn: Anthropic, tài liệu Citations, đọc 2026-11-11]** Đây là chi tiết sản phẩm, dễ đổi (xem mục 9).
-3. **Kiểm bằng code (validator):** chỉ chấp nhận trích dẫn là **chuỗi con nguyên văn** của khối đã cấp. Mẫu của Airbnb: mỗi đoạn trích phải là substring của bài nguồn được cite, "chính xác sau khi chuẩn hóa dấu câu Unicode và khoảng trắng — đó là mức nới duy nhất", nếu một đoạn sai thì **từ chối ghi cả bản trả lời**; kết quả báo cáo: 99,7% đoạn trích khớp từng byte trước chuẩn hóa và 100% đạt ràng buộc sau chuẩn hóa (mẫu 1.769 đoạn trên 132 ca); số lần từ chối/thử lại không được ghi lại. Tác giả nhấn mạnh đây là "ranh giới tin cậy" do code ép, không phải do prompt. **[Nguồn: Airbnb arXiv 2610.14428, mục 3, 7, phụ lục D]**
-4. **Đo và con người duyệt:** đo bằng bộ câu hỏi vàng + LLM judge (hoặc người), và để người duyệt các trường hợp rủi ro cao. Airbnb áp dụng người duyệt mọi ca và nói rõ kết luận chỉ áp dụng cho kho tài liệu đã biên tập kỹ và quy trình chấp nhận độ trễ. **[Nguồn: Airbnb, tóm tắt]**
 
-**Giới hạn cần nhớ của lớp 3:** validator chứng minh "câu trích có thật trong khối đó"; **không** chứng minh "câu trích thật sự ủng hộ câu trả lời" và không chứng minh "khối đó còn hiệu lực". Hai việc sau cần lớp 4 và metadata (mục 4, bài 5.6, 5.7).
+Hãy nghĩ như bốn lớp khóa cho một cánh cửa: lớp đầu rẻ và dễ làm nhất, lớp sau chắc hơn nhưng tốn công hơn.
+
+1. **Prompt:** nói rõ chỉ dùng tài liệu cho trước, được phép nói "không biết", và nếu cần thì rút trích dẫn nguyên văn trước rồi mới trả lời.
+    - Anthropic nêu các kỹ thuật cơ bản: cho phép Claude nói "I don't know" (tức "tôi không biết").
+    - Với tài liệu dài (>20k token, token là đơn vị chữ mà AI đếm; tạm hiểu là một mẩu từ) thì yêu cầu trích nguyên văn trước khi làm việc.
+    - Yêu cầu trích dẫn cho mỗi khẳng định, và rút lại khẳng định nếu không tìm được trích dẫn; hạn chế dùng kiến thức bên ngoài.
+    - Cùng trang cảnh báo các kỹ thuật này giảm đáng kể nhưng **không loại bỏ hoàn toàn** hallucination (hiện tượng AI bịa thông tin nghe có vẻ thật). **[Nguồn: Anthropic, "Reduce hallucinations"]**
+2. **Tính năng trích dẫn của nhà cung cấp (nếu có).** API Messages của Anthropic có tính năng Citations. (API là "cổng" để chương trình của bạn gọi AI; Citations nghĩa là "trích dẫn".)
+    - Bạn bật nó trên tài liệu bạn đưa vào, phản hồi trả về trích đoạn kèm vị trí ký tự/trang.
+    - Trường `cited_text` không tính vào token đầu ra; và nhà cung cấp nói trích dẫn "được đảm bảo có con trỏ hợp lệ" tới tài liệu đã cung cấp.
+    - Citations **không dùng chung** với structured outputs (kiểu bắt AI trả về dữ liệu theo khung cố định); API trả lỗi 400 nếu bật cả hai. **[Nguồn: Anthropic, tài liệu Citations, đọc 2026-11-11]**
+    - Đây là chi tiết sản phẩm, dễ đổi (xem mục 9).
+3. **Kiểm bằng code (validator, tức "bộ kiểm"):** chỉ chấp nhận trích dẫn là **chuỗi con nguyên văn** của khối đã cấp. (Chuỗi con, tiếng Anh là substring, nghĩa là một đoạn chữ cắt ra từ khối mà không sửa một chữ nào.)
+    - Mẫu của Airbnb: mỗi đoạn trích phải là substring của bài nguồn được cite, "chính xác sau khi chuẩn hóa dấu câu Unicode và khoảng trắng — đó là mức nới duy nhất". ("Chuẩn hóa" ở đây chỉ là đưa các kiểu dấu nháy và khoảng trắng khác nhau về một kiểu chung.)
+    - Nếu một đoạn sai thì **từ chối ghi cả bản trả lời**.
+    - Kết quả báo cáo: 99,7% đoạn trích khớp từng byte trước chuẩn hóa và 100% đạt ràng buộc sau chuẩn hóa (mẫu 1.769 đoạn trên 132 ca); số lần từ chối/thử lại không được ghi lại.
+    - Tác giả nhấn mạnh đây là "ranh giới tin cậy" do code ép, không phải do prompt. **[Nguồn: Airbnb arXiv 2610.14428, mục 3, 7, phụ lục D]**
+4. **Đo và con người duyệt:** đo bằng bộ câu hỏi vàng + LLM judge (hoặc người), và để người duyệt các trường hợp rủi ro cao. (LLM judge là một AI khác được giao việc chấm điểm câu trả lời.) Airbnb áp dụng người duyệt mọi ca và nói rõ kết luận chỉ áp dụng cho kho tài liệu đã biên tập kỹ và quy trình chấp nhận độ trễ. **[Nguồn: Airbnb, tóm tắt]**
+
+**Giới hạn cần nhớ của lớp 3:** validator chứng minh "câu trích có thật trong khối đó"; **không** chứng minh "câu trích thật sự ủng hộ câu trả lời" và không chứng minh "khối đó còn hiệu lực". Hai việc sau cần lớp 4 và metadata (mục 4, bài 5.6, 5.7). (Metadata là thông tin đi kèm khối, như mã tài liệu, ngày cập nhật, ngày hết hiệu lực.)
+
+!!! tip "Nói đơn giản"
+    Lớp 3 giống việc bạn dùng Ctrl+F để tìm câu AI trích trong tài liệu gốc: nếu tìm không ra thì câu đó bị bịa. Nhưng tìm ra chưa có nghĩa là câu đó trả lời đúng câu hỏi, hay tài liệu đó còn dùng được. Hai điều này vẫn cần người hoặc lớp kiểm khác.
 
 ### 3.2 Đo hallucination / groundedness
-- **RAGAS** (Es và cộng sự, arXiv 2309.15217) — khung đánh giá RAG không cần đáp án tham chiếu, ba chiều: **Faithfulness** (các phát biểu trong câu trả lời có suy ra được từ ngữ cảnh không), **Answer relevance** (câu trả lời có đúng câu hỏi không), **Context relevance** (ngữ cảnh có gọn không). **[Nguồn: RAGAS mục 3]**
-  - Cách tính Faithfulness: LLM tách câu trả lời thành các phát biểu ngắn; LLM kiểm từng phát biểu có được ngữ cảnh ủng hộ không; điểm = số phát biểu được ủng hộ / tổng số phát biểu. **[Nguồn: RAGAS mục 3]**
-  - Độ khớp với người trên bộ WikiEval (do tác giả tạo, 50 trang Wikipedia, tiếng Anh, dùng gpt-3.5-turbo-16k làm LLM chấm): Faithfulness 0,95; Answer relevance 0,78; Context relevance 0,70 (độ chính xác khi so cặp). **[Nguồn: RAGAS bảng 1]** Hạn chế: dữ liệu tiếng Anh, phiên bản tác giả dùng mô hình cũ, bộ nhỏ; **chưa có bằng chứng tôi đã đọc về độ tin cậy trên tiếng Việt**. Ở các mục sau của bài, tác giả cũng nói context relevance khó chấm nhất.
-  - Tên hàm/thư viện `ragas` hiện hành có thể khác bài báo: **[Chưa kiểm chứng]** (chưa đọc tài liệu thư viện). Dùng ý tưởng, đừng chép tên API từ đây.
+
+Groundedness nghĩa là "mức có căn cứ": phần nào trong câu trả lời thật sự dựa vào tài liệu. Dưới đây là cách đo.
+
+- **RAGAS** (Es và cộng sự, arXiv 2309.15217) — khung đánh giá RAG không cần đáp án tham chiếu, ba chiều: **Faithfulness** (các phát biểu trong câu trả lời có suy ra được từ ngữ cảnh không), **Answer relevance** (câu trả lời có đúng câu hỏi không), **Context relevance** (ngữ cảnh có gọn không). (RAG là cách cho AI tra tài liệu rồi mới trả lời; "ngữ cảnh" là phần tài liệu đưa cho AI.) **[Nguồn: RAGAS mục 3]**
+    - Cách tính Faithfulness: LLM tách câu trả lời thành các phát biểu ngắn; LLM kiểm từng phát biểu có được ngữ cảnh ủng hộ không; điểm = số phát biểu được ủng hộ / tổng số phát biểu. **[Nguồn: RAGAS mục 3]**
+    - Độ khớp với người trên bộ WikiEval (do tác giả tạo, 50 trang Wikipedia, tiếng Anh, dùng gpt-3.5-turbo-16k làm LLM chấm): Faithfulness 0,95; Answer relevance 0,78; Context relevance 0,70 (độ chính xác khi so cặp). **[Nguồn: RAGAS bảng 1]**
+    - Hạn chế: dữ liệu tiếng Anh, phiên bản tác giả dùng mô hình cũ, bộ nhỏ; **chưa có bằng chứng tôi đã đọc về độ tin cậy trên tiếng Việt**. Ở các mục sau của bài, tác giả cũng nói context relevance khó chấm nhất.
+    - Tên hàm/thư viện `ragas` hiện hành có thể khác bài báo: **[Chưa kiểm chứng]** (chưa đọc tài liệu thư viện). Dùng ý tưởng, đừng chép tên API từ đây.
 - **Cách tự làm, rẻ, không cần thư viện [Đề xuất, theo ý tưởng của RAGAS và Airbnb]:** với mỗi câu trả lời, chấm hai lỗi riêng:
-  1. *Trích sai*: validator bắt được (nhị phân, chạy bằng code, 100% lặp lại).
-  2. *Phát biểu không có căn cứ*: LLM judge hoặc người đọc từng phát biểu đối chiếu khối. Để giảm dao động của judge, Airbnb dùng **đa số 3 lần chấm** (mỗi metric là nhị phân, chạy 3 lần lấy đa số). **[Nguồn: Airbnb phụ lục A, D]**
-- **Hai số cần tách, vì chỉ ra nơi cần sửa:** Airbnb dùng cặp (đúng quy trình) và (đủ bằng chứng nguyên văn): khoảng cách giữa hai số cho biết việc tiếp theo thuộc về tác tử hay kho tài liệu; phần thất bại còn lại **chủ yếu do tài liệu thiếu nội dung** chứ không do tìm/sinh (phân tích định tính của tác giả, chưa có thống kê từng loại). **[Nguồn: Airbnb mục 1, 7]**
+    1. *Trích sai*: validator bắt được (nhị phân, tức chỉ có đúng hoặc sai; chạy bằng code, 100% lặp lại).
+    2. *Phát biểu không có căn cứ*: LLM judge hoặc người đọc từng phát biểu đối chiếu khối. Để giảm dao động của judge (cùng một câu mà mỗi lần chấm ra một kiểu), Airbnb dùng **đa số 3 lần chấm** (mỗi metric là nhị phân, chạy 3 lần lấy đa số). **[Nguồn: Airbnb phụ lục A, D]**
+- **Hai số cần tách, vì chỉ ra nơi cần sửa:** Airbnb dùng cặp (đúng quy trình) và (đủ bằng chứng nguyên văn): khoảng cách giữa hai số cho biết việc tiếp theo thuộc về tác tử hay kho tài liệu. (Tác tử, tiếng Anh là agent, là chương trình AI tự tìm và đọc tài liệu qua nhiều bước.) Phần thất bại còn lại **chủ yếu do tài liệu thiếu nội dung** chứ không do tìm/sinh (phân tích định tính của tác giả, chưa có thống kê từng loại). **[Nguồn: Airbnb mục 1, 7]**
+
+!!! tip "Nói đơn giản"
+    Có hai kiểu lỗi khác nhau. Kiểu một: AI trích một câu không hề có trong tài liệu, kiểu lỗi này máy bắt được. Kiểu hai: câu trích có thật, nhưng AI viết thêm ý không có trong đó, kiểu lỗi này cần người hoặc một AI chấm đọc từng ý. Đo riêng hai kiểu thì bạn biết nên sửa cách hỏi AI hay sửa kho tài liệu.
 
 ### 3.3 Ngữ cảnh nhiều khối và vị trí
+
 - Đưa quá nhiều khối không giúp mãi: hiệu năng bão hòa trước recall của bộ tìm (50 tài liệu thay 20 chỉ tăng ~1–1,5%), và thông tin ở giữa ngữ cảnh dài bị dùng kém hơn thông tin ở đầu/cuối (mô hình 2023). **[Nguồn: arXiv 2307.03172]** **[Đề xuất]** giữ 3–8 khối, đặt khối xếp hạng cao ở đầu; đo lại trên mô hình đang dùng.
-- Cùng bài đó: đặt câu hỏi cả trước và sau tài liệu (query-aware) cải thiện mạnh tác vụ khóa-giá trị tổng hợp nhưng thay đổi rất ít ở QA nhiều tài liệu. **[Nguồn: arXiv 2307.03172 mục 4.2]** — không nên kỳ vọng mẹo này sửa được lỗi RAG.
+- Cùng bài đó: đặt câu hỏi cả trước và sau tài liệu (query-aware, nghĩa là "biết câu hỏi") cải thiện mạnh tác vụ khóa-giá trị tổng hợp nhưng thay đổi rất ít ở QA nhiều tài liệu. (QA là hỏi đáp.) **[Nguồn: arXiv 2307.03172 mục 4.2]** — không nên kỳ vọng mẹo này sửa được lỗi RAG.
+
+!!! tip "Nói đơn giản"
+    Đưa AI nhiều tài liệu hơn không phải lúc nào cũng tốt. Giống như đưa một chồng giấy rất dày, người đọc dễ bỏ sót những tờ nằm giữa chồng. Vì vậy hãy chọn ít khối thật sát, và để khối quan trọng nhất lên đầu.
 
 ### 3.4 Đánh đổi độ trễ / chi phí
+
+(Độ trễ là thời gian chờ để có câu trả lời.)
+
 - **[Nguồn: Airbnb]** Cách đọc-nhiều-lần của họ mất ~90 giây mỗi ca so với ~8–9 giây của trợ lý sản xuất; tác giả nói rõ không tuyên bố lợi thế độ trễ, và ca dùng là quy trình chịu được độ trễ, có người duyệt. Mỗi ca trung vị ~5 truy vấn + 6 lần lấy bài.
-- **[Nguồn: Anthropic Contextual Retrieval]** Prompt caching giảm độ trễ >2 lần và chi phí tới 90% khi một ngữ cảnh lớn được dùng lại.
+- **[Nguồn: Anthropic Contextual Retrieval]** Prompt caching (lưu sẵn phần ngữ cảnh lớn để dùng lại, khỏi xử lý lại từ đầu) giảm độ trễ >2 lần và chi phí tới 90% khi một ngữ cảnh lớn được dùng lại.
 - **[Đề xuất]** Mỗi bước thêm (viết lại câu hỏi, tìm nhiều vòng, judge kiểm lại, trích rồi trả lời hai lượt) cộng thêm độ trễ và token; áp dụng theo mức rủi ro (xem bảng ở bài 5.8).
 - Truy xuất nhiều mức (nhanh/thường/sâu) theo kiểu SAP: **[Chưa kiểm chứng trong tài liệu này]** — tôi chưa đọc bài SAP arXiv 2608.00122; chỉ ghi nhận theo bối cảnh dự án.
+
+!!! tip "Nói đơn giản"
+    Kiểm càng kỹ thì càng chậm và càng tốn tiền. Vì vậy không cần kiểm nặng mọi câu hỏi. Câu hỏi nhẹ thì kiểm nhẹ, câu hỏi có thể gây thiệt hại thì kiểm kỹ. Bài 5.8 làm đúng việc này.
 
 ---
 
 ## 4) Chuỗi bài nhỏ
 
+Tám bài thực hành dưới đây làm theo thứ tự. Bài 5.1 và 5.2 là nền; các bài sau mở rộng sang hiển thị nguồn, từ chối, nhiều tài liệu, tài liệu cũ, đo điểm và chọn mức kiểm.
+
 ### Bài 5.1 — Mẫu prompt "chỉ từ nguồn" + quyền từ chối
+
 - **Mục tiêu:** AI chỉ trả lời từ các khối được cấp, và nói "không đủ căn cứ" khi cần.
-- **Thực hành:** (1) lấy 5 câu hỏi từ bộ vàng C4 có đáp án và 5 câu không đáp án; (2) cấp khối bằng cách dán (đường không code) hoặc từ C4 (đường code); (3) dùng mẫu sau, chạy 10 câu, chép kết quả vào bảng:
+- **Việc cần làm:**
+    1. Lấy 5 câu hỏi từ bộ vàng C4 có đáp án và 5 câu không đáp án.
+    2. Cấp khối cho AI bằng cách dán vào khung chat (đường không code) hoặc lấy từ công cụ tìm ở C4 (đường code).
+    3. Dùng mẫu sau, chạy 10 câu, chép kết quả vào bảng.
+
+**Đoạn mã dưới đây làm gì?** Thật ra đây không phải code mà là **một đoạn lời dặn để bạn dán cho AI**. Nó nói với AI bốn điều: chỉ dùng các khối tài liệu được đưa; mỗi ý phải kèm mã khối và một câu trích nguyên văn; nếu không đủ căn cứ thì nói đúng một câu từ chối; nếu hai khối mâu thuẫn hoặc khối đã hết hạn thì nói rõ ra. Những chỗ trong ngoặc nhọn như `{ngay}` và `{cau_hoi}` là chỗ để bạn điền ngày hôm nay và câu hỏi của khách. Bạn chỉ cần thay những chỗ đó rồi dán.
 
 ```text
 Bạn là trợ lý tra cứu nội bộ. CHỈ dùng các khối <nguon> bên dưới. Không dùng kiến thức bên ngoài.
@@ -80,12 +138,22 @@ Hôm nay: {ngay}
 Câu hỏi: {cau_hoi}
 Trả lời theo mẫu: TRẢ LỜI: ... / NGUỒN: [mã khối] "trích nguyên văn" ...
 ```
-- **Sản phẩm:** prompt chuẩn + bảng 10 câu (trả lời đúng / sai / từ chối đúng / từ chối thừa / bịa).
-- **Lỗi thường gặp:** chỉ nói "hãy trả lời chính xác" mà không cấp lối thoát "không đủ căn cứ" (Anthropic: cho phép nói không biết là một trong những kỹ thuật cơ bản **[Nguồn]**); nhồi 20 khối; không ghi ngày hôm nay (để xử lý hết hiệu lực); để AI "tóm tắt" trong phần trích dẫn.
+- **Bạn có sau bài:** prompt chuẩn + bảng 10 câu (trả lời đúng / sai / từ chối đúng / từ chối thừa / bịa). ("Từ chối thừa" là khi tài liệu có đáp án mà AI vẫn từ chối; "bịa" là khi AI trả lời điều tài liệu không có.)
+- **Lỗi hay gặp:** chỉ nói "hãy trả lời chính xác" mà không cấp lối thoát "không đủ căn cứ" (Anthropic: cho phép nói không biết là một trong những kỹ thuật cơ bản **[Nguồn]**); nhồi 20 khối; không ghi ngày hôm nay (để xử lý hết hiệu lực); để AI "tóm tắt" trong phần trích dẫn.
+
+!!! tip "Nói đơn giản"
+    Nếu bạn chỉ bảo nhân viên "trả lời cho chính xác" mà không cho phép họ nói "tôi chưa tìm thấy", họ sẽ cố trả lời cho bằng được. AI cũng vậy. Câu "Không đủ căn cứ trong tài liệu." là cánh cửa thoát để nó khỏi phải bịa.
 
 ### Bài 5.2 — Trích dẫn nguyên văn: tự kiểm bằng code (validator)
+
 - **Mục tiêu:** từ chối tự động mọi câu trả lời có trích dẫn không có trong khối đã cấp.
-- **Thực hành:** yêu cầu AI trả JSON `{status, answer, citations:[{chunk_id, quote}]}`; chạy validator; nếu lỗi → gửi lại cho AI kèm danh sách lỗi (tối đa 2 lần), sau đó ghi "không đủ căn cứ" hoặc đẩy cho người. Validator dưới đây theo ý tưởng của Airbnb (substring sau chuẩn hóa Unicode/khoảng trắng), thêm hai kiểm tra do chúng tôi đề xuất: nhánh từ chối hợp lệ và ngày hết hiệu lực của khối.
+- **Việc cần làm:**
+    1. Yêu cầu AI trả JSON `{status, answer, citations:[{chunk_id, quote}]}`. (JSON là cách viết dữ liệu có khung rõ ràng để máy đọc được. Ở đây `status` là trạng thái trả lời hay từ chối, `answer` là câu trả lời, `citations` là danh sách trích dẫn, `chunk_id` là mã khối và `quote` là câu trích.)
+    2. Chạy validator.
+    3. Nếu có lỗi, gửi lại cho AI kèm danh sách lỗi (tối đa 2 lần); sau đó ghi "không đủ căn cứ" hoặc đẩy cho người.
+    4. Validator dưới đây theo ý tưởng của Airbnb (substring sau chuẩn hóa Unicode/khoảng trắng), thêm hai kiểm tra do chúng tôi đề xuất: nhánh từ chối hợp lệ và ngày hết hiệu lực của khối.
+
+**Đoạn mã dưới đây làm gì?** Nó nhận câu trả lời mà AI đưa ra, rồi kiểm lần lượt: AI trả lời hay từ chối cho đúng khuôn; nếu trả lời thì có trích dẫn không; mã khối có tồn tại không; câu trích có quá ngắn không; câu trích có **thật sự nằm nguyên văn** trong khối không; khối đó có hết hiệu lực chưa. Kết quả là danh sách lỗi; danh sách trống nghĩa là qua. Bạn **không cần đọc hiểu từng dòng**; chỉ cần biết ý nghĩa của nó, rồi nhờ người biết code (hoặc nhờ AI) chạy giúp.
 
 ```python
 # validate2.py — [Đã chạy thử] Python 3.13, `python -I -X utf8`; 5 ca thử: đúng, trích sai, khối hết hạn, từ chối, thiếu trích dẫn
@@ -116,49 +184,89 @@ def validate(out, chunks, today=None, min_len=15):
         if ch.get("valid_to") and ch["valid_to"] < today: errs.append(f"[{i}] chunk het hieu luc {ch['valid_to']}")
     return errs
 ```
-  Kết quả chạy thử: câu trả lời với trích dẫn khớp → `[]`; trích dẫn bị đổi "24"→"36" → báo "KHONG nguyen van"; khối có `valid_to` trước ngày hôm nay → báo hết hiệu lực; từ chối không trích dẫn → `[]`; trả lời không trích dẫn → báo lỗi.
+
+Kết quả chạy thử: câu trả lời với trích dẫn khớp → `[]`; trích dẫn bị đổi "24"→"36" → báo "KHONG nguyen van"; khối có `valid_to` trước ngày hôm nay → báo hết hiệu lực; từ chối không trích dẫn → `[]`; trả lời không trích dẫn → báo lỗi. (Dấu `[]` là danh sách trống, tức không có lỗi.)
+
 - **Điểm quan trọng:** validator nên **kiểm cả trường hợp bị cắt chữ**: dấu "…" trong trích dẫn sẽ làm trượt substring; yêu cầu AI không dùng "…" (Airbnb không nêu quy tắc này — đây là đề xuất của chúng tôi). Cũng đừng nới lỏng ngoài chuẩn hóa dấu câu/khoảng trắng; nếu nới (bỏ dấu, bỏ hoa thường) thì chấp nhận được cả câu bịa na ná.
 - **Đường không code:** làm tay bằng Ctrl+F: chép từng trích dẫn vào tài liệu gốc, đánh dấu "có / không". Vài chục câu/lần thì chấp nhận được, hơn thế thì chuyển sang code.
-- **Sản phẩm:** `validate.py` + tỷ lệ trích dẫn hợp lệ trên 30 câu (mục tiêu: 100% sau tối đa 2 lần thử lại).
-- **Lỗi thường gặp:** PDF/Word có ký tự xuống dòng giữa câu (đã xử lý bằng chuẩn hóa khoảng trắng); số "8.500.000" vs "8,500,000" (chuẩn hóa ở C2); trích cả đoạn quá dài để "chắc ăn" → nên ràng buộc độ dài tối đa của mỗi trích dẫn **[Đề xuất]** (Airbnb giới hạn số đoạn trích k=15 và độ dài tối thiểu 15 ký tự **[Nguồn: phụ lục E]**).
+- **Bạn có sau bài:** `validate.py` + tỷ lệ trích dẫn hợp lệ trên 30 câu (mục tiêu: 100% sau tối đa 2 lần thử lại).
+- **Lỗi hay gặp:** PDF/Word có ký tự xuống dòng giữa câu (đã xử lý bằng chuẩn hóa khoảng trắng); số "8.500.000" vs "8,500,000" (chuẩn hóa ở C2); trích cả đoạn quá dài để "chắc ăn" → nên ràng buộc độ dài tối đa của mỗi trích dẫn **[Đề xuất]** (Airbnb giới hạn số đoạn trích k=15 và độ dài tối thiểu 15 ký tự **[Nguồn: phụ lục E]**).
+
+!!! tip "Nói đơn giản"
+    Validator làm đúng việc mà bạn làm bằng Ctrl+F: lấy câu AI trích rồi tìm trong tài liệu gốc. Máy làm được hàng nghìn lần mà không mệt. Quy tắc cốt lõi chỉ có một: câu trích phải **y nguyên**, không được diễn đạt lại. Nếu cho phép "gần giống", một câu bịa na ná cũng lọt qua.
 
 ### Bài 5.3 — Hiển thị nguồn cho người dùng
+
 - **Mục tiêu:** nhân viên kiểm được trong 10 giây.
-- **Thực hành:** mỗi câu trả lời hiển thị: *tên tài liệu + mục/trang + ngày cập nhật + trích dẫn nguyên văn* (và liên kết mở đúng tài liệu nếu có). Khối nên mang metadata từ C3 (`doc_id`, `section`, `page`, `updated`, `valid_from`, `valid_to`). Nếu dùng API Citations của nhà cung cấp, vị trí ký tự/trang có sẵn trong phản hồi **[Nguồn: tài liệu Citations]**; nếu tự làm, dùng `chunk_id` → bảng metadata.
-- **Sản phẩm:** mẫu hiển thị (bảng/Word/Zalo) và một câu trả lời mẫu.
-- **Lỗi thường gặp:** hiển thị tên tệp nội bộ vô nghĩa (`final_v3_new.pdf`); không có ngày cập nhật; nguồn là bản tóm tắt thay vì bản gốc (Airbnb chỉ cho trích từ bài gốc, không từ trang tóm tắt/điều hướng **[Nguồn: mục 4.1]**).
+- **Việc cần làm:** mỗi câu trả lời hiển thị: *tên tài liệu + mục/trang + ngày cập nhật + trích dẫn nguyên văn* (và liên kết mở đúng tài liệu nếu có). Khối nên mang metadata từ C3 (`doc_id`, `section`, `page`, `updated`, `valid_from`, `valid_to`). Đó lần lượt là mã tài liệu, mục, trang, ngày cập nhật, ngày bắt đầu có hiệu lực và ngày hết hiệu lực. Nếu dùng API Citations của nhà cung cấp, vị trí ký tự/trang có sẵn trong phản hồi **[Nguồn: tài liệu Citations]**; nếu tự làm, dùng `chunk_id` → bảng metadata.
+- **Bạn có sau bài:** mẫu hiển thị (bảng/Word/Zalo) và một câu trả lời mẫu.
+- **Lỗi hay gặp:** hiển thị tên tệp nội bộ vô nghĩa (`final_v3_new.pdf`); không có ngày cập nhật; nguồn là bản tóm tắt thay vì bản gốc (Airbnb chỉ cho trích từ bài gốc, không từ trang tóm tắt/điều hướng **[Nguồn: mục 4.1]**).
 
 ### Bài 5.4 — Câu hỏi ngoài phạm vi và từ chối đúng
+
 - **Mục tiêu:** đo được AI từ chối đúng/thừa.
-- **Thực hành:** mở rộng bộ câu hỏi vàng C4 thành 4 nhóm: (a) có đáp án rõ; (b) không có trong tài liệu nhưng cùng chủ đề ("bảo hành máy giặt Hãng Z" khi tài liệu chỉ có Hãng X); (c) hoàn toàn ngoài phạm vi ("thời tiết mai"); (d) câu hỏi mơ hồ. Chạy, chấm: nhóm (b), (c) phải ra "không đủ căn cứ"; nhóm (d) phải hỏi lại.
+- **Việc cần làm:** mở rộng bộ câu hỏi vàng C4 thành 4 nhóm:
+    - (a) có đáp án rõ;
+    - (b) không có trong tài liệu nhưng cùng chủ đề ("bảo hành máy giặt Hãng Z" khi tài liệu chỉ có Hãng X);
+    - (c) hoàn toàn ngoài phạm vi ("thời tiết mai");
+    - (d) câu hỏi mơ hồ.
+
+    Chạy, chấm: nhóm (b), (c) phải ra "không đủ căn cứ"; nhóm (d) phải hỏi lại.
 - **Cách chấm 2 số:** *Từ chối đúng* = (số câu nhóm b+c bị từ chối) / (số câu nhóm b+c); *Từ chối thừa* = (số câu nhóm a bị từ chối) / (số câu nhóm a). Giảm một số thường làm tăng số kia; ghi cả hai.
-- **Sản phẩm:** bảng 2 số trên ≥ 30 câu (≥ 10 câu b/c).
-- **Lỗi thường gặp:** bộ câu hỏi toàn câu có đáp án → từ chối đúng không đo được; từ chối khi khối đúng không tìm được do lỗi tìm (C4) bị gán nhầm cho C5 — đối chiếu với recall@k.
+- **Bạn có sau bài:** bảng 2 số trên ≥ 30 câu (≥ 10 câu b/c).
+- **Lỗi hay gặp:** bộ câu hỏi toàn câu có đáp án → từ chối đúng không đo được; từ chối khi khối đúng không tìm được do lỗi tìm (C4) bị gán nhầm cho C5 — đối chiếu với recall@k.
 - **[Đề xuất]** Nếu từ chối là kết quả đúng nhưng người dùng cần một lối đi, thêm "liên hệ ai" (trưởng bộ phận) vào mẫu từ chối.
 
+!!! tip "Nói đơn giản"
+    Hai số này giống hai kiểu nhân viên. Người hay nói "không biết" quá mức thì ít sai nhưng vô dụng (từ chối thừa cao). Người không bao giờ nói "không biết" thì hay bịa (từ chối đúng thấp). Bạn muốn người ở giữa: biết thì trả lời, không biết thì nói thật.
+
 ### Bài 5.5 — Câu hỏi nhiều bước và mâu thuẫn giữa tài liệu
+
 - **Mục tiêu:** xử lý câu cần ≥ 2 khối và câu có khối mâu thuẫn.
-- **Thực hành, nhiều bước:** ví dụ "máy giặt 9kg đang khuyến mãi, hỏng motor sau 3 năm thì khách được gì?" cần giá/khuyến mãi (GIA), bảo hành (BH), đổi trả (DT). Hai cách: (1) tìm một lượt lấy k lớn hơn một chút; (2) tách câu hỏi thành các câu con, tìm riêng từng câu rồi tổng hợp (Airbnb: tác tử chạy ~5 truy vấn và đọc ~6 bài mỗi ca, và nhận xét ca có truy vấn tinh chỉnh bổ sung có xu hướng bao phủ trích dẫn cao hơn — đây là quan sát không kiểm soát, tác giả gọi là giả thuyết **[Nguồn: Airbnb phụ lục C]**). Với mỗi câu con, validator bài 5.2 chạy riêng.
-- **Thực hành, mâu thuẫn:** tạo cố ý 5 cặp khối mâu thuẫn (thông báo cũ vs mới; chính sách chung vs ngoại lệ hãng). Yêu cầu trong prompt (quy tắc 3, bài 5.1): nêu cả hai kèm mã khối và ngày; **không** tự chọn khi không có quy tắc ưu tiên. **[Đề xuất]** quy tắc ưu tiên tường minh đặt trong prompt hoặc metadata: "văn bản mới hơn thay thế văn bản cũ cùng chủ đề; văn bản của phòng pháp chế ưu tiên hơn thông báo nội bộ".
-- **Sản phẩm:** 10 câu nhiều bước + 5 cặp mâu thuẫn, bảng điểm đúng/sai/nêu mâu thuẫn.
-- **Lỗi thường gặp:** AI "trộn" hai khối thành một câu mượt nhưng không có trích dẫn nào ủng hộ toàn câu (validator không bắt được, cần judge hoặc người đọc từng phát biểu — xem 3.2); một khối phụ thiếu trong tìm kiếm (recall) → câu trả lời thiếu nhưng "có vẻ đầy đủ".
-- **Lưu ý nguồn:** Airbnb giải quyết một phần "quy trình bị chia ở nhiều bài" bằng cách gộp thực thể thành một trang ngay lúc tạo chỉ mục (merged entities), thay vì tìm nhiều bước lúc truy vấn; xóa lớp này khiến kết quả tụt gần nhất nhưng p=0,078, chưa đạt p<0,05. **[Nguồn: Airbnb bảng 5]** Với SME: **[Đề xuất]** nếu một quy trình luôn nằm rải rác ở 3 tài liệu, hãy viết một khối tổng hợp có tham chiếu về tài liệu gốc, thay vì bắt AI ráp mỗi lần — nhưng trích dẫn vẫn phải lấy từ tài liệu gốc.
+- **Việc cần làm, nhiều bước:** ví dụ "máy giặt 9kg đang khuyến mãi, hỏng motor sau 3 năm thì khách được gì?" cần giá/khuyến mãi (GIA), bảo hành (BH), đổi trả (DT). Có hai cách:
+    1. Tìm một lượt lấy k lớn hơn một chút.
+    2. Tách câu hỏi thành các câu con, tìm riêng từng câu rồi tổng hợp (Airbnb: tác tử chạy ~5 truy vấn và đọc ~6 bài mỗi ca, và nhận xét ca có truy vấn tinh chỉnh bổ sung có xu hướng bao phủ trích dẫn cao hơn — đây là quan sát không kiểm soát, tác giả gọi là giả thuyết **[Nguồn: Airbnb phụ lục C]**).
+
+    Với mỗi câu con, validator bài 5.2 chạy riêng.
+- **Việc cần làm, mâu thuẫn:** tạo cố ý 5 cặp khối mâu thuẫn (thông báo cũ vs mới; chính sách chung vs ngoại lệ hãng). Yêu cầu trong prompt (quy tắc 3, bài 5.1): nêu cả hai kèm mã khối và ngày; **không** tự chọn khi không có quy tắc ưu tiên. **[Đề xuất]** quy tắc ưu tiên tường minh đặt trong prompt hoặc metadata: "văn bản mới hơn thay thế văn bản cũ cùng chủ đề; văn bản của phòng pháp chế ưu tiên hơn thông báo nội bộ".
+- **Bạn có sau bài:** 10 câu nhiều bước + 5 cặp mâu thuẫn, bảng điểm đúng/sai/nêu mâu thuẫn.
+- **Lỗi hay gặp:** AI "trộn" hai khối thành một câu mượt nhưng không có trích dẫn nào ủng hộ toàn câu (validator không bắt được, cần judge hoặc người đọc từng phát biểu — xem 3.2); một khối phụ thiếu trong tìm kiếm (recall) → câu trả lời thiếu nhưng "có vẻ đầy đủ".
+- **Lưu ý nguồn:** Airbnb giải quyết một phần "quy trình bị chia ở nhiều bài" bằng cách gộp thực thể thành một trang ngay lúc tạo chỉ mục (merged entities), thay vì tìm nhiều bước lúc truy vấn; xóa lớp này khiến kết quả tụt gần nhất nhưng p=0,078, chưa đạt p<0,05. **[Nguồn: Airbnb bảng 5]** (Giá trị p là con số cho biết chênh lệch có thể chỉ do ngẫu nhiên; thường người ta cần p<0,05 mới coi là chênh lệch đáng tin. Ở đây chưa đạt, nên chưa kết luận chắc.) Với SME: **[Đề xuất]** nếu một quy trình luôn nằm rải rác ở 3 tài liệu, hãy viết một khối tổng hợp có tham chiếu về tài liệu gốc, thay vì bắt AI ráp mỗi lần — nhưng trích dẫn vẫn phải lấy từ tài liệu gốc.
+
+!!! tip "Nói đơn giản"
+    Khi hai tài liệu nói khác nhau, cách an toàn là để AI **nói thẳng cả hai** kèm ngày, rồi để người hoặc một quy tắc ưu tiên đã viết sẵn quyết định. Đừng để AI tự chọn một bên và kể như chuyện đã rõ.
 
 ### Bài 5.6 — Tài liệu cũ, hết hiệu lực
+
 - **Mục tiêu:** AI không dùng bảng giá/chính sách đã hết hạn.
-- **Thực hành:** mỗi khối có `valid_from`, `valid_to` (hoặc `updated`); (1) **lọc trước khi đưa cho AI** (chỉ khối còn hiệu lực theo ngày hỏi, hoặc theo ngày giao dịch nếu câu hỏi nói rõ); (2) nếu cần trả lời lịch sử ("giá tháng 9?") thì cho phép khối cũ nhưng prompt phải nhận ra; (3) validator kiểm `valid_to` (code ở bài 5.2) làm lớp phòng thủ thứ hai; (4) khi cập nhật bảng giá, **thay hoặc đánh dấu hết hạn** khối cũ và nhúng lại chỉ mục (C4).
-- **Sản phẩm:** bảng metadata + 5 câu thử "giá hiện tại" vs "giá tháng trước".
-- **Lỗi thường gặp:** để cả hai bản trong chỉ mục không có ngày; người cập nhật quên đổi mã khối; hết hiệu lực nhưng không ai ghi.
+- **Việc cần làm:** mỗi khối có `valid_from`, `valid_to` (hoặc `updated`).
+    1. **Lọc trước khi đưa cho AI** (chỉ khối còn hiệu lực theo ngày hỏi, hoặc theo ngày giao dịch nếu câu hỏi nói rõ).
+    2. Nếu cần trả lời lịch sử ("giá tháng 9?") thì cho phép khối cũ nhưng prompt phải nhận ra.
+    3. Validator kiểm `valid_to` (code ở bài 5.2) làm lớp phòng thủ thứ hai.
+    4. Khi cập nhật bảng giá, **thay hoặc đánh dấu hết hạn** khối cũ và nhúng lại chỉ mục (C4).
+- **Bạn có sau bài:** bảng metadata + 5 câu thử "giá hiện tại" vs "giá tháng trước".
+- **Lỗi hay gặp:** để cả hai bản trong chỉ mục không có ngày; người cập nhật quên đổi mã khối; hết hiệu lực nhưng không ai ghi.
 - **[Chưa kiểm chứng]** Không có nguồn đã đọc đo mức độ mô hình xử lý tốt/kém tài liệu cũ-mới lẫn lộn; đây là quy trình quản trị, không phải kết quả thực nghiệm. Airbnb nhắc việc duy trì lớp điều hướng khi nguồn đổi cần kiểm tra cấu trúc và kiểm tra ngữ nghĩa định kỳ: "gánh nặng chuyển sang quản trị văn bản và dữ liệu — là gánh nặng thật". **[Nguồn: Airbnb mục 8]**
 
+!!! tip "Nói đơn giản"
+    Cách rẻ nhất để AI không dùng bảng giá cũ là **đừng đưa bảng giá cũ cho nó**. Hãy lọc bỏ khối hết hạn trước, và để validator làm lớp kiểm thứ hai phòng khi sót.
+
 ### Bài 5.7 — Đo hallucination/groundedness trên bộ vàng (đường không code → có code)
+
 - **Mục tiêu:** có hai số: *tỷ lệ trích dẫn hợp lệ* (validator) và *tỷ lệ phát biểu có căn cứ* (judge/người).
-- **Thực hành (không code):** với 30 câu, người chấm đọc từng câu trả lời: ghi phát biểu nào không có trong nguồn. Dùng bảng: `câu | số phát biểu | số có căn cứ | trích dẫn có thật? | từ chối đúng?`. Tính groundedness = Σ có căn cứ / Σ phát biểu (cùng ý với Faithfulness của RAGAS **[Nguồn]**).
-- **Thực hành (code):** (1) validator chạy toàn bộ; (2) judge LLM: prompt hai bước theo RAGAS (tách phát biểu → kiểm từng phát biểu có trong ngữ cảnh) — mô phỏng ý tưởng, tự viết prompt; chạy 3 lần lấy đa số như Airbnb; (3) **hiệu chỉnh judge bằng người trên 20–30 câu** trước khi tin điểm của nó. Dùng một mô hình khác hoặc ít nhất khác phiên với mô hình sinh để tránh tự chấm mình (vấn đề này là cảnh báo chung; Airbnb dùng "mô hình mạnh hơn, độc lập" để audit liên kết điều hướng **[Nguồn: mục 4.1]**).
-- **Sản phẩm:** bảng điểm theo từng cấu hình (ví dụ k=3 vs k=8; prompt A vs B; có/không validator-retry) kèm số câu.
-- **Lỗi thường gặp:** chạy judge một lần rồi tin con số; n nhỏ kết luận mạnh (Airbnb n=132 mà các cấu hình vẫn không tách được ở p<0,05); judge và sinh dùng cùng prompt/mô hình; đo "độ lưu loát" thay vì độ có căn cứ.
+- **Việc cần làm (không code):** với 30 câu, người chấm đọc từng câu trả lời: ghi phát biểu nào không có trong nguồn. Dùng bảng: `câu | số phát biểu | số có căn cứ | trích dẫn có thật? | từ chối đúng?`. Tính groundedness = Σ có căn cứ / Σ phát biểu (cùng ý với Faithfulness của RAGAS **[Nguồn]**). (Σ là ký hiệu "cộng tất cả các dòng lại".)
+- **Việc cần làm (code):**
+    1. Validator chạy toàn bộ.
+    2. Judge LLM: prompt hai bước theo RAGAS (tách phát biểu → kiểm từng phát biểu có trong ngữ cảnh) — mô phỏng ý tưởng, tự viết prompt; chạy 3 lần lấy đa số như Airbnb.
+    3. **Hiệu chỉnh judge bằng người trên 20–30 câu** trước khi tin điểm của nó. Dùng một mô hình khác hoặc ít nhất khác phiên với mô hình sinh để tránh tự chấm mình (vấn đề này là cảnh báo chung; Airbnb dùng "mô hình mạnh hơn, độc lập" để audit liên kết điều hướng **[Nguồn: mục 4.1]**).
+- **Bạn có sau bài:** bảng điểm theo từng cấu hình (ví dụ k=3 vs k=8; prompt A vs B; có/không validator-retry) kèm số câu.
+- **Lỗi hay gặp:** chạy judge một lần rồi tin con số; n nhỏ kết luận mạnh (Airbnb n=132 mà các cấu hình vẫn không tách được ở p<0,05); judge và sinh dùng cùng prompt/mô hình; đo "độ lưu loát" thay vì độ có căn cứ.
+
+!!! tip "Nói đơn giản"
+    Hãy đo hai thứ: "trích dẫn có thật không" (máy kiểm) và "ý nào trong câu trả lời có căn cứ" (người hoặc AI chấm). Đừng tin AI chấm khi chưa so với người chấm vài chục câu, và đừng để chính AI đã viết câu trả lời tự chấm bài của mình.
 
 ### Bài 5.8 — Chọn mức kiểm theo rủi ro (độ trễ, chi phí)
+
 - **Mục tiêu:** không dùng "súng cao xạ bắn muỗi" và không bỏ qua câu rủi ro cao.
 - **Bảng đề xuất [Đề xuất của nhóm; ngưỡng chưa được nguồn nào chứng minh]:**
 
@@ -168,18 +276,27 @@ def validate(out, chunks, today=None, min_len=15):
 | Vừa | Chính sách bảo hành, đổi trả cho khách | + validator trích nguyên văn (retry ≤ 2) | cộng 0–2 lần gọi mô hình |
 | Cao | Bảng giá báo khách, cam kết hợp đồng, quy định pháp lý | + người duyệt bắt buộc; + judge đa số 3 lần khi chạy đo; ghi log nguồn | chấp nhận chậm hơn nhiều lần (tham chiếu: ~90 s so với ~8–9 s của Airbnb **[Nguồn]**) |
 
-- **Sản phẩm:** một trang "quy tắc mức kiểm" gắn với từng nhóm câu hỏi.
-- **Lỗi thường gặp:** để mọi câu đi qua đường nặng nhất rồi nhân viên bỏ dùng; hoặc bỏ validator vì "đã dặn trong prompt" (Airbnb: ràng buộc do code ép, không phải do prompt **[Nguồn]**).
+(FAQ là các câu hỏi thường gặp. Retry là thử lại. Log là bản ghi lại những gì đã xảy ra để sau này tra cứu.)
+
+- **Bạn có sau bài:** một trang "quy tắc mức kiểm" gắn với từng nhóm câu hỏi.
+- **Lỗi hay gặp:** để mọi câu đi qua đường nặng nhất rồi nhân viên bỏ dùng; hoặc bỏ validator vì "đã dặn trong prompt" (Airbnb: ràng buộc do code ép, không phải do prompt **[Nguồn]**).
+
+!!! tip "Nói đơn giản"
+    Hỏi giờ mở cửa thì không cần duyệt kỹ như báo giá cho khách hay cam kết trong hợp đồng. Chia câu hỏi thành ba mức rủi ro, mỗi mức một cách kiểm, để vừa an toàn vừa không làm nhân viên nản vì quá chậm.
 
 ---
 
 ## 5) Đường không code vs đường có code; khi nào buộc phải chuyển
+
+Bài này có hai cách làm. Đường không code dùng công cụ có sẵn và kiểm bằng mắt, đủ để bắt đầu. Đường có code nối các bước thành một dây chuyền chạy tự động.
 
 | | Không code | Có code nhẹ |
 |---|---|---|
 | Cách làm | Project/Gem/GPT với tệp tải lên + prompt mẫu bài 5.1; yêu cầu nêu tên tệp + trích nguyên văn; kiểm trích dẫn bằng Ctrl+F | Pipeline: C4 tìm → prompt → JSON → validator → retry → hiển thị nguồn → log |
 | Mạnh | Nhanh; đủ cho quy mô nhỏ, rủi ro thấp | Kiểm tự động 100% trích dẫn; log; đo lặp lại |
 | Yếu | Khó đo, khó ép; không có cơ chế "từ chối cả bản trả lời" | Cần bảo trì; chi phí gọi nhiều lượt |
+
+(Project/Gem/GPT là tính năng của Claude, Gemini, ChatGPT cho phép bạn lưu sẵn chỉ dẫn và tải tệp lên để dùng lại. Pipeline là dây chuyền nhiều bước nối nhau, bước trước đưa kết quả cho bước sau.)
 
 **Buộc phải chuyển sang code khi (đề xuất):**
 1. Hơn ~50 câu/tuần cần kiểm trích dẫn → kiểm tay không bền.
@@ -189,6 +306,9 @@ def validate(out, chunks, today=None, min_len=15):
 5. Điểm groundedness hoặc từ chối đúng không đạt ngưỡng ở mục 6 sau khi đã chỉnh prompt.
 
 Lưu ý: tính năng Citations của nhà cung cấp là "đường giữa" cho người dùng API, nhưng nhà cung cấp mô tả nó là cung cấp con trỏ hợp lệ tới tài liệu bạn đưa vào; việc **kiểm câu trích nguyên văn bằng code của bạn** vẫn là lớp độc lập, đặc biệt nếu chuyển nhà cung cấp hoặc dùng đầu ra có cấu trúc (không dùng chung với Citations ở API Anthropic theo tài liệu tại thời điểm đọc). **[Nguồn: tài liệu Citations]**
+
+!!! tip "Nói đơn giản"
+    Nếu mỗi tuần chỉ vài chục câu hỏi và câu trả lời không gửi ra ngoài, bạn cứ dùng đường không code và kiểm bằng Ctrl+F. Khi câu hỏi nhiều lên, hoặc câu trả lời đến tay khách hàng, hãy nhờ người biết code dựng đường có code để máy kiểm thay bạn.
 
 ---
 
@@ -200,8 +320,11 @@ Lưu ý: tính năng Citations của nhà cung cấp là "đường giữa" cho 
 - Từ chối đúng ≥ 90% trên câu ngoài tài liệu/ngoài phạm vi (≥ 10 câu); từ chối thừa ≤ 10% trên câu có đáp án.
 - Xử lý đúng ≥ 4/5 cặp mâu thuẫn (nêu cả hai kèm ngày) và 5/5 câu "tài liệu hết hiệu lực".
 - Có log mỗi câu hỏi: câu hỏi, các khối đã cấp, câu trả lời, kết quả validator, người duyệt (nếu có), phiên bản mô hình + prompt.
-- Biết độ trễ trung bình/p95 và chi phí mỗi câu hỏi theo từng mức.
+- Biết độ trễ trung bình/p95 và chi phí mỗi câu hỏi theo từng mức. (p95 là mức thời gian chờ mà 95 trong 100 lần không vượt quá; nó cho thấy những lần chậm nhất trông thế nào, thay vì chỉ nhìn trung bình.)
 - Phân tích lỗi còn lại và gán nguyên nhân: *tài liệu thiếu* (sửa C2/C3), *tìm sai* (C4), *sinh sai* (C5). Airbnb ghi nhận phần còn lại của họ chủ yếu là nội dung thiếu — **[Nguồn]** — nhưng đây là một kho tài liệu khác; hãy tự phân loại.
+
+!!! tip "Nói đơn giản"
+    Khi gặp lỗi, hãy hỏi: lỗi này do tài liệu chưa viết (sửa kho tài liệu), do tìm nhầm đoạn (sửa cấp 4), hay do AI viết sai dù đoạn đúng đã có (sửa cấp 5)? Biết đúng nguyên nhân thì mới sửa đúng chỗ.
 
 ---
 
@@ -209,13 +332,16 @@ Lưu ý: tính năng Citations của nhà cung cấp là "đường giữa" cho 
 
 **Chính sách bảo hành (khách hỏi qua Zalo, nhân viên tra cứu):**
 
-Khối cấp cho AI:
+Khối cấp cho AI (đây là đoạn tài liệu mẫu mà chương trình đưa cho AI đọc; dòng đầu trong ngoặc vuông là mã khối, thời gian hiệu lực và ngày cập nhật):
+
 ```
 [BH-01 | hiệu lực: 2026-01-01 → không | cập nhật 2026-09-01]
 Máy giặt được bảo hành 24 tháng kể từ ngày mua, động cơ bảo hành 10 năm.
 ```
 Câu hỏi: "Máy giặt hỏng động cơ năm thứ 5 có được bảo hành không?"
-Câu trả lời mong muốn (có validator):
+
+Câu trả lời mong muốn (có validator). Chú ý mỗi ý đều có một câu trích nguyên văn nằm trong khối ở trên:
+
 ```
 TRẢ LỜI: Có. Động cơ được bảo hành 10 năm, nên năm thứ 5 vẫn trong thời hạn. Các bộ phận khác chỉ 24 tháng.
 NGUỒN: [BH-01] "động cơ bảo hành 10 năm" ; [BH-01] "bảo hành 24 tháng kể từ ngày mua"
