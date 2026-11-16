@@ -459,7 +459,7 @@ def doc_page(kind, src_text, title, depth, side_items, current, crumbs, prev_nex
 
 # ---------- home ----------
 
-def pcard(g):
+def pcard(g, compact=False):
     pages = g["has_pages"]
     tag = "a" if pages else "div"
     href = f' href="{g["slug"]}/index.html"' if pages else ""
@@ -468,6 +468,14 @@ def pcard(g):
     go = f'<span class="go">Xem lộ trình {ic("arrow", 16)}</span>' if pages else '<span class="go soon">Đang chuẩn bị nội dung</span>'
     out = f'<span class="pout">{ic("check", 16)}<span>{g["out"]}</span></span>' if g["out"] else ""
     hay = html.escape(" ".join([g["name"], g["tag"], g["desc"], g["out"]] + list(g["tags"])).lower(), quote=True)
+    if compact:
+        return f"""
+<{tag} class="pcard pc-min st-{g['status']}"{href}>
+  <span class="pmeta">{meta}</span>
+  <h3>{g['name']}</h3>
+  <p class="ptag">{g['tag']}</p>
+  <span class="go">Xem lộ trình {ic("arrow", 16)}</span>
+</{tag}>"""
     return f"""
 <{tag} class="pcard st-{g['status']}"{href} data-status="{g['status']}" data-hay="{hay}">
   <div class="phead"><span class="pico">{ic(g['icon'], 26)}</span><span class="badge b-{g['status']}">{STATUS.get(g['status'], g['status'])}</span></div>
@@ -481,19 +489,86 @@ def pcard(g):
 </{tag}>"""
 
 
-def flow_card():
+
+# ---------- hình minh họa trang chủ ----------
+
+_B, _N, _A, _T, _L = "#1d4ed8", "#0b1f4d", "#ff7a3d", "#e8efff", "#cfd7e6"
+
+
+def scene(n):
+    """Ba cảnh minh họa cho ba vấn đề (SVG nhẹ, không chữ trừ chữ AI)."""
+    head = '<svg class="scene" viewBox="0 0 320 160" role="img" aria-label="{}" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="160" rx="14" fill="#f4f7fd"/>'
+    if n == 1:
+        return head.format("Quy trình nằm rải rác ở tin nhắn, bảng tính và trong đầu một người; AI trả về mỗi lần một kiểu") + f"""
+<g stroke="{_L}" stroke-width="2" stroke-dasharray="4 4" fill="none"><path d="M92 34 C120 34 124 70 150 76"/><path d="M92 80 L150 80"/><path d="M92 124 C120 124 124 92 150 86"/></g>
+<rect x="16" y="14" width="76" height="40" rx="12" fill="{_T}" stroke="{_B}" stroke-width="2"/><path d="M30 54 L28 66 L42 54Z" fill="{_T}" stroke="{_B}" stroke-width="2" stroke-linejoin="round"/>
+<rect x="27" y="26" width="42" height="4" rx="2" fill="{_B}"/><rect x="27" y="36" width="28" height="4" rx="2" fill="{_B}" opacity=".5"/>
+<rect x="16" y="62" width="76" height="38" rx="8" fill="#fff" stroke="{_B}" stroke-width="2"/><path d="M16 74 H92 M16 87 H92 M42 62 V100 M67 62 V100" stroke="{_B}" stroke-width="1.5" opacity=".5"/><rect x="16" y="62" width="76" height="12" rx="6" fill="{_B}" opacity=".15"/>
+<circle cx="54" cy="116" r="9" fill="{_N}"/><path d="M34 148 C34 130 74 130 74 148Z" fill="{_N}"/>
+<rect x="150" y="50" width="62" height="60" rx="16" fill="{_B}"/><text x="181" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#fff" font-family="inherit">AI</text>
+<path d="M214 80 H232" stroke="{_B}" stroke-width="2.5" stroke-linecap="round"/><path d="M228 74 L236 80 L228 86" fill="none" stroke="{_B}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="#fff" stroke="{_B}" stroke-width="2"><rect x="240" y="18" width="64" height="38" rx="8" transform="rotate(-4 272 37)"/><rect x="240" y="62" width="64" height="38" rx="8"/><rect x="240" y="106" width="64" height="38" rx="8" transform="rotate(4 272 125)" stroke="{_A}"/></g>
+<g fill="{_B}" opacity=".55"><rect x="250" y="30" width="40" height="4" rx="2" transform="rotate(-4 272 37)"/><rect x="250" y="40" width="26" height="4" rx="2" transform="rotate(-4 272 37)"/><rect x="250" y="74" width="30" height="4" rx="2"/><rect x="250" y="84" width="42" height="4" rx="2"/><rect x="250" y="118" width="44" height="4" rx="2" transform="rotate(4 272 125)"/><rect x="250" y="128" width="20" height="4" rx="2" transform="rotate(4 272 125)"/></g>
+<text x="289" y="148" font-size="22" font-weight="800" fill="{_A}" font-family="inherit">?</text></svg>"""
+    if n == 2:
+        return head.format("Ngân sách nhỏ không đủ xây hệ thống riêng; dùng công cụ có sẵn và thêm code nhẹ") + f"""
+<g fill="#ffd2b8" stroke="{_A}" stroke-width="2"><ellipse cx="50" cy="128" rx="26" ry="9"/><ellipse cx="50" cy="116" rx="26" ry="9"/><ellipse cx="50" cy="104" rx="26" ry="9"/></g>
+<rect x="116" y="22" width="76" height="116" rx="8" fill="none" stroke="{_L}" stroke-width="2.5" stroke-dasharray="6 5"/>
+<g fill="{_L}"><rect x="128" y="36" width="14" height="14" rx="3"/><rect x="150" y="36" width="14" height="14" rx="3"/><rect x="172" y="36" width="10" height="14" rx="3"/><rect x="128" y="62" width="14" height="14" rx="3"/><rect x="150" y="62" width="14" height="14" rx="3"/><rect x="172" y="62" width="10" height="14" rx="3"/><rect x="128" y="88" width="14" height="14" rx="3"/><rect x="150" y="88" width="14" height="14" rx="3"/></g>
+<circle cx="192" cy="24" r="14" fill="{_A}"/><path d="M186 18 L198 30 M198 18 L186 30" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<rect x="232" y="112" width="68" height="26" rx="8" fill="{_B}"/><rect x="240" y="82" width="68" height="26" rx="8" fill="{_B}" opacity=".75"/><rect x="236" y="52" width="40" height="26" rx="8" fill="{_B}" opacity=".5"/>
+<circle cx="290" cy="50" r="13" fill="#0f9d6b"/><path d="M283 50 L288 55 L297 45" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>"""
+    return head.format("Dán dữ liệu khách vào chat công khai, tin câu trả lời không kiểm và không đo hiệu quả") + f"""
+<rect x="20" y="16" width="186" height="128" rx="12" fill="#fff" stroke="{_B}" stroke-width="2"/><path d="M20 40 H206" stroke="{_B}" stroke-width="2"/>
+<g fill="{_B}"><circle cx="34" cy="28" r="3.5"/><circle cx="46" cy="28" r="3.5" opacity=".6"/><circle cx="58" cy="28" r="3.5" opacity=".3"/></g>
+<rect x="64" y="50" width="130" height="50" rx="10" fill="{_T}" stroke="{_A}" stroke-width="2"/>
+<rect x="76" y="60" width="52" height="5" rx="2.5" fill="{_N}"/><rect x="76" y="71" width="94" height="5" rx="2.5" fill="{_N}" opacity=".5"/><rect x="76" y="82" width="74" height="5" rx="2.5" fill="{_N}" opacity=".5"/>
+<rect x="32" y="112" width="162" height="22" rx="11" fill="#f4f7fd" stroke="{_L}" stroke-width="2"/><rect x="44" y="121" width="46" height="4" rx="2" fill="{_L}"/>
+<path d="M262 30 L296 90 H228Z" fill="#fff6ec" stroke="{_A}" stroke-width="3" stroke-linejoin="round"/><rect x="260" y="48" width="4" height="22" rx="2" fill="{_A}"/><circle cx="262" cy="79" r="2.8" fill="{_A}"/>
+<path d="M232 142 A32 32 0 0 1 292 142" fill="none" stroke="{_L}" stroke-width="6" stroke-linecap="round" stroke-dasharray="3 9"/><text x="262" y="140" text-anchor="middle" font-size="18" font-weight="800" fill="{_L}" font-family="inherit">?</text></svg>"""
+
+
+def dots_svg(n, total=100):
+    cells = "".join(
+        f'<circle cx="{(i % 10) * 10 + 5}" cy="{(i // 10) * 10 + 5}" r="3.6" class="{"on" if i < n else ""}"/>' for i in range(total))
+    return f'<svg class="dots" viewBox="0 0 100 100" role="img" aria-label="{n} trên {total}">{cells}</svg>'
+
+
+def bars_html(rows):
+    return '<div class="bars">' + "".join(
+        f'<div class="br"><span>{lab}</span><div class="bt"><i style="width:{w}%" class="{cls}"></i></div></div>'
+        for lab, w, cls in rows) + "</div>"
+
+
+
+HERO_START = "tri-thuc-to-chuc/cap-00-bien-ban-hop-co-khuon.html"
+
+
+def brand_chip(file, name):
+    if file == "zalo":  # logo Zalo là chữ (wordmark): hiển thị lớn hơn, không lặp tên
+        return f'<span class="bchip word"><img src="assets/brands/{file}.svg" alt="{name}" width="38" height="38" loading="lazy"></span>'
+    return (f'<span class="bchip"><img src="assets/brands/{file}.svg" alt="" width="18" height="18" loading="lazy">{name}</span>')
+
+
+def hero_card():
+    """Sơ đồ minh họa: khách nhắn, AI soạn nháp, người duyệt, ghi vào sổ (logo là nhãn hiệu của chủ sở hữu)."""
     steps = [
-        ("chat", "Khách nhắn Zalo", "“Đơn của tôi đã giao chưa?”", "Khách", ""),
-        ("search", "Tra đơn trong phần mềm bán hàng", "Chỉ đọc, không sửa được dữ liệu", "Công cụ", ""),
-        ("zap", "AI soạn bản nháp theo quy trình", "Có trích dẫn đúng điều khoản", "AI", ""),
-        ("user", "Nhân viên duyệt rồi mới gửi", "Tiền và cam kết luôn qua người", "Người", "hot"),
+        ("Khách nhắn tin", "", [("zalo", "Zalo"), ("messenger", "Messenger"), ("gmail", "Gmail")]),
+        ("AI soạn bản nháp", "", [("claude", "Claude"), ("chatgpt", "ChatGPT"), ("gemini", "Gemini")]),
+        ("Người duyệt rồi mới gửi", "hot", []),
+        ("Ghi vào sổ theo dõi", "", [("sheets", "Google Sheets"), ("excel", "Excel")]),
     ]
-    items = "".join(
-        f'<li class="{hot}"><span class="fi">{ic(i, 20)}</span><div><b>{t}</b><small>{s}</small></div><em>{tag}</em></li>'
-        for i, t, s, tag, hot in steps)
-    return f"""<div class="flowcard" aria-label="Ví dụ quy trình xử lý tin nhắn của khách có điểm duyệt của người">
-  <div class="fhead"><span class="dot"></span>Ví dụ minh họa: xử lý tin nhắn khách hàng</div>
-  <ol>{items}</ol>
+    person = ('<svg class="avatar" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#ffe3cf"/>'
+              '<circle cx="20" cy="15" r="6.5" fill="#0b1f4d"/><path d="M7 35c1-8 7-11 13-11s12 3 13 11a20 20 0 0 1-26 0z" fill="#0b1f4d"/>'
+              '<circle cx="31" cy="30" r="7" fill="#0f9d6b" stroke="#fff" stroke-width="2"/>'
+              '<path d="M27.8 30l2.2 2.2 3.6-4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    rows = ""
+    for i, (title, hot, chips) in enumerate(steps, 1):
+        inner = "".join(brand_chip(f, n) for f, n in chips) if chips else f'<span class="who">{person}<span>Nhân viên</span></span>'
+        rows += f'<li class="{hot}"><span class="sn">{i}</span><div><b>{title}</b><div class="bchips">{inner}</div></div></li>'
+    return f"""<div class="stage" role="group" aria-label="Ví dụ minh họa: xử lý tin nhắn khách hàng bằng AI có người duyệt">
+  <div class="st-head"><span class="dot"></span>Ví dụ minh họa: xử lý tin nhắn khách hàng</div>
+  <ol class="pipe">{rows}</ol>
 </div>"""
 
 
@@ -505,11 +580,11 @@ def sh(eyebrow, title, sub=""):
 def home():
     shown = sorted([g for g in GROUPS if g["has_pages"]], key=lambda g: g["order"])
     shown = sorted(shown, key=lambda g: g["updated"], reverse=True)[:5]
-    cards = "".join(pcard(g) for g in sorted(shown, key=lambda g: g["order"]))
+    cards = "".join(pcard(g, True) for g in sorted(shown, key=lambda g: g["order"]))
     cards += f"""
 <a class="pcard ctacard" href="#cach-lam">
   <h3>Chưa biết bắt đầu từ đâu?</h3>
-  <p>Doanh nghiệp chưa có quy trình nên bắt đầu bằng việc viết SOP. Xem thứ tự gợi ý cho từng giai đoạn.</p>
+  <p>Xem thứ tự gợi ý cho doanh nghiệp chưa có quy trình.</p>
   <span class="go">Xem thứ tự gợi ý {ic('arrow', 16)}</span>
 </a>"""
     steps = {}
@@ -522,88 +597,82 @@ def home():
         f'<li class="rs"><span class="rn">{i + 1}</span><div class="rc"><b>{v["label"]}</b>'
         + (f'<p>{v["note"]}</p>' if v["note"] else "") + f'<div class="rchips">{"".join(v["chips"])}</div></div></li>'
         for i, (k, v) in enumerate(sorted(steps.items())))
-    stats = [
-        ("70%", "hệ thống AI trong doanh nghiệp chạy thật dùng prompt trên mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
-        ("68%", "chạy tối đa 10 bước rồi chuyển cho người", "Nghiên cứu MAP · arXiv 2512.04123"),
-        ("&lt;25%", "tỉ lệ đạt khi cùng một việc phải đúng 8 lần liên tiếp, ở mô hình mà lần đầu đúng trên 60%", "τ-bench"),
-        ("36→12", "phút tiết kiệm: người dùng tự ước 36, thực đo 12 trong thí nghiệm Copilot", "Thí nghiệm có đối chứng"),
+    charts = [
+        (dots_svg(70), "70%", "hệ thống AI chạy thật dùng mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
+        (dots_svg(68), "68%", "chạy tối đa 10 bước rồi chuyển cho người", "Nghiên cứu MAP · arXiv 2512.04123"),
+        (bars_html([("Đúng lần đầu: trên 60%", 60, ""), ("Đúng 8 lần liên tiếp: dưới 25%", 25, "hot")]),
+         "&lt;25%", "tỉ lệ đạt giảm mạnh khi cùng một việc phải đúng 8 lần liên tiếp", "τ-bench"),
+        (bars_html([("Tự ước: 36 phút", 100, ""), ("Thực đo: 12 phút", 33, "hot")]),
+         "36→12", "phút tiết kiệm, tự ước so với thực đo trong thí nghiệm Copilot", "Thí nghiệm có đối chứng"),
     ]
-    stat_html = "".join(f'<div class="stat"><b>{a}</b><p>{b}</p><small>{c}</small></div>' for a, b, c in stats)
+    stat_html = "".join(f'<div class="stat"><div class="sviz">{v}</div><b>{a}</b><p>{b}</p><small>{c}</small></div>'
+                        for v, a, b, c in charts)
     principles = [
-        ("layers", "Bắt đầu từ việc nhỏ",
-         "Mỗi cấp chạy được độc lập, có sản phẩm cầm đi được và tiêu chí đo để biết khi nào mới lên cấp.",
-         "Xem các lộ trình theo cấp", "bai-toan.html"),
-        ("chat", "Dùng công cụ sẵn có trước",
-         "Claude, ChatGPT, Gemini cho người không code; Python nhẹ khi cần. Không phải xây sản phẩm riêng.",
-         "Ví dụ: Cấp C0, dùng AI thủ công", "rag-tra-cuu-tai-lieu/cap-00-dung-ai-thu-cong.html"),
-        ("lock", "Quy tắc quan trọng do code giữ",
-         "Phép tính, kiểm trích dẫn, giới hạn quyền viết bằng code, không chỉ nhắc AI trong prompt.",
-         "Ví dụ: Cấp C5, kiểm trích dẫn bằng code", "rag-tra-cuu-tai-lieu/cap-05-tra-loi-co-trich-dan.html"),
-        ("user", "Người duyệt điểm quan trọng",
-         "Tiền, cam kết với khách và dữ liệu cá nhân đi qua điểm duyệt của người. AI đề xuất, người quyết định.",
-         "Ví dụ: Cấp C8, điểm duyệt của người", "rag-tra-cuu-tai-lieu/cap-08-quy-trinh-nhieu-buoc.html"),
-        ("bars", "Đo trước khi tin",
-         "Bộ ca mẫu có đáp án, đo trước và sau. Năng suất tự ước thường cao hơn thực đo.",
-         "Ví dụ: Cấp C6, đánh giá", "rag-tra-cuu-tai-lieu/cap-06-danh-gia.html"),
+        ("Bắt đầu từ việc nhỏ", "Mỗi cấp chạy được độc lập và có tiêu chí đo để lên cấp.", "bai-toan.html"),
+        ("Dùng công cụ sẵn có trước", "Claude, ChatGPT, Gemini cho người không code; Python nhẹ khi cần.",
+         "rag-tra-cuu-tai-lieu/cap-00-dung-ai-thu-cong.html"),
+        ("Quy tắc quan trọng do code giữ", "Phép tính, kiểm trích dẫn, giới hạn quyền viết bằng code.",
+         "rag-tra-cuu-tai-lieu/cap-05-tra-loi-co-trich-dan.html"),
+        ("Người duyệt điểm quan trọng", "Tiền, cam kết và dữ liệu cá nhân luôn qua người duyệt.",
+         "rag-tra-cuu-tai-lieu/cap-08-quy-trinh-nhieu-buoc.html"),
+        ("Đo trước khi tin", "Bộ ca mẫu có đáp án, đo trước và sau.", "rag-tra-cuu-tai-lieu/cap-06-danh-gia.html"),
     ]
     pr_html = "".join(
-        f'<article class="pc"><div class="ptop"><span class="pnum">0{n}</span></div>'
-        f'<h3>{b}</h3><p>{c}</p><a class="plink" href="{href}">{label} →</a></article>'
-        for n, (i, b, c, label, href) in enumerate(principles, 1))
-    pr_html += ('<a class="pc pc-ev" href="nen-tang-bang-chung.html"><h3>Vì sao là năm nguyên tắc này?</h3>'
-                '<p>Chúng rút ra từ những hệ thống AI đã chạy thật trong năm bài báo SIPTech đã đọc kỹ, không phải lý thuyết suông.</p>'
-                '<span class="plink">Xem bằng chứng →</span></a>')
+        f'<li><a class="prow" href="{href}"><span class="pnum">0{n}</span><span class="ptxt"><b>{b}</b><span>{c}</span></span>'
+        f'<span class="parr">{ic("arrow", 18)}</span></a></li>'
+        for n, (b, c, href) in enumerate(principles, 1))
     base = "".join(
-        f'<a class="base" href="{s}.html"><h3>{t}</h3><p>{d}</p><span class="go">Đọc {ic("arrow", 16)}</span></a>' for s, t, d in ROOT_DOCS)
+        f'<a class="base" href="{s}.html" title="{html.escape(d, quote=True)}"><h3>{t.replace("dữ liệu", "dữ&nbsp;liệu").replace("pháp lý", "pháp&nbsp;lý").replace("Việt Nam", "Việt&nbsp;Nam")}</h3><span class="go">Đọc {ic("arrow", 16)}</span></a>' for s, t, d in ROOT_DOCS)
     problems = [
-        ("flow", "Chưa có quy trình", "Quy trình nằm trong đầu vài người làm giỏi và trong tin nhắn Zalo. AI không làm theo được thứ chưa viết ra, và sẽ tự điền chỗ trống mỗi lần một kiểu."),
-        ("zap", "Ít tiền, ít người kỹ thuật", "Không đủ ngân sách xây hệ thống từ đầu thành một sản phẩm độc lập. Cần đi bằng công cụ có sẵn và thêm code nhẹ đúng chỗ."),
-        ("shield", "Dùng AI chưa có kỷ luật", "Dán dữ liệu khách vào chat công khai, tin câu trả lời không kiểm, không đo hiệu quả. Đây là quan sát của SIPTech, có bằng chứng gián tiếp, chưa có số đo trên SME Việt Nam."),
+        (1, "Chưa có quy trình", "Quy trình nằm trong đầu vài người và trong tin nhắn Zalo. AI không làm theo được thứ chưa viết ra, nên tự điền chỗ trống, mỗi lần một kiểu."),
+        (2, "Ít tiền, ít người kỹ thuật", "Không đủ ngân sách xây hệ thống riêng. Đi bằng công cụ có sẵn và thêm code nhẹ đúng chỗ."),
+        (3, "Dùng AI chưa có kỷ luật", "Dán dữ liệu khách vào chat công khai, tin câu trả lời không kiểm, không đo hiệu quả."),
     ]
-    pb = "".join(f'<div class="issue"><span class="pico">{ic(i, 24)}</span><h3>{a}</h3><p>{b}</p></div>' for i, a, b in problems)
+    pb = "".join(f'<div class="issue">{scene(i)}<h3>{a}</h3><p>{b}</p></div>' for i, a, b in problems)
     body = f"""
 <section class="hero">
   <div class="wrap herogrid">
     <div class="herotext">
-      <span class="pill">{TAGLINE}</span>
-      <h1>Đưa AI vào doanh nghiệp <span class="hl">đúng cách</span>: từng bước, đo được, an toàn</h1>
-      <p class="lead">Nhiều doanh nghiệp vừa và nhỏ đang dùng AI mỗi nơi một kiểu, chưa có quy trình và không đủ ngân sách xây hệ thống riêng.
-      {BRAND} đi từ việc nhỏ nhất với công cụ có sẵn như Claude, ChatGPT, Gemini, rồi mới đến API và code, kèm cách đo để biết khi nào nên đi tiếp.</p>
-      <div class="btns"><a class="btn pri" href="#bai-toan">Xem các bài toán</a><a class="btn ghost" href="tong-quan.html">Đọc tổng quan</a></div>
-      <ul class="checks">
-        <li>{ic('check', 18)}Mỗi cấp có sản phẩm cầm đi được</li>
-        <li>{ic('check', 18)}Có đường không cần code</li>
-        <li>{ic('check', 18)}Nguồn và số đo rõ ràng</li>
-      </ul>
+      <h1><span class="nw">Đưa AI vào</span> <span class="nw">doanh nghiệp,</span><br><span class="hl"><span class="nw">từng bước</span> <span class="nw">và đo được</span></span></h1>
+      <p class="lead">Lộ trình cho doanh nghiệp vừa và nhỏ ở Việt Nam. Bắt đầu bằng công cụ có sẵn như Claude, ChatGPT, Gemini, không cần biết code.</p>
+      <div class="btns heroact"><a class="btn pri big" href="{HERO_START}">Bắt đầu với bài toán đầu tiên {ic('arrow', 18)}</a><a class="textlink" href="bai-toan.html">Xem tất cả bài toán</a></div>
+      <p class="micro">Miễn phí · Không cần biết lập trình · Có đường không cần code</p>
+      <div class="proof" aria-label="Bằng chứng từ nghiên cứu">
+        <div><b>70%</b><span>hệ thống AI trong doanh nghiệp chạy thật dùng mô hình có sẵn, không huấn luyện lại</span><small>Nghiên cứu MAP · arXiv 2512.04123</small></div>
+        <div><b>36→12</b><span>phút tiết kiệm: người dùng tự ước 36, thực đo 12</span><small>Thí nghiệm Copilot có đối chứng</small></div>
+      </div>
+      <a class="proofmore" href="nen-tang-bang-chung.html">Xem các nguồn và cách đọc số liệu →</a>
     </div>
-    <div>{flow_card()}</div>
+    <div>{hero_card()}</div>
   </div>
-  <div class="wrap"><div class="facts">
-    <div><b>{NUM}</b><span>bài toán, thêm mới liên tục</span></div>
-    <div><b>{TOTAL}</b><span>cấp độ từ dễ đến khó</span></div>
-    <div><b>2</b><span>đường: không code và code nhẹ</span></div>
-    <div><b>A–D</b><span>4 hạng quyền cho công cụ, từ chỉ đọc đến có hậu quả</span></div>
-  </div></div>
 </section>
+
+<section class="factstrip"><div class="wrap"><div class="facts">
+  <div><b>{NUM}</b><span>bài toán, thêm mới liên tục</span></div>
+  <div><b>{TOTAL}</b><span>cấp độ từ dễ đến khó</span></div>
+  <div><b>2</b><span>đường: không code và code nhẹ</span></div>
+  <div><b>4</b><span>hạng quyền cho công cụ AI, từ chỉ đọc đến có hậu quả</span></div>
+</div></div></section>
 
 <section class="sec" id="van-de">
   <div class="wrap">
     {sh("Vấn đề", "Doanh nghiệp đang vướng ở đâu khi dùng AI?")}
     <div class="grid3">{pb}</div>
+    <p class="fine">Ba điều trên là quan sát của SIPTech, có bằng chứng gián tiếp, chưa có số đo trên SME Việt Nam.</p>
   </div>
 </section>
 
 <section class="band" id="bang-chung">
   <div class="wrap">
     <div class="sh light"><span class="eyebrow">Bằng chứng</span><h2>Những hệ thống AI chạy thật trông như thế nào</h2>
-    <p class="sub">Đều từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. Cách đọc chi tiết trong <a href="nen-tang-bang-chung.html">Nền tảng bằng chứng</a>.</p></div>
+    <p class="sub">Đều từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. <a href="nen-tang-bang-chung.html">Xem nguồn và cách đọc số liệu</a>.</p></div>
     <div class="stats">{stat_html}</div>
   </div>
 </section>
 
 <section class="sec" id="bai-toan">
   <div class="wrap">
-    {sh("Bài toán", "Các bài toán doanh nghiệp, mỗi bài một lộ trình", f"Hiện có {NUM} bài toán và danh sách được bổ sung liên tục. Mỗi cấp có sản phẩm cầm đi được, đường không code, đường code nhẹ, tiêu chí lên cấp và rủi ro cần tránh.")}
+    {sh("Bài toán", "Các bài toán doanh nghiệp, mỗi bài một lộ trình", f"Hiện có {NUM} bài toán, bổ sung liên tục. Mỗi cấp có sản phẩm cầm đi được và tiêu chí lên cấp.")}
     <div class="pgrid">{cards}</div>
     <p class="allp"><a class="btn ghost" href="bai-toan.html">Xem tất cả {NUM} bài toán {ic('arrow', 16)}</a></p>
   </div>
@@ -611,15 +680,21 @@ def home():
 
 <section class="sec tint" id="cach-lam">
   <div class="wrap">
-    {sh("Cách làm", "Năm nguyên tắc xuyên suốt")}
-    <div class="prs3">{pr_html}</div>
-    <h3 class="subh">Thứ tự gợi ý cho doanh nghiệp chưa có quy trình</h3>
+    {sh("Bắt đầu từ đâu", "Thứ tự gợi ý cho doanh nghiệp chưa có quy trình")}
     <ol class="road">{path}</ol>
     <p class="fine">Đây là đề xuất của SIPTech, chưa có nguồn đo.</p>
   </div>
 </section>
 
-<section class="sec" id="nen-tang">
+<section class="sec" id="nguyen-tac">
+  <div class="wrap prsplit">
+    <div class="sh"><span class="eyebrow">Cách làm</span><h2>Năm nguyên tắc<br>xuyên suốt</h2>
+      <p class="sub">Rút ra từ các hệ thống AI đã chạy thật. <a href="nen-tang-bang-chung.html">Vì sao là năm nguyên tắc này?</a></p></div>
+    <ol class="prlist">{pr_html}</ol>
+  </div>
+</section>
+
+<section class="sec tint" id="nen-tang">
   <div class="wrap">
     {sh("Tài liệu nền", "Đọc trước khi bắt đầu")}
     <div class="bases">{base}</div>
@@ -628,15 +703,17 @@ def home():
   </div>
 </section>
 
-<section class="sec tint" id="gioi-han">
+<section class="sec" id="gioi-han">
   <div class="wrap narrow">
-    {sh("Lưu ý", "Điều cần biết trước khi áp dụng")}
-    <ul class="limits">
-      <li><span class="lic">{ic('alert', 20)}</span><div><b>Chưa có số đo trên SME Việt Nam.</b> Mọi bằng chứng định lượng đến từ tổ chức lớn hoặc nhóm kỹ thuật mạnh.</div></li>
-      <li><span class="lic">{ic('alert', 20)}</span><div><b>Pháp lý chưa xác minh toàn văn.</b> Luật, nghị định được tổng hợp từ nguồn thứ cấp. Đây không phải tư vấn pháp lý; cần luật sư hoặc đọc văn bản gốc trước khi áp dụng.</div></li>
-      <li><span class="lic">{ic('alert', 20)}</span><div><b>Ngưỡng và cỡ mẫu là đề xuất.</b> Ví dụ bộ 20-30 ca chỉ phát hiện hỏng, không đo chính xác. Mỗi bài tách rõ [Nguồn] và [Đề xuất].</div></li>
-      <li><span class="lic">{ic('alert', 20)}</span><div><b>Công cụ thay đổi nhanh.</b> Tính năng, giá và điều khoản của Claude, ChatGPT, Gemini, Zalo và các phần mềm bán hàng cần kiểm lại trước khi dùng.</div></li>
-    </ul>
+    <details class="limitbox">
+      <summary><span class="lic">{ic('alert', 20)}</span><span><b>Điều cần biết trước khi áp dụng</b><small>4 lưu ý về số liệu, pháp lý, ngưỡng và công cụ</small></span></summary>
+      <ul class="limits">
+        <li><span class="lic">{ic('alert', 20)}</span><div><b>Chưa có số đo trên SME Việt Nam.</b> Mọi bằng chứng định lượng đến từ tổ chức lớn hoặc nhóm kỹ thuật mạnh.</div></li>
+        <li><span class="lic">{ic('alert', 20)}</span><div><b>Pháp lý chưa xác minh toàn văn.</b> Luật, nghị định được tổng hợp từ nguồn thứ cấp. Đây không phải tư vấn pháp lý; cần luật sư hoặc đọc văn bản gốc trước khi áp dụng.</div></li>
+        <li><span class="lic">{ic('alert', 20)}</span><div><b>Ngưỡng và cỡ mẫu là đề xuất.</b> Ví dụ bộ 20-30 ca chỉ phát hiện hỏng, không đo chính xác. Mỗi bài tách rõ [Nguồn] và [Đề xuất].</div></li>
+        <li><span class="lic">{ic('alert', 20)}</span><div><b>Công cụ thay đổi nhanh.</b> Tính năng, giá và điều khoản của Claude, ChatGPT, Gemini, Zalo và các phần mềm bán hàng cần kiểm lại trước khi dùng.</div></li>
+      </ul>
+    </details>
   </div>
 </section>
 
