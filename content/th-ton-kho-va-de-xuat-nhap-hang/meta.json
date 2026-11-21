@@ -1,0 +1,19 @@
+{
+  "name": "Tồn kho và đề xuất nhập hàng",
+  "code": "3 bài",
+  "icon": "bars",
+  "order": 66,
+  "status": "draft",
+  "updated": "2026-11-21",
+  "tag": "Phân loại ABC, tồn kho an toàn và số lượng nên nhập, đo trên tháng giữ lại",
+  "desc": "Dùng coding agent tính từ xuất nhập tồn 12 tháng; công thức tất định, có mốc so sánh đơn giản và đo trên hai tháng giữ lại; người quyết số cuối.",
+  "out": "Phân loại ABC, cảnh báo sắp hết hoặc tồn lâu, đề xuất nhập kèm tiền vốn",
+  "tags": [
+    "tồn kho",
+    "nhập hàng",
+    "abc",
+    "dự báo"
+  ],
+  "step": null,
+  "step_label": ""
+}

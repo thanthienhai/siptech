@@ -252,6 +252,8 @@ def render_md(text):
     body = apply_tokens(body, sources)
     body = label_tables(body)
     body = lesson.post(body)
+    body = body.replace("<img ", '<img loading="lazy" decoding="async" ')
+    body = re.sub(r'(<img [^>]*src="(anh/[^"]+)"[^>]*>)', r'<a class="zoom" href="\2" target="_blank" rel="noopener" title="Bấm để xem cỡ lớn">\1</a>', body)
     render_md.meta = {k: " ".join(v) for k, v in getattr(md, "Meta", {}).items()}
     return body, md.toc_tokens
 
@@ -284,7 +286,7 @@ def title_of(text, fallback):
 
 
 def short_title(t):
-    t = re.sub(r"^(Cấp\s+\w+\s*(\(\w+\))?\s*[:\-—]\s*|[CKQ]\d\s*[—:\-]\s*)", "", t)
+    t = re.sub(r"^(Cấp\s+\w+\s*(\(\w+\))?\s*[:\-—]\s*|[CKQ]\d\s*[—:\-]\s*|Bài\s+\d+\s*[.:\-—]\s*)", "", t)
     t = re.sub(r"\s*\([ -~]+\)", "", t)  # bỏ chú thích tiếng Anh trong ngoặc
     return t.strip()
 
@@ -952,7 +954,7 @@ def main():
         readme = (gdir / "00-README.md").read_text(encoding="utf-8") if (gdir / "00-README.md").exists() else ""
         write(OUT / g["slug"] / "index.html", group_page(g, levels, readme))
         side = [("%s/index.html" % g["slug"], "Tổng quan nhóm bài", None)] + [
-            (f"{g['slug']}/{fn}.html", f"{i}. {short_title(t)}", None) for i, (fn, t, _) in enumerate(levels)]
+            (f"{g['slug']}/{fn}.html", (f"Bài {i + 1}. " if re.match(r"Bài\s+\d", t) else f"{i}. ") + short_title(t), None) for i, (fn, t, _) in enumerate(levels)]
         for i, (fn, t, text) in enumerate(levels):
             prev = (f"{g['slug']}/{levels[i-1][0]}.html", short_title(levels[i-1][1])) if i > 0 else None
             nxt = (f"{g['slug']}/{levels[i+1][0]}.html", short_title(levels[i+1][1]),
@@ -966,6 +968,8 @@ def main():
         for extra in gdir.iterdir():
             if extra.suffix.lower() in (".pptx", ".pdf", ".xlsx", ".docx", ".zip"):
                 shutil.copy2(extra, OUT / g["slug"] / extra.name)
+        if (gdir / "anh").is_dir():  # ảnh minh họa của bài
+            shutil.copytree(gdir / "anh", OUT / g["slug"] / "anh")
 
     # sitemap + 404
     pages = [p.relative_to(OUT).as_posix() for p in OUT.rglob("*.html")]

@@ -1,0 +1,20 @@
+{
+  "name": "Phân tích đánh giá của khách",
+  "code": "3 bài",
+  "icon": "chat",
+  "order": 63,
+  "status": "draft",
+  "updated": "2026-11-21",
+  "tag": "Từ hàng trăm review đời thường ra chủ đề, ca nguy cấp và việc nên sửa trước",
+  "desc": "Dùng coding agent phân tích 250 đánh giá; số đếm do code, mọi trích dẫn kiểm nguyên văn, mỉa mai chuyển người đọc.",
+  "out": "Chủ đề và sắc thái theo ý, ca nguy cấp, xu hướng theo tuần, 5 việc nên sửa có trích dẫn",
+  "tags": [
+    "đánh giá",
+    "review",
+    "cskh",
+    "phân tích",
+    "sắc thái"
+  ],
+  "step": null,
+  "step_label": ""
+}

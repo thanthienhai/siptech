@@ -1,0 +1,20 @@
+{
+  "name": "Làm sạch danh bạ khách hàng",
+  "code": "3 bài",
+  "icon": "user",
+  "order": 61,
+  "status": "draft",
+  "updated": "2026-11-21",
+  "tag": "Gộp khách trùng, chuẩn hóa số điện thoại, không xóa dữ liệu",
+  "desc": "Dùng coding agent làm sạch 400 dòng danh bạ gom từ nhiều nguồn; mọi gộp ghi lại và hoàn tác được; ca nghi trùng chuyển người quyết.",
+  "out": "Danh bạ sạch, nhật ký gộp, danh sách ca nghi trùng cần người quyết",
+  "tags": [
+    "crm",
+    "danh bạ",
+    "trùng",
+    "số điện thoại",
+    "dữ liệu cá nhân"
+  ],
+  "step": null,
+  "step_label": ""
+}

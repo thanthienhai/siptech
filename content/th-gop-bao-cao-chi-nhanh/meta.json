@@ -1,0 +1,19 @@
+{
+  "name": "Gộp báo cáo từ nhiều chi nhánh",
+  "code": "3 bài",
+  "icon": "layers",
+  "order": 67,
+  "status": "draft",
+  "updated": "2026-11-21",
+  "tag": "Gộp sáu file Excel mỗi nơi một kiểu thành một báo cáo chuẩn, có kiểm tổng",
+  "desc": "Dùng coding agent gộp 6 file chi nhánh; tổng từng file phải khớp tổng hợp, không sửa file gốc, và cách chạy lại khi một chi nhánh đổi định dạng.",
+  "out": "Bảng hợp nhất, báo cáo tháng, danh sách việc phải hỏi lại chi nhánh",
+  "tags": [
+    "excel",
+    "báo cáo",
+    "chi nhánh",
+    "gộp dữ liệu"
+  ],
+  "step": null,
+  "step_label": ""
+}

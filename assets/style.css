@@ -529,3 +529,8 @@ a{color:var(--brand)}
 @media (max-width:560px){.btn.big{width:100%}.heroact{align-items:stretch;text-align:center}.micro{text-align:center}}
 
 .nw{white-space:nowrap}
+
+/* ảnh minh họa trong bài thực hành */
+.doc img{max-width:100%;height:auto;display:block;margin:1.3em 0 .5em;border:1px solid var(--line);border-radius:12px}
+.doc img + em{display:block;font-size:14px;color:var(--muted,#5b6b8c)}
+.doc a.zoom{display:block;cursor:zoom-in;border:0}
