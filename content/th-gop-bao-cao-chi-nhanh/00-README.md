@@ -26,6 +26,21 @@ Ba nguyên tắc xuyên suốt:
 | [Bài 3](cap-02-dua-vao-dung-hang-thang.md) | Chạy lại script cho tháng mới (không gọi agent), quét "chữ của tháng cũ", agent sửa script khi định dạng đổi | Khoảng 30 phút mỗi tháng | Quy trình hằng tháng 5 bước và bộ hồi quy |
 | [Bài 4](cap-03-prompt-mau-va-bai-tap.md) | 9 prompt dùng lại, 3 bài tập (thêm chi nhánh, đổi tên cột, báo cáo theo tuần), dùng với dữ liệu thật | Mỗi bài tập 20 đến 40 phút | Bộ prompt đã thử và tiêu chí đạt kiểm bằng lệnh |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Kết quả đo, tóm tắt
 
 Dữ liệu giả, mỗi tình huống chạy 1 lần hợp lệ (n=1). Không rút ra kết luận "agent nào tốt hơn".
@@ -42,8 +57,7 @@ Dữ liệu giả, mỗi tình huống chạy 1 lần hợp lệ (n=1). Không r
 
 **Điều cần nhớ:** chấm đúng số tiền **chưa đủ**. Ở bài 3, script của `agy` ra số đúng mà chữ giải thích vẫn là của tháng cũ; chỉ đọc chữ hoặc quét mã tháng cũ mới thấy.
 
-## Cấu trúc thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 08-gop-bao-cao-chi-nhanh/
   00-README.md, bai-1-..., bai-2-..., bai-3-..., bai-4-...

@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả của hai agent, chạy bộ chấm so với đáp án, đọc các ca agent làm sai.
     - **Mất bao lâu:** khoảng 30 phút. Chạy bộ chấm mất vài giây mỗi lần.
-    - **Cần có:** bộ bài đã giải nén (thư mục `du-lieu/` và `ket-qua/` cạnh nhau), Python 3. Kết quả mẫu của chúng tôi đã có sẵn trong `ket-qua/`. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
+    - **Cần có:** bộ bài đã giải nén (thư mục `du-lieu/` và `ket-qua/` cạnh nhau), Python 3. Kết quả mẫu của chúng tôi đã có sẵn trong `ket-qua/`. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent). Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** một bảng đúng/sai theo từng chỉ tiêu, và hiểu vì sao "agent tự báo sạch" không đủ.
 
 Kết quả đo của chúng tôi, ngày 2026-11-20, cùng prompt (bài 1), cùng dữ liệu, 40 sản phẩm, mỗi agent chạy 2 lần (**n=2**, chỉ là quan sát, chưa đo được độ ổn định):

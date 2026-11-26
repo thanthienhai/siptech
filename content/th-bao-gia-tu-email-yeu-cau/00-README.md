@@ -24,6 +24,21 @@ Phép tính tiền do code làm; người thật duyệt trước khi gửi. VAT
 | [Bài 3](cap-02-dua-vao-dung-hang-ngay.md) | Quy trình mỗi ngày, tự kiểm không cần đáp án, checklist người duyệt | khoảng 30 phút | Quy trình không có gì tự gửi, hàng đợi duyệt theo trạng thái |
 | [Bài 4](cap-03-prompt-mau-va-bai-tap.md) | 9 prompt dùng lại (5 đã chạy thật), 3 bài tập có bộ chấm, dùng dữ liệu thật | khoảng 1,5 đến 3 giờ | Bộ prompt của riêng bạn, ba bài tập chấm bằng code |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Kết quả đo tóm tắt
 
 **[Đo được]** Ngày 2026-11-20. 12 yêu cầu, 35 dòng hàng trong đáp án, mỗi lần chạy 36 file. n = 5 lần chạy hợp lệ (claude 3, agy 2), chưa đo được độ ổn định, không xếp hạng agent.
@@ -45,8 +60,7 @@ Phép tính tiền do code làm; người thật duyệt trước khi gửi. VAT
 - Một lần chạy (agy-1) đã đọc file đáp án và chạy chương trình chấm trên kết quả của agent khác dù prompt dặn "chỉ đọc và ghi trong thư mục hiện tại": bài học về hàng rào thật.
 - Bài 4 **[Đo được]**, ngày 2026-11-21, n = 1 mỗi prompt, Claude Code: 5 prompt (giải thích script, kiểm chéo, email không hứa ngày giao, câu hỏi làm rõ, báo cáo cho sếp) đã chạy thật, 54 đến 197 giây, 0,20 đến 0,64 USD theo giá niêm yết. Kiểm bằng code: email không hứa giờ giao; báo cáo cho sếp khớp 12/12 tổng cộng với đáp án; kiểm chéo ra 7 khớp, 0 lệch, 5 "không kết luận được" (quá thận trọng).
 
-## Thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 00-README.md
 bai-1-...md  bai-2-...md  bai-3-...md  bai-4-...md

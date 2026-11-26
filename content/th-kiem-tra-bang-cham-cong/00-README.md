@@ -15,6 +15,21 @@ Bạn biết cách nhờ một coding agent (chương trình AI tự đọc file
 | [Bài 3. Dùng hằng tháng](cap-02-dung-hang-thang.md) | dưới 10 phút mỗi tháng (chưa kể người duyệt) | Quy trình 6 bước chạy lại không cần agent, bộ tự kiểm 7 mục, bảng người duyệt |
 | [Bài 4. Prompt mẫu và bài tập tự làm](cap-03-prompt-mau-va-bai-tap.md) | mỗi prompt vài phút, mỗi bài tập 10 đến 20 phút | 9 prompt (6 đã chạy thật), 3 bài tập có bộ kiểm bằng code, checklist dữ liệu thật |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Kết quả đo tóm tắt
 
 Tất cả **[Đo được]**, ngày 2026-11-20, **n = 1 lần chạy mỗi dòng**, cùng prompt nguyên văn, cùng dữ liệu đã ẩn danh. Chấm bằng `ket-qua/cham.py`.
@@ -40,8 +55,7 @@ Quan sát (không phải xếp hạng):
 
 **n nhỏ:** chỉ 1 đến 2 lần mỗi cấu hình, chưa đo được độ ổn định giữa các lần chạy, không đủ để kết luận agent nào tốt hơn. Dữ liệu giả và đáp án cùng do người soạn bài viết nên có thể dễ hơn thực tế.
 
-## Cấu trúc thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 06-kiem-tra-bang-cham-cong/
   00-README.md, bai-1-...md, bai-2-...md, bai-3-...md, bai-4-...md

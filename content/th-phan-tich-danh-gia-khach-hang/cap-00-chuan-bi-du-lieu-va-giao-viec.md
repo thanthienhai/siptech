@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải 250 đánh giá mẫu của một quán cà phê, mở agent trong một thư mục riêng, dán prompt giao việc phân tích đánh giá.
     - **Mất bao lâu:** khoảng 20 phút chuẩn bị. Agent chạy thêm vài phút đến vài chục phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 454,5 giây, Antigravity 957,9 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file, Python để chạy vài lệnh kiểm.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file, Python để chạy vài lệnh kiểm. Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** một thư mục có bảng ý kiến theo chủ đề và sắc thái, danh sách đánh giá nguy cấp, xu hướng theo tuần, báo cáo 5 việc nên sửa. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: quán "Mây Lưng Chừng" là hư cấu, 250 đánh giá do script sinh với hạt giống cố định. Không có tên người, số điện thoại hay doanh nghiệp thật. Không dùng làm kết luận về bất kỳ quán thật nào.
@@ -22,6 +22,9 @@ Bài toán giao cho coding agent: đọc cả 250 bài, trả về năm thứ ch
 
 !!! warning "Quy tắc xuyên suốt cả chuỗi bài"
     **Phép đếm do code làm, không để mô hình "đếm nhẩm" hay "nhớ lại".** Agent đọc để hiểu tiếng Việt (việc cần hiểu), còn đếm và kiểm trích dẫn là code (việc cần chính xác). Đưa 250 bài vào khung chat rồi hỏi "tóm tắt giúp" cho câu trả lời trôi chảy, nhưng bạn không kiểm được số đếm, không biết trích dẫn có thật không, không biết bài nào bị bỏ sót.
+
+!!! tip "Chưa có file đánh giá của quán mình?"
+    Bài này chạy bằng dữ liệu giả có sẵn. Muốn thử với quán của bạn mà chưa biết xuất đánh giá ra sao, cách chắc nhất là **chép tay 30 đánh giá** vào Excel với 5 cột như file mẫu (mã, nền tảng, ngày, số sao, nội dung) rồi lưu CSV. **Chưa kiểm** cách xuất tự động từ Google Maps, Facebook hay sàn thương mại; tính năng này mỗi nơi một khác và hay đổi.
 
 ## Các bước làm
 

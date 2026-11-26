@@ -17,6 +17,21 @@ Chủ shop có bảng 40 sản phẩm mỹ phẩm, cần nhập lên sàn. Ba ch
 | [Bài 3](cap-02-dua-vao-dung-hang-ngay.md) | Quy trình mỗi lô: thước kiểm riêng, người duyệt, chặn đăng nhầm | khoảng 30 phút thiết lập | quy trình lặp lại được và checklist |
 | [Bài 4](cap-03-prompt-mau-va-bai-tap.md) | 9 prompt dùng lại, ba bài tập: từ cấm mới, mâu thuẫn, đổi giọng | 20 đến 40 phút mỗi bài tập | prompt chạy thử và tiêu chí đạt kiểm bằng code |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Dữ liệu mẫu (thư mục `du-lieu/`)
 
 | File | Nội dung |
@@ -61,8 +76,7 @@ Cả hai agent: không dùng từ cấm, không bịa con số, không chép l�
 - **Chất lượng viết:** đầu ra của cả hai agent đọc như bảng thông số chuyển thành câu, chưa phải mô tả bán hàng hay. Chưa đo SEO hay việc sàn có chấp nhận nội dung không.
 - Đây không phải tư vấn pháp lý.
 
-## Cấu trúc thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 03-mo-ta-san-pham-hang-loat/
   00-README.md, bai-1-..., bai-2-..., bai-3-..., bai-4-...

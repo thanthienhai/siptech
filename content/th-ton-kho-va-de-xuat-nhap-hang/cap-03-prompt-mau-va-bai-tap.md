@@ -294,7 +294,7 @@ gop       108           21.5%                 23.5%     14.5     15.8  cong thuc
 | Mốc tháng trước | 31,9% | 139,2% | 45,3% | 26,1% | 19,1% | 28,3% | 30,7% | 21,8% |
 | Ai thắng | công thức | công thức | công thức | mốc | mốc | công thức | mốc | mốc |
 
-Công thức thắng 4 tháng, thua 4 tháng. Kết luận "công thức thua mốc ngây thơ" của bài 2 **chỉ đúng với hai tháng cuối** của dữ liệu giả này, không phải quy luật chung. Số ở đây lệch chút so với bài 2 (ví dụ 33,3% so với 33,1%) vì bài 2 chấm lại so với số bán thật của đáp án, còn bộ đo này dùng nhu cầu đã làm sạch do chính script tính.
+Công thức thắng 4 tháng (03, 04, 05, 08) và thua 4 tháng (06, 07, 09, 10). Bài 2 chỉ đo hai tháng cuối nên thấy "công thức thua mốc ngây thơ"; trên 8 tháng thì **thắng thua lẫn lộn**, không có kết luận chắc nào. Riêng tháng 04, mốc ra 139,2% là điểm ngoại lai, nên 4 thắng 4 thua còn mong manh. Số ở đây lệch chút so với bài 2 (ví dụ 33,3% so với 33,1%) vì bài 2 chấm lại so với số bán thật của đáp án, còn bộ đo này dùng nhu cầu đã làm sạch do chính script tính.
 
 ## Dùng với dữ liệu thật của bạn
 

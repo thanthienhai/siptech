@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải danh bạ mẫu, tập làm bản giả danh (ẩn danh), mở agent trong một thư mục riêng, dán prompt giao việc làm sạch danh bạ.
     - **Mất bao lâu:** khoảng 30 phút chuẩn bị. Agent chạy thêm vài phút đến vài chục phút **[Đo được]** (lần chạy có log của chúng tôi: Claude Code 513,6 giây, Antigravity 1.031,3 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 với thư viện `openpyxl` (cho bước giả danh; thiếu thì gõ `pip install openpyxl`), Excel để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 với thư viện `openpyxl` (cho bước giả danh; thiếu thì gõ `pip install openpyxl`), Excel để xem file. Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** một thư mục có danh bạ sạch (mỗi khách một dòng), nhật ký "đã gộp gì và vì sao", danh sách ca nghi trùng để người quyết. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: tên, số điện thoại, email, địa chỉ đều bịa, sinh bằng script có hạt giống cố định. Không có khách hàng thật nào.

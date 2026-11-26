@@ -15,6 +15,21 @@ Quán nhận đánh giá từ Google Maps, Shopee Food và fanpage, mỗi nơi m
 | [Bài 3. Dùng hằng tuần](cap-02-dua-vao-dung-hang-ngay.md) | Lần đầu khoảng 1 giờ | Quy trình che thông tin, kiểm, cảnh báo tuần, người duyệt, lưu trữ |
 | [Bài 4. Prompt mẫu và bài tập](cap-03-prompt-mau-va-bai-tap.md) | 1 đến 2 giờ | 8 prompt dùng lại được, ba bài tập có bộ chấm, hướng dẫn dùng dữ liệu thật |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Kết quả đo tóm tắt (ngày 2026-11-20)
 
 Cùng một prompt (không sửa sau khi thấy kết quả), cùng dữ liệu. Claude Code 2.1.329 và Antigravity `agy` 1.5.13. **n nhỏ: claude 2 lần chạy hoàn chỉnh, agy 3 lần (1 lần bị dừng ở giới hạn 900 giây), chưa đo được độ ổn định.** Chấm bằng `ket-qua/cham.py`:
@@ -35,8 +50,7 @@ Thời gian: claude lần 1 mất 454,5 giây, agy lần 2 mất 957,9 giây. Ha
 
 **Bài 4 (lần chạy 2026-11-21, n=1 mỗi prompt):** 5 trong 8 prompt đã chạy thật trên đầu ra có sẵn. Bộ kiểm chéo do một phiên mới tự viết bắt đủ 3 lỗi cố ý trong bản sao; báo cáo một trang có trích dẫn đúng nhưng con số "36 khách" không khớp bảng bài 2 (41 ý, agent tự bỏ 5 ý trùng với việc khác, không ghi vào báo cáo).
 
-## Cấu trúc thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 04-phan-tich-danh-gia-khach-hang/
   00-README.md, bai-1 .. bai-4 (.md)

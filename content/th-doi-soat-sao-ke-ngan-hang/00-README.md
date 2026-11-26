@@ -17,6 +17,21 @@ Việc này hay gặp ở shop và công ty nhỏ thu tiền bằng chuyển kho
 | [Bài 3. Đưa vào dùng hằng ngày](cap-02-dung-hang-ngay.md) | khoảng 30 phút dựng lần đầu | Quy trình hàng tháng, kiểm tái lập, checklist người duyệt |
 | [Bài 4. Prompt mẫu và bài tập tự làm](cap-03-prompt-mau-va-bai-tap.md) | mỗi prompt vài phút, mỗi bài tập 20 đến 40 phút | 9 prompt dùng lại được, 3 bài tập có tiêu chí chấm bằng code |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Dữ liệu mẫu (sinh, hạt giống cố định)
 
 | File | Nội dung |

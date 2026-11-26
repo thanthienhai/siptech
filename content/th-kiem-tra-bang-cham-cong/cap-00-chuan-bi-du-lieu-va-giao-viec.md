@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải bảng chấm công mẫu, **ẩn danh** bằng một script (mã `NV-001`... thay họ tên), mở agent trong một thư mục riêng, dán prompt giao việc kiểm tra chấm công.
     - **Mất bao lâu:** khoảng 30 phút chuẩn bị. Agent chạy thêm vài phút đến 20 phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 247,8 giây, Antigravity 1.217,6 giây, mỗi bên n = 1).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 để chạy script ẩn danh, Excel hoặc Notepad để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 để chạy script ẩn danh, Excel hoặc Notepad để xem file. Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** một thư mục có bảng công từng ngày, danh sách bất thường, tổng hợp theo người, báo cáo ngắn và chương trình `tinh_cong.py`. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: công ty, 25 nhân viên, họ tên, mã thẻ, giờ quẹt đều bịa, sinh bằng script có hạt giống cố định. Mọi ngưỡng (đi trễ mấy phút, làm thêm bao nhiêu giờ thì cảnh báo, ngày lễ) là **tham số giả định** của công ty giả, không phải quy định pháp luật. Giờ làm thêm, nghỉ lễ, nghỉ phép: cần kiểm với văn bản hiện hành hoặc chuyên gia nhân sự; bài này không trích điều luật.

@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải dữ liệu mẫu (bảng giá, chính sách, 12 email và tin nhắn xin báo giá), mở agent trong một thư mục riêng, dán prompt giao việc lập báo giá nháp.
     - **Mất bao lâu:** khoảng 25 phút chuẩn bị. Agent chạy thêm vài phút **[Đo được]** (lần chạy của chúng tôi, n = 1 mỗi lần: Claude Code 378 và 433 giây, Antigravity 962,5 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 (agent sẽ viết và chạy script Python; cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)), Excel hoặc Notepad để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 (agent sẽ viết và chạy script Python; cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)), Excel hoặc Notepad để xem file. Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** một thư mục `dau-ra/` có 12 báo giá nháp theo mẫu, 12 email trả lời nháp, 12 danh sách câu hỏi cần hỏi lại khách, cùng script tính tiền. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: công ty "An Phát Demo", khách hàng, địa chỉ, số điện thoại (dãy 0900 000 xxx), email (@example.com) đều bịa. Bảng giá và chính sách do chúng tôi viết để làm bài, không phải của doanh nghiệp thật. Ngày làm: 2026-11-20.

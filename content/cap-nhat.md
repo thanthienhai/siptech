@@ -19,7 +19,7 @@ Các thay đổi đáng kể của trang, mới nhất ở trên. Sửa lỗi nh
 - **Khả năng truy cập:** kiểm bằng axe-core trên toàn bộ các trang ở màn hình máy tính và điện thoại, không còn vi phạm; sửa đề mục, vùng cuộn bàn phím, độ tương phản màu.
 - **Mô tả riêng cho từng trang, canonical và dữ liệu có cấu trúc** để công cụ tìm kiếm hiểu đúng nội dung.
 - **Sửa lỗi hiển thị:** khối mã nằm trong khung "Bạn sẽ thấy" trước đây làm khung bị cắt đôi, nay hiển thị đúng.
-- **Bài 07 (tồn kho):** ghi thêm rằng "công thức thua mốc bằng tháng trước" chỉ đúng với hai tháng cuối; đo lại trên 8 tháng giữ lại thì thắng 4, thua 4.
+- **Bài 07 (tồn kho):** sửa kết luận: bài 2 chỉ đo hai tháng cuối nên thấy "công thức thua mốc bằng tháng trước"; đo lại trên 8 tháng giữ lại thì thắng 4 (03, 04, 05, 08), thua 4 (06, 07, 09, 10), tức chưa kết luận được. Bản trước của nhật ký này ghi "chỉ đúng với hai tháng cuối", câu đó sai và đã sửa.
 
 ## 21/11/2026
 

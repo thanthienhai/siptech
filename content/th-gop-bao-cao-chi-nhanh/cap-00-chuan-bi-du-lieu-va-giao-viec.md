@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** xem 6 file Excel doanh thu "mỗi nơi một kiểu", chụp mã băm để chứng minh không sửa file gốc, rồi dán prompt giao việc gộp báo cáo cho agent.
     - **Mất bao lâu:** khoảng 30 phút chuẩn bị **[Đề xuất, chưa đo]**. Agent chạy thêm 12 đến 17 phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 718 giây, Antigravity 1.045 giây, n=1).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel để xem file, Python 3 để chạy lại script ở bài 3.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel để xem file, Python 3 để chạy lại script ở bài 3. Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** thư mục `lan-chay-1` có script `gop.py` và thư mục `ra/` gồm 7 file: bảng hợp nhất, 3 bảng tổng hợp, việc cần hỏi chi nhánh, bảng kiểm tra tổng, báo cáo. Chấm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: công ty "Mẫu An Phát", 6 chi nhánh, mã hàng, số chứng từ và số tiền đều do chương trình `sinh_du_lieu.py` bịa ra với hạt giống cố định. Không có dữ liệu của doanh nghiệp thật.

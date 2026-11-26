@@ -19,6 +19,21 @@ Ba điều giữ nguyên xuyên suốt: **công thức do chủ cửa hàng đ�
 | [Bài 3. Dùng hằng tháng](cap-02-dung-hang-ngay.md) | Chạy lại script, đổi ngân sách, xuất Excel, quy trình 6 bước có người duyệt | khoảng 30 phút | script chạy lại bằng một lệnh |
 | [Bài 4. Prompt mẫu và bài tập](cap-03-prompt-mau-va-bai-tap.md) | 8 prompt dùng lại (5 đã chạy thật), 3 bài tập có bộ kiểm, dùng với dữ liệu thật | 1 đến 2 giờ | bộ prompt và ba bài tập tự đo |
 
+## Sắp xếp thư mục trước khi làm
+
+Tạo một thư mục trống làm nơi làm bài (ví dụ `bai-toan`) và sắp như sau:
+
+```file
+bai-toan/
+  du-lieu/      giải nén du-lieu.zip vào đây (dữ liệu giả và bản giao việc)
+  lan-chay-1/   thư mục RIÊNG của agent: bạn tạo ở Bài 1, chỉ chép file dữ liệu vào
+  ket-qua/      giải nén bo-cham.zip vào đây (đáp án và bộ chấm), SAU KHI agent chạy xong
+```
+
+- Trong từng bài, lệnh chấm cho biết bạn đứng ở thư mục nào. Phần lớn bộ chấm cần `du-lieu/` và `ket-qua/` nằm **cạnh nhau**.
+- **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
+- **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
+
 ## Kết quả đo tóm tắt
 
 **[Đo được]** ngày 2026-11-20, 60 mã, mỗi agent 1 lần chạy có log (Claude Code `claude-1`, Antigravity `agy-2`), chấm bằng `ket-qua/cham.py`.
@@ -36,7 +51,7 @@ Ba điều giữ nguyên xuyên suốt: **công thức do chủ cửa hàng đ�
 | Hold-out 2026-10, WAPE công thức / mốc tháng trước | 38,2% / 21,7% | 39,9% / 21,9% |
 | Thời gian chạy | 660 giây | 1.525 giây |
 
-**Điều quan trọng nhất:** công thức trung bình trượt của chủ cửa hàng **thua mốc ngây thơ "bằng tháng trước" ở cả hai tháng giữ lại, ở cả hai agent**, và agent đã báo thẳng. Nhưng n chỉ là hai tháng (khoảng 54 mã mỗi tháng, sai số dồn vào vài mã mùa vụ lớn). **[Đo được]** Khi đo lại trên 8 tháng (bài 4, bài tập 3), công thức thắng 4 tháng và thua 4 tháng: kết luận "thua" chỉ đúng với hai tháng cuối của dữ liệu giả này.
+**Điều quan trọng nhất:** công thức trung bình trượt của chủ cửa hàng **thua mốc ngây thơ "bằng tháng trước" ở cả hai tháng giữ lại, ở cả hai agent**, và agent đã báo thẳng. Nhưng n chỉ là hai tháng (khoảng 54 mã mỗi tháng, sai số dồn vào vài mã mùa vụ lớn). **[Đo được]** Khi đo lại trên 8 tháng (bài 4, bài tập 3), công thức thắng 4 tháng (03, 04, 05, 08) và thua 4 tháng (06, 07, 09, 10): thắng thua lẫn lộn, **chưa kết luận được**.
 
 **Không** rút ra "agent nào tốt hơn" từ bảng này: mỗi bên chỉ 1 lần chạy.
 
@@ -49,8 +64,7 @@ Ba điều giữ nguyên xuyên suốt: **công thức do chủ cửa hàng đ�
 - Prompt **không bị sửa** giữa các lần chạy (bản gốc ở `logs/prompt.txt` và `du-lieu/prompt-giao-viec.txt`).
 - Log Antigravity có dòng báo lỗi profile PowerShell của máy chạy; chúng tôi đã che tên thư mục tổ chức và đường dẫn máy trong mọi log và ảnh.
 
-## Cấu trúc thư mục
-
+## Đào sâu: cấu trúc thư mục trong bản gốc của tác giả
 ```
 07-ton-kho-va-de-xuat-nhap-hang/
   00-README.md  bai-1-...md  bai-2-...md  bai-3-...md  bai-4-...md

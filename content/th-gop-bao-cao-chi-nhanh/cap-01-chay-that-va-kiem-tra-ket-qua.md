@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả agent tạo ra, so mã băm để chắc file gốc không bị sửa, chấm bằng đáp án, đọc bảng kiểm tra tổng và các ca agent làm sai hoặc đáng ngờ.
     - **Mất bao lâu:** khoảng 30 phút **[Đề xuất, chưa đo]**.
-    - **Cần có:** thư mục `lan-chay-1` đã chạy xong ở bài 1, hoặc dùng bản chúng tôi lưu sẵn trong `ket-qua/claude-bai1-2` và `ket-qua/agy-bai1-2`; Python 3. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
+    - **Cần có:** thư mục `lan-chay-1` đã chạy xong ở bài 1, hoặc dùng bản chúng tôi lưu sẵn trong `ket-qua/claude-bai1-2` và `ket-qua/agy-bai1-2`; Python 3. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent). Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** biết agent đúng bao nhiêu dòng, tổng từng chi nhánh có khớp không, chỗ lệch là lệch hợp lý hay đáng báo động.
 
 > Dữ liệu là **dữ liệu giả để học**. Mọi số gắn **[Đo được]** là kết quả chạy của chúng tôi ngày 2026-11-20, **mỗi agent 1 lần chạy hợp lệ (n=1)**, chưa đo được độ ổn định. Không có kết luận "agent nào tốt hơn".

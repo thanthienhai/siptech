@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả của agent, cộng tay tổng tiền bằng Excel, chấm bằng bộ chấm `cham.py`, đọc các ca agent làm sai hoặc đáng ngờ, rồi trả lời bằng số: **công thức có hơn cách đoán "bằng tháng trước" không?**
     - **Mất bao lâu:** khoảng 40 phút (5 phút kiểm tay, 5 phút chấm, phần còn lại để đọc).
-    - **Cần có:** kết quả của bài 1 (hoặc thư mục `ket-qua/` có sẵn trong bộ bài), Excel, Python 3. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
+    - **Cần có:** kết quả của bài 1 (hoặc thư mục `ket-qua/` có sẵn trong bộ bài), Excel, Python 3. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent). Cách sắp xếp thư mục: xem mục "Sắp xếp thư mục" ở [trang tổng quan nhóm bài](00-README.md).
     - **Kết quả:** bảng chấm đúng/sai theo 8 nhóm tiêu chí và kết luận có số, có ghi n, về công thức dự báo.
 
 > Dữ liệu GIẢ để học. Mọi số **[Đo được]** là kết quả chạy và chấm của chúng tôi ngày 2026-11-20, 60 mã hàng. Mỗi agent chỉ có **1 lần chạy đầy đủ log** (Claude Code `claude-1`, Antigravity `agy-2`), nên **chưa đo được độ ổn định** và không rút ra "agent nào tốt hơn".

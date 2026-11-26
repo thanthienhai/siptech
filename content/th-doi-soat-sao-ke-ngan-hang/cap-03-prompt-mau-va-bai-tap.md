@@ -202,6 +202,8 @@ Những chỗ tôi tự quyết, bạn xem lại:
 
 *Lần chạy ngày 2026-11-21, n = 1. Bảng rút gọn từ báo cáo của agent. Log: `logs/bai4-viec-ktt.json`.*
 
+Đây là cách agent tự gom việc, **chưa đối chiếu từng dòng với đáp án**. Ví dụ nhóm 5a ghi 5 việc, trong khi đáp án chỉ có 2 đơn cũ đã giao mà chưa thu (xem bài 1). Hãy coi bảng này là bản nháp để người kiểm, không phải con số chốt.
+
 !!! tip "Script phụ nằm ở đâu?"
     Agent viết script cộng tiền vào thư mục tạm của chính nó, không phải thư mục bạn mở. Muốn giữ lại script để kiểm, thêm vào cuối prompt: "Lưu mọi script bạn viết vào thư mục hiện tại". **[Đề xuất]**, chúng tôi chưa thử câu này.
 
@@ -350,6 +352,8 @@ python -X utf8 bai_tap.py bay-moi
   đơn bẫy: DH2610-012 (ghi chú trong sổ đơn nói khách báo chuyển nhầm sang tài khoản khác;
   sao kê KHÔNG có dòng tiền nào của đơn này, nên đúng ra vẫn là đơn chưa thu và phải vào ngoai_le.csv)
 ```
+
+Lưu ý: ở bài 1, `DH2610-012` là ví dụ dòng khớp chuẩn của bộ dữ liệu gốc. Bài tập này dựng một bản **riêng** trong `bai-tap/bay-moi` rồi sửa đơn đó thành đơn "bẫy"; bộ dữ liệu gốc không đổi.
 
 Chép hai file từ `bai-tap\bay-moi\du-lieu` vào một thư mục chạy mới, mở agent ở đó, dán prompt của bài 1, rồi kiểm:
 

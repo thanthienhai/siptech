@@ -538,6 +538,20 @@ GLOSSARY = [
      "n là số lần chạy hoặc số mẫu đã đo. n = 1 nghĩa là mới chạy một lần: cho thấy agent làm được gì và sai ở kiểu nào, nhưng không đo được độ ổn định và không đủ để so sánh hai công cụ."),
     ("terminal", "Dòng lệnh (Terminal, PowerShell)", r"cửa sổ dòng lệnh|PowerShell", "Cửa sổ để gõ lệnh cho máy thay vì bấm chuột.",
      "Cửa sổ chữ nơi bạn gõ lệnh và máy trả lời bằng chữ. Trên Windows thường dùng PowerShell. Coding agent chạy trong cửa sổ này."),
+    ("abc", "Phân loại ABC", r"phân loại ABC|ABC", "Chia mặt hàng thành nhóm A, B, C theo mức đóng góp doanh thu để biết nên chú ý hàng nào trước.",
+     "Cách xếp mặt hàng theo đóng góp: nhóm A là số ít mặt hàng tạo phần lớn doanh thu (cần canh tồn kho sát), nhóm C là nhiều mặt hàng đóng góp ít. Ngưỡng chia (ví dụ 80% và 95% doanh thu cộng dồn) là do người dùng đặt."),
+    ("wape", "WAPE", r"WAPE", "Sai số dự báo tính bằng tỉ lệ: càng thấp càng sát thực tế.",
+     "Tổng sai lệch tuyệt đối giữa số dự báo và số bán thật, chia cho tổng số bán thật. WAPE 20% nghĩa là dự báo lệch trung bình khoảng một phần năm so với thực tế. Chỉ có ý nghĩa khi so với một mốc đơn giản."),
+    ("holdout", "Hold-out (tháng giữ lại)", r"hold-out|giữ lại để đo", "Giấu vài tháng cuối khi dự báo, rồi so với số thật của chính những tháng đó.",
+     "Cách kiểm công thức dự báo trung thực: không cho công thức nhìn thấy vài tháng cuối, bảo nó dự báo, rồi đối chiếu với số bán thật của các tháng đó."),
+    ("sku", "SKU", r"SKU", "Mã định danh của một mặt hàng cụ thể (một loại, một cỡ, một màu).",
+     "Mã quản lý riêng cho từng biến thể hàng hóa, ví dụ cùng một loại áo nhưng khác cỡ thì khác SKU."),
+    ("bom", "BOM (dấu đầu file)", r"BOM", "Ba byte đầu file giúp Excel nhận ra chữ tiếng Việt.",
+     "Ba byte ở đầu file văn bản cho biết file lưu bằng UTF-8. Nó giúp Excel mở đúng chữ có dấu, nhưng một số script đọc file có thể thấy nó như một ký tự lạ dính vào tên cột đầu."),
+    ("utf8", "UTF-8", r"UTF-8", "Cách lưu chữ cho phép viết đủ tiếng Việt có dấu.",
+     "Bảng mã phổ biến cho văn bản. Nếu chữ tiếng Việt hiện thành ký tự lạ, thường là mở file bằng bảng mã khác UTF-8."),
+    ("pip", "pip", r"pip install", "Lệnh cài thêm thư viện cho Python.",
+     "Công cụ đi kèm Python để tải và cài thêm thư viện, ví dụ `pip install openpyxl` để Python đọc được file Excel."),
 ]
 
 IGNORE_TAGS = re.compile(r"^<(a|code|pre|h[1-6]|summary|abbr|button|script|style)\b", re.I)
