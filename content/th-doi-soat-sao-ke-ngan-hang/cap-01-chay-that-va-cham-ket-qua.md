@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** chấm kết quả của agent bằng bộ chấm `cham.py` (so với đáp án), rồi đọc những dòng agent làm sai hoặc làm khác nhau.
     - **Mất bao lâu:** chấm mất vài giây. Đọc kỹ các ca đáng xem khoảng 30 phút.
-    - **Cần có:** Python 3 và thư viện `openpyxl`; thư mục `ket-qua/` của bài toán (có `cham.py`, `dap-an.json`, đầu ra `claude-1/` và `agy-2/` của chúng tôi). Muốn chấm đầu ra của chính bạn thì cần thư mục `lan-chay-1` từ bài 1.
+    - **Cần có:** Python 3 và thư viện `openpyxl`; thư mục `ket-qua/` của bài toán (có `cham.py`, `dap-an.json`, đầu ra `claude-1/` và `agy-2/` của chúng tôi). Muốn chấm đầu ra của chính bạn thì cần thư mục `lan-chay-1` từ bài 1. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
     - **Kết quả:** một bảng điểm, và biết nên tin phần nào, soi lại phần nào.
 
 > Dữ liệu là **dữ liệu giả để học** (xem bài 1). Mọi con số dưới đây là **[Đo được]**: kết quả chạy ngày 2026-11-20 trên đúng bộ dữ liệu và prompt của bài 1. Mỗi agent chỉ có **một lần chạy có log đầy đủ** (n = 1), nên bài này mô tả quan sát, không kết luận agent nào tốt hơn và chưa đo được độ ổn định.

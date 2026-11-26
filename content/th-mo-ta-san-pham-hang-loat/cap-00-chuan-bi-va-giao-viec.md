@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải bảng thông số 40 sản phẩm giả, mở agent trong một thư mục riêng, dán prompt giao việc viết tiêu đề, mô tả, 5 gạch đầu dòng và từ khóa cho cả 40 sản phẩm.
     - **Mất bao lâu:** khoảng 20 phút chuẩn bị. Agent chạy thêm vài phút **[Đo được]** (lần chạy của chúng tôi, 40 sản phẩm: Claude Code 241 giây và 298 giây, Antigravity 756 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 (agent sẽ viết và chạy script Python; cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)), Excel hoặc Notepad để xem file.
     - **Kết quả:** file `nhap_hang_loat.csv` và `.xlsx` (40 dòng), một script kiểm `kiem.py`, một báo cáo `bao_cao_kiem.md`. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: shop "Vườn Nhỏ", tên sản phẩm, số phiếu công bố `DEMO-xxxx`, dung tích, xuất xứ đều bịa, sinh bằng script có hạt giống cố định. Không có doanh nghiệp, sản phẩm hay giấy tờ thật nào.

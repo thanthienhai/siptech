@@ -522,6 +522,22 @@ GLOSSARY = [
     ("sla", "SLA", r"SLA", "Cam kết thời hạn xử lý.", "Cam kết về thời hạn xử lý, ví dụ trả lời khách trong 2 giờ."),
     ("log", "Log (nhật ký)", r"log", "Bản ghi lại mỗi lần hệ thống chạy: ai hỏi gì, AI trả lời gì.",
      "Bản ghi lại mỗi lần hệ thống chạy: ai hỏi gì, AI trả lời gì, tốn bao nhiêu. Có log mới biết chuyện gì đã xảy ra khi có sai sót."),
+    ("coding-agent", "Coding agent", r"coding agent", "Chương trình AI tự đọc file, viết và chạy code trên máy bạn để làm việc bạn giao.",
+     "Chương trình AI chạy trong cửa sổ dòng lệnh: nó đọc file trong thư mục bạn mở, viết script, chạy lệnh và báo kết quả. Vì chạy được lệnh trên máy bạn nên cần thư mục riêng và dữ liệu thử trước (ví dụ Claude Code, Antigravity)."),
+    ("script", "Script", r"script", "Một file chứa các lệnh để máy chạy lại nhiều lần.",
+     "Một file chứa các lệnh (ở đây thường là Python) để máy làm lại cùng một việc mỗi lần bạn chạy. Script chạy lại cho kết quả giống nhau, khác với nhờ AI làm lại từ đầu."),
+    ("csv", "CSV", r"CSV", "File bảng dạng chữ, mỗi dòng một hàng, các ô cách nhau bằng dấu phẩy.",
+     "File bảng dạng chữ thuần: mỗi dòng là một hàng, các ô cách nhau bằng dấu phẩy hoặc chấm phẩy. Mở được bằng Excel hoặc Notepad. Nếu chữ tiếng Việt bị vỡ, mở bằng Notepad hoặc nhập qua Data > From Text/CSV và chọn UTF-8."),
+    ("log", "Log (nhật ký chạy)", r"log", "Bản ghi lại từng việc agent đã làm, để xem lại sau.",
+     "Bản ghi theo thứ tự thời gian mọi việc agent đã làm (đọc file nào, chạy lệnh gì, kết quả ra sao). Nhờ log mới kiểm được agent làm đúng hay tự báo đúng."),
+    ("hat-giong", "Hạt giống (seed)", r"hạt giống", "Một con số cố định để máy sinh ra cùng một bộ dữ liệu ngẫu nhiên mỗi lần.",
+     "Máy sinh dữ liệu giả bằng cách bốc ngẫu nhiên. Đặt cùng một hạt giống thì lần nào cũng ra đúng bộ dữ liệu cũ, nên người khác chạy lại được và so sánh được."),
+    ("ma-bam", "Mã băm (hash)", r"mã băm", "Dấu vân tay của một file: đổi một ký tự thì mã đổi hoàn toàn.",
+     "Một chuỗi ký tự được tính từ nội dung file. Hai file giống từng byte thì mã băm giống nhau; sửa dù một ký tự thì mã khác hẳn. Dùng để kiểm agent có sửa file gốc hay không."),
+    ("n-1", "n = 1 (cỡ mẫu)", r"n ?= ?1", "Chỉ có một lần chạy: đủ để thấy kiểu sai, chưa đủ để nói chắc.",
+     "n là số lần chạy hoặc số mẫu đã đo. n = 1 nghĩa là mới chạy một lần: cho thấy agent làm được gì và sai ở kiểu nào, nhưng không đo được độ ổn định và không đủ để so sánh hai công cụ."),
+    ("terminal", "Dòng lệnh (Terminal, PowerShell)", r"cửa sổ dòng lệnh|PowerShell", "Cửa sổ để gõ lệnh cho máy thay vì bấm chuột.",
+     "Cửa sổ chữ nơi bạn gõ lệnh và máy trả lời bằng chữ. Trên Windows thường dùng PowerShell. Coding agent chạy trong cửa sổ này."),
 ]
 
 IGNORE_TAGS = re.compile(r"^<(a|code|pre|h[1-6]|summary|abbr|button|script|style)\b", re.I)

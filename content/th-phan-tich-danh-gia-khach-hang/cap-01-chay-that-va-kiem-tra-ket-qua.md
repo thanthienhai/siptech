@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả agent đã tạo, chạy bộ kiểm không cần đáp án, rồi chấm bằng đáp án và đọc các ca agent khác đáp án.
     - **Mất bao lâu:** khoảng 40 phút (chưa tính thời gian agent chạy ở bài 1).
-    - **Cần có:** thư mục `ket-qua/` của bài này (có sẵn `dap-an.json`, `cham.py`, `kiem-tra-dau-ra.py` và đầu ra của 5 lần chạy), Python.
+    - **Cần có:** thư mục `ket-qua/` của bài này (có sẵn `dap-an.json`, `cham.py`, `kiem-tra-dau-ra.py` và đầu ra của 5 lần chạy), Python. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
     - **Kết quả:** biết agent làm đúng đến đâu trên 250 đánh giá giả, bằng con số do code tính, và biết phải đọc con số đó thận trọng thế nào.
 
 > Dữ liệu là **giả để học** (250 đánh giá của quán hư cấu). Nhãn: **[Đo được]** = kết quả chạy của chúng tôi ngày 2026-11-20 (Claude Code 2.1.329, Antigravity `agy` 1.5.13); **[Đề xuất]** = ý kiến. Số lần chạy rất ít: đây là quan sát, chưa phải đo độ ổn định.

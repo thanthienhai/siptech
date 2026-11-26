@@ -1,11 +1,11 @@
-date: 2026-11-11
+date: 2026-11-26
 
 # AI cho SME Việt Nam: từ khối nhỏ nhất đến nghiệp vụ phức tạp
 
 Doanh nghiệp nhỏ thường ít tiền, chưa có quy trình và khó xây hệ thống riêng. Vì vậy series này không bắt đầu bằng "xây một hệ thống AI", mà đi theo **thang cấp độ**: mỗi cấp là một khối nhỏ chạy được độc lập, có sản phẩm cầm đi được, và có tiêu chí đo được để biết khi nào mới nên lên cấp. Trang này là cổng vào: ý tưởng chung, danh sách bài toán, điều rút ra từ bằng chứng và giới hạn của bộ tài liệu.
 
 !!! note "Đây là tài liệu nghiên cứu nền"
-    Bộ tài liệu tổng hợp ngày 11/11/2026, làm nền cho series hướng dẫn, chưa phải nội dung series hoàn chỉnh. Mỗi bài tách rõ điều **có nguồn** (nhãn [[S1]], bấm để mở nguồn) và điều **SIPTech đề xuất** (khung màu xanh).
+    Bộ tài liệu tổng hợp ngày 11/11/2026 (cập nhật 26/11/2026 phần danh mục), làm nền cho series hướng dẫn. Nhiều nhóm bài đã được viết thành bài giảng; mục "Việc cần kiểm trước khi xuất bản" bên dưới là danh sách kiểm chứng còn mở, chưa đóng. Mỗi bài tách rõ điều **có nguồn** (nhãn [[S1]], bấm để mở nguồn) và điều **SIPTech đề xuất** (khung màu xanh).
 
 ## Ý tưởng cốt lõi: thang cấp độ
 
@@ -55,7 +55,7 @@ Danh sách này tiếp tục được bổ sung. Xem [tất cả bài toán](bai
 
 Nền tảng là năm bài báo về hệ thống chạy thật, chi tiết ở [Nền tảng bằng chứng](nen-tang-bang-chung.md).
 
-1. **Hệ thống chạy thật đều hẹp và có kiểm soát:** 70% dùng prompt trên mô hình có sẵn, 68% chạy dưới 10 bước rồi chuyển cho người [[S1]]. Điều này làm cho hướng "khối nhỏ trước" hợp lý.
+1. **Hệ thống chạy thật đều hẹp và có kiểm soát:** 70% dùng prompt trên mô hình có sẵn, 68% thực hiện tối đa 10 bước rồi chuyển cho người [[S1]]. Điều này làm cho hướng "khối nhỏ trước" hợp lý.
 2. **Chất lượng nằm nhiều ở nội dung và quy trình hơn ở công nghệ truy xuất:** các biến thể tìm kiếm của Airbnb không khác nhau có ý nghĩa thống kê, còn phần thất bại còn lại chủ yếu do SOP thiếu bước [[S2]]. SME làm được việc này mà không cần nhiều tiền.
 3. **Công thức chung ở các ca lớn:** SOP, quy trình từng bước, bộ ca mẫu có đáp án, triển khai nhỏ, sửa có kiểm soát [[S1]] [[S2]].
 4. **Hàng rào bằng code đáng tin hơn hàng rào bằng prompt**, ví dụ kiểm trích dẫn nguyên văn bằng code [[S2]].

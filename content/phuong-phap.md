@@ -50,15 +50,15 @@ Coding agent đọc file, viết và chạy lệnh trên máy bạn. Trong các 
 ## Những điều chúng tôi chưa làm được
 
 - **Chưa có số đo trên SME Việt Nam.** Bằng chứng định lượng đến từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. Giả thuyết về thực trạng dùng AI ở doanh nghiệp nhỏ trong nước chỉ có bằng chứng gián tiếp.
-- **Chưa thử với người học thật.** Các bài viết cho người chưa biết code, nhưng chưa có người ngoài làm theo từ đầu đến cuối.
+- **Chưa thử với người học thật.** Các bài viết cho người chưa biết code, nhưng chưa có người ngoài làm theo từ đầu đến cuối. Chúng tôi đã nhờ agent AI đọc thử vai người mới và vai người hoài nghi để bắt chỗ khó hiểu và chỗ nói quá; việc đó giúp sửa lỗi, nhưng **không thay được người học thật**.
 - **Pháp lý chưa xác minh toàn văn.** Nhiều văn bản mới chỉ đọc qua nguồn thứ cấp. Cần luật sư hoặc đọc văn bản gốc trước khi áp dụng.
 - **Công cụ thay đổi nhanh.** Giao diện, tính năng, điều khoản và giá của Claude, ChatGPT, Gemini, Antigravity có thể đổi sau ngày ghi trong bài. Chỗ nào chưa kiểm được, bài ghi "chưa kiểm".
-- **Tiếng Việt kém hơn tiếng Anh** ở các mô hình hiện nay theo các phép đo công khai; chúng tôi chưa tự đo trên văn bản của doanh nghiệp bạn. Hãy đo trên dữ liệu của chính bạn.
+- **Tiếng Việt có thể kém hơn tiếng Anh.** Một số phép đo công khai trên các mô hình đời 2024 đến 2025 cho thấy điều đó (xem [Nền tảng bằng chứng](nen-tang-bang-chung.md)); mô hình mới hơn có thể khác và chúng tôi chưa tự đo trên văn bản của doanh nghiệp bạn. Hãy đo trên dữ liệu của chính bạn.
 
 ## Cập nhật và sửa lỗi
 
 - Mỗi bài ghi ngày cập nhật. Các thay đổi đáng kể được ghi ở trang [Nhật ký cập nhật](cap-nhat.md).
-- Thấy sai hoặc thiếu? Mở một yêu cầu tại [kho mã nguồn của trang trên GitHub](https://github.com/thanthienhai/siptech/issues). Nội dung sai sẽ được sửa và ghi vào nhật ký, kể cả khi sai là do chúng tôi.
+- Thấy sai hoặc thiếu? Dùng trang [Hỏi và góp ý](gop-y.html) (hoặc mở yêu cầu trực tiếp tại [kho mã nguồn trên GitHub](https://github.com/thanthienhai/siptech/issues)). Nội dung sai sẽ được sửa và ghi vào nhật ký, kể cả khi sai là do chúng tôi.
 
 ## Về chính trang web này
 

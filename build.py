@@ -55,6 +55,7 @@ NUM = len(GROUPS)
 TOTAL = sum(g["n"] for g in GROUPS if not g["lab"])
 LAB_N = sum(1 for g in GROUPS if g["lab"])
 LAB_TOTAL = sum(g["n"] for g in GROUPS if g["lab"])
+N_DRAFT = sum(1 for g in GROUPS if g["status"] == "draft")
 GROUP_BY_SLUG = {g["slug"]: g for g in GROUPS}
 
 
@@ -433,7 +434,7 @@ def page(title, body, depth, desc=None, active="", extra_head="", path=None, tab
     <div class="fcols">
       <div><div class="brand sm">{LOGO_REV}<span>SIP<b>Tech</b></span></div><p>{TAGLINE}.</p></div>
       <div><p class="fh">Bài toán</p>{''.join(f'<a href="{r}{g["slug"]}/index.html">{g["name"]}</a>' for g in [x for x in GROUPS if x["has_pages"]][:6])}<a href="{r}bai-toan.html"><b>Xem tất cả ({NUM})</b></a></div>
-      <div><p class="fh">Tài liệu nền</p>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}tu-dien.html">Từ điển thuật ngữ</a><a href="{r}chon-bai-toan.html">Chọn bài toán phù hợp</a><a href="{r}tim-kiem.html">Tìm kiếm</a><a href="{r}bo-nhan-dien.html">Bộ nhận diện</a><a href="https://github.com/thanthienhai/siptech/issues" target="_blank" rel="noopener">Góp ý, báo lỗi</a></div>
+      <div><p class="fh">Tài liệu nền</p>{''.join(f'<a href="{r}{s}.html">{t}</a>' for s, t, _ in ROOT_DOCS)}<a href="{r}tu-dien.html">Từ điển thuật ngữ</a><a href="{r}chon-bai-toan.html">Chọn bài toán phù hợp</a><a href="{r}tim-kiem.html">Tìm kiếm</a><a href="{r}bo-nhan-dien.html">Bộ nhận diện</a><a href="{r}gop-y.html">Hỏi và góp ý</a></div>
     </div>
     <p class="legal">Nội dung là tài liệu nghiên cứu và hướng dẫn kỹ thuật, không phải tư vấn pháp lý hay tư vấn thuế.
     Số liệu định lượng đến từ các nghiên cứu ở tổ chức lớn, chưa có nguồn nào đo trực tiếp trên SME Việt Nam.
@@ -730,12 +731,12 @@ def home():
         + (f'<p>{v["note"]}</p>' if v["note"] else "") + f'<div class="rchips">{"".join(v["chips"])}</div></div></li>'
         for i, (k, v) in enumerate(sorted(steps.items())))
     charts = [
-        (dots_svg(70), "70%", "hệ thống AI chạy thật dùng mô hình có sẵn, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123"),
-        (dots_svg(68), "68%", "chạy tối đa 10 bước rồi chuyển cho người", "Nghiên cứu MAP · arXiv 2512.04123"),
+        (dots_svg(70), "70%", "trong 86 hệ thống AI được khảo sát dùng mô hình có sẵn bằng prompt, không huấn luyện lại", "Nghiên cứu MAP · arXiv 2512.04123 · khảo sát người làm agent"),
+        (dots_svg(68), "68%", "thực hiện tối đa 10 bước rồi chuyển cho người (cùng khảo sát 86 hệ thống)", "Nghiên cứu MAP · arXiv 2512.04123"),
         (bars_html([("Đúng lần đầu: trên 60%", 60, ""), ("Đúng 8 lần liên tiếp: dưới 25%", 25, "hot")]),
-         "&lt;25%", "tỉ lệ đạt giảm mạnh khi cùng một việc phải đúng 8 lần liên tiếp", "τ-bench"),
+         "&lt;25%", "tỉ lệ đạt giảm mạnh khi cùng một việc phải đúng 8 lần liên tiếp (mảng bán lẻ)", "τ-bench · mô hình gpt-4o đời 2024 · arXiv 2406.12045"),
         (bars_html([("Tự ước: 36 phút", 100, ""), ("Thực đo: 12 phút", 33, "hot")]),
-         "36→12", "phút tiết kiệm, tự ước so với thực đo trong thí nghiệm Copilot", "Thí nghiệm có đối chứng"),
+         "36 vs 12", "phút tiết kiệm: người dùng tự ước 36, thực đo 12 (thí nghiệm Copilot)", "Thí nghiệm có đối chứng, môi trường thử"),
     ]
     stat_html = "".join(f'<div class="stat"><div class="sviz">{v}</div><b>{a}</b><p>{b}</p><small>{c}</small></div>'
                         for v, a, b, c in charts)
@@ -768,10 +769,10 @@ def home():
       <h1><span class="nw">Đưa AI vào</span> <span class="nw">doanh nghiệp,</span><br><span class="hl"><span class="nw">từng bước</span> <span class="nw">và đo được</span></span></h1>
       <p class="lead">Lộ trình cho doanh nghiệp vừa và nhỏ ở Việt Nam. Bắt đầu bằng công cụ có sẵn như Claude, ChatGPT, Gemini, không cần biết code.</p>
       <div class="btns heroact"><a class="btn pri big" href="chon-bai-toan.html">Tìm bài toán phù hợp với bạn {ic('arrow', 18)}</a><a class="textlink" href="bai-toan.html">Xem tất cả bài toán</a></div>
-      <p class="micro">Miễn phí · Không cần biết lập trình · Có đường không cần code</p>
+      <p class="micro">Miễn phí · Bắt đầu không cần biết lập trình · Có đường làm thật với coding agent</p>
       <div class="proof" aria-label="Bằng chứng từ nghiên cứu">
-        <div><b>70%</b><span>hệ thống AI trong doanh nghiệp chạy thật dùng mô hình có sẵn, không huấn luyện lại</span><small>Nghiên cứu MAP · arXiv 2512.04123</small></div>
-        <div><b>36→12</b><span>phút tiết kiệm: người dùng tự ước 36, thực đo 12</span><small>Thí nghiệm Copilot có đối chứng</small></div>
+        <div><b>70%</b><span>trong 86 hệ thống AI được khảo sát dùng mô hình có sẵn, không huấn luyện lại</span><small>Nghiên cứu MAP · arXiv 2512.04123</small></div>
+        <div><b>36 vs 12</b><span>phút tiết kiệm: người dùng tự ước 36, thực đo 12</span><small>Thí nghiệm Copilot có đối chứng, môi trường thử</small></div>
       </div>
       <a class="proofmore" href="nen-tang-bang-chung.html">Xem các nguồn và cách đọc số liệu →</a>
     </div>
@@ -780,7 +781,7 @@ def home():
 </section>
 
 <section class="factstrip"><div class="wrap"><div class="facts">
-  <div><b>{NUM}</b><span>bài toán, thêm mới liên tục</span></div>
+  <div><b>{NUM}</b><span>nhóm bài, trong đó {N_DRAFT} đang soạn</span></div>
   <div><b>{TOTAL + LAB_TOTAL}</b><span>cấp độ và bài thực hành, từ dễ đến khó</span></div>
   <div><b>2</b><span>đường: không code và code nhẹ</span></div>
   <div><b>4</b><span>hạng quyền cho công cụ AI, từ chỉ đọc đến có hậu quả</span></div>
@@ -808,7 +809,7 @@ def home():
 
 <section class="band" id="bang-chung">
   <div class="wrap">
-    <div class="sh light"><span class="eyebrow">Bằng chứng</span><h2>Những hệ thống AI chạy thật trông như thế nào</h2>
+    <div class="sh light"><span class="eyebrow">Bằng chứng</span><h2>Hệ thống AI đang vận hành trông như thế nào</h2>
     <p class="sub">Đều từ tổ chức lớn hoặc nhóm kỹ thuật mạnh. <a href="nen-tang-bang-chung.html">Xem nguồn và cách đọc số liệu</a>.</p></div>
     <div class="stats">{stat_html}</div>
   </div>
@@ -837,7 +838,7 @@ def home():
 <section class="sec" id="nguyen-tac">
   <div class="wrap prsplit">
     <div class="sh"><span class="eyebrow">Cách làm</span><h2>Năm nguyên tắc<br>xuyên suốt</h2>
-      <p class="sub">Rút ra từ các hệ thống AI đã chạy thật. <a href="nen-tang-bang-chung.html">Vì sao là năm nguyên tắc này?</a></p></div>
+      <p class="sub">Đề xuất của SIPTech, dựa trên các nghiên cứu về hệ thống AI đang vận hành. <a href="nen-tang-bang-chung.html">Vì sao là năm nguyên tắc này?</a></p></div>
     <ol class="prlist">{pr_html}</ol>
   </div>
 </section>
@@ -1015,7 +1016,7 @@ def all_page():
   <div class="crumb"><a href="index.html">Trang chủ</a> <i>/</i> Bài toán</div>
   <span class="pill">Danh sách cập nhật liên tục</span>
   <h1>Tất cả bài toán</h1>
-  <p class="lead">Hiện có {NUM} bài toán: {NUM - LAB_N} nhóm theo cấp độ ({TOTAL} cấp) và {LAB_N} nhóm thực hành với coding agent ({LAB_TOTAL} bài). Bài toán mới được thêm theo thời gian; thẻ nào đang soạn hoặc sắp ra sẽ ghi rõ trạng thái.</p>
+  <p class="lead">Hiện có {NUM} nhóm bài: {NUM - LAB_N} nhóm theo cấp độ ({TOTAL} cấp) và {LAB_N} nhóm thực hành, gồm nhóm nhập môn ({LAB_TOTAL} bài; {N_DRAFT} nhóm đang soạn). Nhóm mới được thêm theo thời gian; thẻ nào đang soạn hoặc sắp ra sẽ ghi rõ trạng thái.</p>
 </div></section>
 <section class="sec"><div class="wrap">
   <div class="tools">
@@ -1085,6 +1086,9 @@ def main():
     write(OUT / "chon-bai-toan.html", page("Chọn bài toán phù hợp", extras.advisor_body(GROUPS, SITE_URL), 0,
           desc="Trả lời bốn câu ngắn để nhận danh sách bài nên đọc theo thứ tự, phù hợp với việc bạn cần làm, mức độ quen máy tính và dữ liệu bạn có.",
           path="chon-bai-toan.html", jsonld=_simple_ld("Chọn bài toán phù hợp", "chon-bai-toan.html")))
+    write(OUT / "gop-y.html", page("Hỏi và góp ý", extras.FEEDBACK_BODY, 0,
+          desc="Báo lỗi, đặt câu hỏi chung về việc dùng AI trong công việc, hoặc đề xuất bài toán mới. Nội dung được đăng công khai trên GitHub của dự án.",
+          path="gop-y.html", jsonld=_simple_ld("Hỏi và góp ý", "gop-y.html")))
     write(OUT / "tim-kiem.html", page("Tìm kiếm", extras.SEARCH_BODY, 0,
           desc="Tìm bài, mục và từ khóa trong toàn bộ nội dung của SIPTech.", path="tim-kiem.html",
           jsonld=_simple_ld("Tìm kiếm", "tim-kiem.html")))

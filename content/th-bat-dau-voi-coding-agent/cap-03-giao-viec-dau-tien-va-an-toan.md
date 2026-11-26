@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tạo thư mục thử, đặt một file dữ liệu giả vào, mở agent và dán prompt 6 phần giao việc đầu tiên, đọc câu xin quyền, rồi chấm kết quả bằng một script.
     - **Mất bao lâu:** khoảng 25 phút làm theo bài. Agent chạy xong trong 1 đến 2 phút **[Đo được]** (n=1 mỗi agent: Claude Code 52,3 giây, Antigravity 116,1 giây).
-    - **Cần có:** một agent đã cài và đăng nhập ([bài 1](cap-00-cai-dat-claude-code.md) hoặc [bài 2](cap-01-cai-dat-antigravity.md)), biết dùng `cd`, `mkdir`, `copy` ([bài 3](cap-02-lam-quen-cua-so-dong-lenh.md)), và [du-lieu.zip](du-lieu.zip).
+    - **Cần có:** một agent đã cài và đăng nhập ([bài 2](cap-01-cai-dat-claude-code.md) hoặc [bài 3](cap-02-cai-dat-antigravity.md)), biết dùng `cd`, `mkdir`, `copy` ([bài 1](cap-00-lam-quen-cua-so-dong-lenh.md)), và [du-lieu.zip](du-lieu.zip).
     - **Kết quả:** một thư mục có `tong_hop.py`, `tong_theo_khach.csv`, `bao_cao.md`; bộ chấm báo đạt 9 trên 9 tiêu chí; và bạn nắm bộ quy tắc an toàn trước khi làm với dữ liệu của mình.
 
 > Dữ liệu là **giả**: tên khách, sản phẩm, giá đều bịa, sinh bằng script có hạt giống cố định. Không có dữ liệu của doanh nghiệp thật.
@@ -17,6 +17,9 @@ Một shop nhỏ có file `don-hang-thu.csv`: 12 đơn tháng 11, tổng 20 dòn
 ### Bước 1. Tạo thư mục thử, chỉ đặt một file vào
 
 Giải nén `du-lieu.zip` ở nơi bạn làm bài (nếu chưa), rồi, trong PowerShell, đứng ở thư mục chứa `du-lieu\`:
+
+!!! stuck "Vừa xong bài 1 và đang ở trong thư mục `thu-agent`, hoặc đang mở agent?"
+    Thoát agent trước (cách thoát: bài 2 hoặc bài 3), rồi gõ `cd ..` để lên một cấp. Gõ `dir` kiểm tra: phải thấy thư mục `du-lieu`. Nếu thấy lỗi "Cannot find path", bạn đang đứng sai thư mục.
 
 ```lenh
 mkdir viec-dau-tien
@@ -46,7 +49,7 @@ cd viec-dau-tien
 agy
 ```
 
-`cd` đi vào thư mục, `claude` hoặc `agy` mở agent tại đó. Cách cài, đăng nhập, thoát: [bài 1](cap-00-cai-dat-claude-code.md) và [bài 2](cap-01-cai-dat-antigravity.md).
+`cd` đi vào thư mục, `claude` hoặc `agy` mở agent tại đó. Cách cài, đăng nhập, thoát: [bài 2](cap-01-cai-dat-claude-code.md) và [bài 3](cap-02-cai-dat-antigravity.md).
 
 !!! see "Bạn sẽ thấy"
     Khung chat, chờ bạn gõ. Nếu agent hỏi có tin thư mục này không, chỉ đồng ý khi đúng là `viec-dau-tien`. Mở nhầm thư mục thì thoát agent rồi `cd` lại.
@@ -97,7 +100,7 @@ Giải thích lệnh bạn vừa xin chạy bằng lời thường: nó làm gì
 Chưa chạy lại prompt này trong giao diện tương tác; đó là cách bạn hỏi bất cứ lúc nào.
 
 !!! info "Vì sao ảnh log của chúng tôi không có câu xin quyền"
-    Chúng tôi chạy agent ở chế độ không tương tác (`claude -p` với `--permission-mode acceptEdits` và danh sách công cụ cho phép; `agy -p` với `--dangerously-skip-permissions`) để ghi log. Nên log không có câu hỏi. Khi bạn chạy tương tác như bài này, bạn sẽ thấy các câu hỏi. Giao diện chính xác của chúng chưa kiểm (xem bài 1 và bài 2).
+    Chúng tôi chạy agent ở chế độ không tương tác (`claude -p` với `--permission-mode acceptEdits` và danh sách công cụ cho phép; `agy -p` với `--dangerously-skip-permissions`) để ghi log. Nên log không có câu hỏi. Khi bạn chạy tương tác như bài này, bạn sẽ thấy các câu hỏi. Giao diện chính xác của chúng chưa kiểm (xem bài 2 và bài 3).
 
 ### Bước 5. Chấm kết quả bằng code
 
@@ -212,7 +215,7 @@ Về quy định pháp luật Việt Nam đối với dữ liệu cá nhân: ch�
 
 ## Đào sâu: hai lần chạy chi tiết
 
-**Điều kiện chạy (ngày 2026-11-21, n=1 mỗi agent).** Mỗi agent chạy một lần trong thư mục riêng chỉ có `don-hang-thu.csv`, chạy không tương tác bằng `agentlab\agent_run.py` (ghi log vào `logs\bai4-claude-1.*` và `logs\bai4-agy-1.*`). Claude Code: `--permission-mode acceptEdits` và cho phép các công cụ Read, Write, Edit, Glob, Grep, Bash. Antigravity: `--dangerously-skip-permissions` (chỉ chấp nhận được vì thư mục riêng và dữ liệu giả; xem bài 2). Chỉ **một** lần cho mỗi agent nên chưa đo được dao động giữa các lần.
+**Điều kiện chạy (ngày 2026-11-21, n=1 mỗi agent).** Mỗi agent chạy một lần trong thư mục riêng chỉ có `don-hang-thu.csv`, chạy không tương tác bằng `agentlab\agent_run.py` (ghi log vào `logs\bai4-claude-1.*` và `logs\bai4-agy-1.*`). Claude Code: `--permission-mode acceptEdits` và cho phép các công cụ Read, Write, Edit, Glob, Grep, Bash. Antigravity: `--dangerously-skip-permissions` (chỉ chấp nhận được vì thư mục riêng và dữ liệu giả; xem bài 3). Chỉ **một** lần cho mỗi agent nên chưa đo được dao động giữa các lần.
 
 **Claude Code (52,3 giây, 7 lượt).** Xem file (`ls`, `head`), xem các dòng cuối kèm ký tự ẩn (`cat -A`), viết `tong_hop.py` đọc bằng `utf-8-sig`, chạy `python -X utf8 tong_hop.py`. Script tự in "khớp" khi tổng các khách bằng tổng toàn file; Claude Code nhận ra phép đối chiếu đó dùng cùng một vòng lặp nên **chưa độc lập**, rồi tính lại tổng bằng một đoạn code khác (cùng ra 11.385.000 đồng, 12 đơn). Rồi viết `bao_cao.md` 7 dòng.
 
@@ -245,7 +248,7 @@ Lệnh in `Đã ghi 20 dòng hàng, 12 đơn, 6 khách (hạt giống 20261121).
 | Triệu chứng | Cách xử lý |
 |---|---|
 | Agent làm việc ở thư mục khác | Thoát agent, `cd viec-dau-tien`, mở lại |
-| `UnicodeEncodeError` hoặc `UnicodeDecodeError` khi chạy script | Chạy lại bằng `python -X utf8` (bài 3) |
+| `UnicodeEncodeError` hoặc `UnicodeDecodeError` khi chạy script | Chạy lại bằng `python -X utf8` (bài 1) |
 | Số liệu lệch bộ chấm | Có thể do đếm dòng thay vì đếm đơn. Nhắc "đếm số ma_don khác nhau" rồi chạy lại |
 | Agent xin cài gói hoặc dùng mạng | Từ chối (bảng "Khi nào từ chối") |
 | Báo cáo dài hơn 8 dòng | Nhắc "rút bao_cao.md xuống tối đa 8 dòng" |

@@ -643,3 +643,7 @@ details.deep .dh{color:var(--mute);font-size:13.5px;font-weight:400}
 .sr1 .sg{margin-left:10px;font-size:13px;color:var(--mute)}
 .sr1 p{margin:4px 0 0;color:var(--mute);font-size:15px}
 @media (max-width:640px){.sform{flex-direction:column}.rc2{padding-left:52px}.aq{padding:14px}}
+
+.fbin{width:100%;font:500 16px/1.5 var(--sans);padding:12px 14px;border:1.5px solid var(--line2);border-radius:12px;margin-top:8px;color:var(--text)}
+.fbin:focus{outline:3px solid #93b4ff;outline-offset:1px;border-color:var(--brand)}
+textarea.fbin{resize:vertical;min-height:140px}

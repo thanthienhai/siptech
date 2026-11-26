@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải dữ liệu giả của một cửa hàng 60 mã hàng, xem bằng Excel, mở agent trong thư mục riêng và dán prompt đề xuất nhập hàng cho tháng 11/2026.
     - **Mất bao lâu:** khoảng 30 phút chuẩn bị. Agent chạy thêm vài phút đến vài chục phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 660 giây, Antigravity 1.525 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 (agent sẽ viết và chạy script Python; cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)), Excel hoặc Notepad để xem file.
     - **Kết quả:** một thư mục có bảng đề xuất nhập hàng kèm tổng tiền vốn, bảng cảnh báo hàng sắp hết, danh sách lỗi nhập liệu và báo cáo cho chủ cửa hàng. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: tên hàng, giá vốn, nhà cung cấp, số lượng đều bịa, sinh bằng script có hạt giống cố định. Không có dữ liệu của doanh nghiệp thật. Con số tiền ngân sách (30.000.000 đ) cũng chỉ là tham số học tập.

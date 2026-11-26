@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả của agent, kiểm bằng công cụ không cần đáp án, chấm bằng đáp án, rồi đọc các chỗ agent làm sai.
     - **Mất bao lâu:** khoảng 40 phút (các lệnh kiểm chạy vài giây).
-    - **Cần có:** thư mục bài toán đã tải (có `ket-qua/`), Python 3 với `openpyxl`, Excel. Kết quả của chúng tôi đã có sẵn trong `ket-qua/`, bạn không cần tự chạy lại agent.
+    - **Cần có:** thư mục bài toán đã tải (có `ket-qua/`), Python 3 với `openpyxl`, Excel. Kết quả của chúng tôi đã có sẵn trong `ket-qua/`, bạn không cần tự chạy lại agent. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
     - **Kết quả:** biết agent đúng bao nhiêu, sai ở đâu, và 5 phép kiểm dùng được cả với danh bạ thật của bạn (không cần đáp án).
 
 > Dữ liệu GIẢ. **[Đo được]** = lần chạy và chấm của chúng tôi ngày 2026-11-20, **n = 2 lần mỗi agent** (một lần đủ log, một lần chỉ còn file kết quả vì mất log). Cùng prompt, cùng dữ liệu, mỗi lần một thư mục riêng.

@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** tải dữ liệu mẫu, mở agent trong một thư mục riêng, dán prompt giao việc đối soát sao kê.
     - **Mất bao lâu:** khoảng 20 phút chuẩn bị. Agent chạy thêm vài phút đến vài chục phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 557 giây, Antigravity 1.257 giây).
-    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file.
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Python 3 (agent sẽ viết và chạy script Python; cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)), Excel hoặc Notepad để xem file.
     - **Kết quả:** một thư mục có bảng ghép sao kê với đơn hàng, danh sách ngoại lệ, tổng kiểm. Cách kiểm đúng sai ở bài 2.
 
 > Dữ liệu trong bài là **dữ liệu giả để học**: tên người, số điện thoại, số tài khoản, công ty và nhà cung cấp đều bịa, sinh bằng script có hạt giống cố định. Không có dữ liệu của doanh nghiệp thật.
@@ -175,7 +175,7 @@ Trước khi sinh dữ liệu, chúng tôi tìm cách sao kê ngân hàng Việt
 - **[Nguồn]** Thư viện mã nguồn mở `ofxstatement-vn-vietcombank` (giấy phép MIT) chuyển sao kê Excel của Vietcombank sang định dạng OFX, cho thấy sao kê Excel của ngân hàng có cấu trúc bảng khá ổn định. https://github.com/darkms/ofxstatement-vn-vietcombank
 - **[Nguồn]** Trang hỗ trợ của MISA có hướng dẫn nhập sao kê ngân hàng từ file Excel vào phần mềm kế toán. https://helpact.misa.vn/?p=72941 (chỉ xem phần tóm tắt trong kết quả tìm kiếm).
 
-**Chưa tìm được:** một file sao kê mẫu chính thức, công khai của một ngân hàng kèm tiêu đề cột chính xác từng ký tự. File giả trong bài dùng bộ cột phổ biến nhất (`Ngày GD, Số CT, Ghi nợ, Ghi có, Số dư, Nội dung chi tiết`), kèm vài dòng thông tin tài khoản ở đầu và dòng tổng ở cuối. Sao kê của ngân hàng bạn có thể khác tên cột; khi đó chỉ cần sửa một dòng trong prompt.
+**Chưa tìm được:** một file sao kê mẫu chính thức, công khai của một ngân hàng kèm tiêu đề cột chính xác từng ký tự. File giả trong bài dùng bộ cột phổ biến nhất (`Ngày GD, Số CT, Ghi nợ, Ghi có, Số dư, Nội dung chi tiết`), kèm vài dòng thông tin tài khoản ở đầu và dòng tổng ở cuối. Sao kê của ngân hàng bạn có thể khác tên cột; khi đó sửa phần mô tả cột và tiền tố mã đơn trong prompt (và tên cột trong bộ chấm nếu bạn chấm bằng `cham.py`).
 
 ### Các bẫy đã cài và cách đáp án gắn nhãn
 

@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả của agent, chấm bằng chương trình `cham.py` so với đáp án, rồi đọc tay các ca agent sai hoặc khác đáp án.
     - **Mất bao lâu:** khoảng 40 phút (chấm tự động mất vài giây, phần lớn thời gian là đọc ca lệch).
-    - **Cần có:** thư mục `ket-qua/` của bài (có sẵn kết quả 6 lần chạy), Python 3 với thư viện `openpyxl`.
+    - **Cần có:** thư mục `ket-qua/` của bài (có sẵn kết quả 6 lần chạy), Python 3 với thư viện `openpyxl`. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
     - **Kết quả:** bảng điểm 6 lần chạy, hiểu vì sao "tính tiền đúng" chưa chắc là "đúng chính sách", và biết cách phát hiện agent đi ra ngoài thư mục làm việc.
 
 > **Dữ liệu giả để học.** Mọi số **[Đo được]** dưới đây là kết quả chạy ngày 2026-11-20, n = 1 đến 2 lần mỗi agent hợp lệ, chưa đo được độ ổn định. Không có kết luận "agent nào tốt hơn".

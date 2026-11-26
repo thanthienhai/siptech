@@ -3,7 +3,7 @@
 !!! info "Bài này"
     - **Bạn làm gì:** mở kết quả thật của Claude Code và Antigravity (`agy`) trên cùng dữ liệu ẩn danh, chấm bằng bộ chấm có sẵn, đọc các ca agent làm khác đáp án, rồi rà xem agent có chạy lệnh ngoài thư mục không.
     - **Mất bao lâu:** khoảng 30 phút để làm theo. Đọc kỹ các ca khác đáp án thêm 15 phút.
-    - **Cần có:** thư mục bài đã giải nén (có `ket-qua/` và `logs/`), Python 3, Excel hoặc Notepad. Không cần chạy lại agent.
+    - **Cần có:** thư mục bài đã giải nén (có `ket-qua/` và `logs/`), Python 3, Excel hoặc Notepad. Không cần chạy lại agent. Tải [bo-cham.zip](bo-cham.zip) và giải nén ở **ngoài** thư mục chạy của agent (đừng để đáp án cạnh agent).
     - **Kết quả:** bạn trả lời được bằng số: agent tìm đúng bao nhiêu trong 61 bất thường đã cài, báo oan bao nhiêu, bao nhiêu ô khớp đáp án, và chỗ nào khác là do lỗi tính hay do quy định chưa rõ.
 
 > Dữ liệu giả (xem bài 1). Mọi số trong bài là kết quả chạy của chúng tôi ngày 2026-11-20, **n = 1 đến 2 lần mỗi cấu hình**: đây là quan sát, chưa đo được độ ổn định, không đủ để xếp hạng agent.

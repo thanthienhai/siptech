@@ -1,9 +1,9 @@
-# Bài 2. Cài đặt Antigravity CLI (lệnh agy)
+# Bài 3. Cài đặt Antigravity CLI (lệnh agy)
 
 !!! info "Bài này"
     - **Bạn làm gì:** cài Antigravity CLI của Google (lệnh `agy`), đăng nhập, kiểm tra chạy được, biết cách thoát và đọc câu xin quyền. Bài cũng cảnh báo cờ `--dangerously-skip-permissions`.
     - **Mất bao lâu:** khoảng 15 phút **[Đề xuất]** (ước tính, chưa đo trên máy mới).
-    - **Cần có:** một tài khoản Google đủ điều kiện dùng Antigravity (Bước 1), internet, một cửa sổ PowerShell ([bài 3](cap-02-lam-quen-cua-so-dong-lenh.md) hướng dẫn mở). Chỉ cần **một** trong hai agent: nếu đã xong [bài 1](cap-00-cai-dat-claude-code.md) và hài lòng, bạn có thể bỏ qua bài này.
+    - **Cần có:** một tài khoản Google đủ điều kiện dùng Antigravity (Bước 1), internet, một cửa sổ PowerShell ([bài 1](cap-00-lam-quen-cua-so-dong-lenh.md) hướng dẫn mở). Chỉ cần **một** trong hai agent: nếu đã xong [bài 2](cap-01-cai-dat-claude-code.md) và hài lòng, bạn có thể bỏ qua bài này.
     - **Kết quả:** `agy --version` in ra số phiên bản, và lệnh `agy` mở được khung chat của agent.
 
 > Máy của chúng tôi đã cài sẵn `agy` và đang đăng nhập, nên chúng tôi **không cài lại, không đăng nhập lại**. Các bước cài và đăng nhập lấy từ tài liệu chính thức của Google, gắn nhãn **[Nguồn]** và ngày đọc 2026-11-21. Phần kiểm tra là kết quả chạy thật (Windows 10). Chỗ nào chưa kiểm, bài ghi "chưa kiểm".
@@ -30,7 +30,7 @@ Cũng là một **agent** (chương trình AI tự đọc file, viết file và 
 
 ### Bước 2. Mở PowerShell
 
-`Win + X`, chọn **Windows PowerShell** (hoặc **Terminal**). Dòng bắt đầu bằng `PS C:\...>` nghĩa là bạn đang ở PowerShell. Chi tiết và cách mở trên macOS, Linux xem [bài 3](cap-02-lam-quen-cua-so-dong-lenh.md).
+`Win + X`, chọn **Windows PowerShell** (hoặc **Terminal**). Dòng bắt đầu bằng `PS C:\...>` nghĩa là bạn đang ở PowerShell. Chi tiết và cách mở trên macOS, Linux xem [bài 1](cap-00-lam-quen-cua-so-dong-lenh.md).
 
 ### Bước 3. Dán lệnh cài
 
@@ -176,7 +176,7 @@ Chạy không tương tác (cách chúng tôi dùng để ghi log ở bài 4): `
 
 **Chưa kiểm:** chạy trình cài từ đầu; màn hình thiết lập và đăng nhập lần đầu; chữ chính xác của câu xin quyền; phím thoát trong giao diện; cài trên macOS/Linux thật; hạn mức dùng theo gói.
 
-## Checklist cuối bài 2
+## Checklist cuối bài 3
 
 - [ ] `agy --version` in ra số phiên bản trong cửa sổ PowerShell mới.
 - [ ] Đã đăng nhập bằng tài khoản Google được phép, mở được khung chat trong thư mục `thu-agy`.

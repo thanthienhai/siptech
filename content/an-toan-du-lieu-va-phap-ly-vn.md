@@ -25,7 +25,7 @@ Nhân viên dán hợp đồng vào ChatGPT, kế toán tải sao kê lên một
 | Nội bộ thường | Quy trình, mẫu biểu không có tên người | Hạn chế; nên ẩn tên công ty và đối tác | Được, theo quy tắc công ty |
 | Bí mật kinh doanh | Giá vốn, hợp đồng, công thức, mã nguồn, báo cáo tài chính chưa công bố | Không | Chỉ khi đã đọc điều khoản dữ liệu và có người duyệt |
 | Dữ liệu cá nhân | Họ tên kèm số điện thoại, địa chỉ, email khách hoặc nhân viên, CV | Không | Chỉ khi có cơ sở pháp lý, đã ẩn danh nếu có thể, đã kiểm tra việc chuyển ra nước ngoài |
-| Dữ liệu cá nhân nhạy cảm | Sức khỏe, sinh trắc học, giao dịch ngân hàng, định vị, CCCD | Cấm tuyệt đối | Mặc định cấm; chỉ khi có tư vấn pháp lý |
+| Dữ liệu cá nhân nhạy cảm | Sức khỏe, sinh trắc học, giao dịch ngân hàng, định vị, CCCD | Không (mặc định) | Mặc định không đưa vào; chỉ khi có tư vấn pháp lý |
 
 ### Ẩn danh trước khi gửi
 
@@ -80,7 +80,7 @@ Một bài của Đoàn Luật sư Hà Nội nêu thời hạn lập hồ sơ ch
 Ban hành 31/12/2025, hiệu lực 01/01/2026, **thay thế Nghị định 13/2023/NĐ-CP** [[S2]]. Nhiều nguồn thứ cấp thống nhất điểm này [[v:ok]]. Các chi tiết dưới đây chủ yếu theo EY, một nguồn thứ cấp:
 
 - **Chuyển dữ liệu ra nước ngoài:** từ nộp hồ sơ **sau** (Nghị định 13) chuyển sang **thẩm định trước**. Dùng Mẫu 09 và 10; cơ quan có 15 ngày kết luận, doanh nghiệp có 30 ngày bổ sung; cập nhật 6 tháng một lần khi mục đích hoặc bên nhận đổi. Hồ sơ gửi Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao (A05), Bộ Công an. Có miễn trừ cho chuyển dữ liệu nhằm quản lý nhân sự theo pháp luật lao động [[S2]].
-- **Miễn trừ:** hộ kinh doanh và doanh nghiệp siêu nhỏ miễn hoàn toàn; doanh nghiệp nhỏ và khởi nghiệp miễn 5 năm từ 01/01/2026; không áp dụng nếu xử lý dữ liệu như một dịch vụ, trực tiếp xử lý dữ liệu nhạy cảm, hoặc từ 100.000 chủ thể dữ liệu tích lũy trở lên. Doanh nghiệp vừa không còn được liệt kê [[S2]].
+- **Miễn trừ:** hộ kinh doanh và doanh nghiệp siêu nhỏ miễn hoàn toàn; doanh nghiệp nhỏ và khởi nghiệp miễn 5 năm từ 01/01/2026; không áp dụng nếu xử lý dữ liệu như một dịch vụ, trực tiếp xử lý dữ liệu nhạy cảm, hoặc từ 100.000 chủ thể dữ liệu tích lũy trở lên. Theo nguồn thứ cấp [[S2]], doanh nghiệp vừa không thấy được liệt kê trong nhóm miễn trừ. **Chưa đọc văn bản gốc**: đừng kết luận doanh nghiệp vừa phải tuân thủ đầy đủ nếu chưa hỏi người có chuyên môn.
 - **Đổi loại dữ liệu:** lịch sử hoạt động trực tuyến, mã số thuế, số sổ BHXH, số thẻ BHYT bị đưa khỏi nhóm "cơ bản". Nhóm nhạy cảm mở rộng gồm theo dõi hành vi, hoạt động viễn thông và mạng xã hội, tình trạng sức khỏe rộng hơn, thông tin định danh điện tử, ảnh giấy tờ tùy thân, lịch sử giao dịch và ngân hàng [[S2]].
 - **Sự đồng ý:** phải kiểm chứng và lưu được; cấm ô tick sẵn và diễn đạt gây hiểu nhầm [[S2]].
 - **Vi phạm dữ liệu vị trí hoặc sinh trắc học:** thông báo cá nhân trong 72 giờ; lưu hồ sơ vi phạm ít nhất 5 năm [[S2]].

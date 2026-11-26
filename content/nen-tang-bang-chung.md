@@ -24,7 +24,7 @@ Nhóm UC Berkeley, Intesa Sanpaolo, UIUC, Stanford và IBM Research, ICML 2026 [
 - **Phương pháp:** 20 ca phỏng vấn sâu; khảo sát 306 người làm agent (28/7 đến 29/10/2025); lọc còn 86 hệ thống đang chạy hoặc chạy thử, thuộc 26 lĩnh vực.
 - **Vì sao triển khai:** năng suất 80%, giảm giờ công 72%, tăng hài lòng khách 38%, rủi ro và tuân thủ 12%.
 - **Phục vụ ai:** 92,5% phục vụ con người; nhân viên nội bộ 52%, khách bên ngoài 40%. Triển khai nội bộ trước là chủ ý để giảm rủi ro.
-- **Kiến trúc đơn giản đến bất ngờ:** 70% dùng mô hình có sẵn bằng prompt, không tinh chỉnh; 79% prompt viết tay hoặc tay kết hợp LLM; 68% chạy dưới 10 bước rồi chuyển cho người (47% dưới 5 bước); 16 trong 20 ca dùng workflow cố định; 17 trong 20 ca tự viết thay vì dùng framework.
+- **Kiến trúc đơn giản đến bất ngờ:** 70% dùng mô hình có sẵn bằng prompt, không tinh chỉnh; 79% prompt viết tay hoặc tay kết hợp LLM; 68% thực hiện tối đa 10 bước rồi chuyển cho người (47% dưới 5 bước); 16 trong 20 ca dùng workflow cố định; 17 trong 20 ca tự viết thay vì dùng framework.
 - **Độ trễ:** 66% chấp nhận chờ từ vài phút; 15 trong 20 ca chạy bất đồng bộ.
 - **Đánh giá chất lượng:** 74% bằng người; 52% dùng LLM làm giám khảo; 75% không dùng benchmark chính thức mà dùng A/B hoặc phản hồi chuyên gia. Mọi ca dùng LLM làm giám khảo đều kèm duyệt tay.
 - **Thách thức số 1 là độ tin cậy.** Cách giảm rủi ro: chế độ chỉ đọc, sandbox, bọc API, phân quyền như người dùng.

@@ -229,3 +229,52 @@ def build_search_index(out_dir):
         entries.append({"t": title.split(" · ")[0] if g else title, "g": g, "u": rel, "d": desc, "h": heads[:700], "x": plain[:900]})
     (out_dir / "search-index.json").write_text(json.dumps(entries, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(entries)
+
+
+# ------------------------------------------------------------------ Hỏi và góp ý (qua GitHub, công khai)
+
+FEEDBACK_BODY = """
+<section class="ghero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Trang chủ</a> <i>/</i> Hỏi và góp ý</div>
+  <span class="pill">Kênh công khai</span>
+  <h1>Hỏi và góp ý</h1>
+  <p class="lead">Thấy bài sai, khó hiểu, hay muốn đề xuất một bài toán mới? Điền vài dòng, trang sẽ dựng sẵn nội dung và mở một yêu cầu trên GitHub của dự án.</p>
+</div></section>
+<section class="sec"><div class="wrap narrow">
+  <div class="admonition warning"><p class="admonition-title">Đọc trước khi gửi</p>
+    <ul>
+      <li><b>Nội dung được đăng công khai</b> trên GitHub và cần tài khoản GitHub. Đừng ghi tên khách hàng, số điện thoại, số tài khoản hay dữ liệu nội bộ của doanh nghiệp.</li>
+      <li>Đây là <b>kênh góp ý của dự án</b>, không phải dịch vụ tư vấn riêng cho doanh nghiệp bạn và không cam kết thời gian trả lời.</li>
+      <li>Nội dung sai sẽ được sửa và ghi ở <a href="cap-nhat.html">Nhật ký cập nhật</a>.</li>
+    </ul></div>
+  <form id="fb" class="adv" novalidate>
+    <fieldset class="aq"><legend><span class="an">1</span> Bạn muốn gửi gì?</legend>
+      <div class="aopts">
+        <label class="ao"><input type="radio" name="loai" value="loi" checked><span><b>Báo lỗi hoặc thông tin sai</b> Số liệu, lệnh không chạy, liên kết hỏng, chữ khó hiểu</span></label>
+        <label class="ao"><input type="radio" name="loai" value="hoi"><span><b>Câu hỏi về việc dùng AI trong công việc</b> Nêu tình huống chung, không kèm dữ liệu thật</span></label>
+        <label class="ao"><input type="radio" name="loai" value="de-xuat"><span><b>Đề xuất bài toán mới</b> Việc văn phòng lặp lại mà bạn muốn có bài hướng dẫn</span></label>
+      </div></fieldset>
+    <fieldset class="aq"><legend><span class="an">2</span> Trang liên quan (nếu có)</legend>
+      <input id="fbpage" type="text" class="fbin" placeholder="Địa chỉ trang hoặc tên bài" aria-label="Trang liên quan"></fieldset>
+    <fieldset class="aq"><legend><span class="an">3</span> Nội dung</legend>
+      <textarea id="fbtext" class="fbin" rows="6" placeholder="Bạn đã làm gì, thấy gì, mong muốn gì. Với lỗi lệnh: ghi lệnh và thông báo lỗi (đã bỏ thông tin riêng)." aria-label="Nội dung"></textarea></fieldset>
+    <div class="aact"><button type="submit" class="btn pri big">Mở trên GitHub</button></div>
+    <p class="amsg" id="fbmsg" role="alert" hidden>Hãy viết nội dung trước khi gửi.</p>
+  </form>
+</div></section>
+<script>
+(function(){
+  var f = document.getElementById('fb'), msg = document.getElementById('fbmsg');
+  var T = {loi: 'Báo lỗi: ', hoi: 'Câu hỏi: ', 'de-xuat': 'Đề xuất bài toán: '};
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var loai = f.querySelector('input[name=loai]:checked').value, text = document.getElementById('fbtext').value.trim(), page = document.getElementById('fbpage').value.trim();
+    if (!text) { msg.hidden = false; return; }
+    msg.hidden = true;
+    var title = T[loai] + text.split(String.fromCharCode(10))[0].slice(0, 70);
+    var body = (page ? 'Trang liên quan: ' + page + String.fromCharCode(10, 10) : '') + text + String.fromCharCode(10, 10) + '---' + String.fromCharCode(10) + 'Gửi từ trang Hỏi và góp ý của siptech.id.vn';
+    window.open('https://github.com/thanthienhai/siptech/issues/new?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body), '_blank', 'noopener');
+  });
+})();
+</script>
+"""

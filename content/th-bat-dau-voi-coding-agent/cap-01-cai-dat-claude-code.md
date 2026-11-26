@@ -1,9 +1,9 @@
-# Bài 1. Cài đặt Claude Code
+# Bài 2. Cài đặt Claude Code
 
 !!! info "Bài này"
     - **Bạn làm gì:** cài Claude Code, đăng nhập, kiểm tra chạy được, biết cách xin quyền và cách thoát.
     - **Mất bao lâu:** khoảng 15 phút, phần lớn là chờ tải và đăng nhập trên trình duyệt **[Đề xuất]** (ước tính, chúng tôi chưa đo trên máy mới).
-    - **Cần có:** máy Windows 10 (bản 1809 trở lên), macOS 13 trở lên hoặc Linux; internet; một tài khoản Claude đủ điều kiện (xem Bước 1). Chưa biết mở cửa sổ dòng lệnh? Đọc nhanh [bài 3](cap-02-lam-quen-cua-so-dong-lenh.md) trước.
+    - **Cần có:** máy Windows 10 (bản 1809 trở lên), macOS 13 trở lên hoặc Linux; internet; một tài khoản Claude đủ điều kiện (xem Bước 1). Chưa biết mở cửa sổ dòng lệnh? Đọc nhanh [bài 1](cap-00-lam-quen-cua-so-dong-lenh.md) trước.
     - **Kết quả:** lệnh `claude --version` in ra số phiên bản, và lệnh `claude` mở được khung chat của agent.
 
 > Máy của chúng tôi đã cài sẵn và đang đăng nhập, nên chúng tôi **không cài lại, không đăng nhập lại**. Các bước cài và đăng nhập dưới đây lấy từ tài liệu chính thức, gắn nhãn **[Nguồn]** và ngày đọc 2026-11-21. Phần "kiểm tra" là kết quả chạy thật trên máy chúng tôi (Windows 10). Chỗ nào chưa kiểm, bài ghi rõ "chưa kiểm".
@@ -135,7 +135,7 @@ Chưa chạy lại prompt này trong giao diện tương tác. Bạn nên biết
 
 *Đầu ra thật của `claude --help` trên máy chúng tôi: tùy chọn `--permission-mode` liệt kê đúng sáu tên chế độ (bản dựng lại từ đầu ra thật, không phải ảnh chụp cửa sổ).*
 
-3. **Chế độ khởi động.** Với bản 2.1.283 trở lên, tài liệu ghi terminal khởi động ở chế độ `auto` (một mô hình duyệt thay bạn, bạn sẽ ít thấy câu hỏi hơn). Khi học, nên nhấn `Shift + Tab` về chế độ thủ công để tự đọc từng câu xin quyền.
+3. **Chế độ khởi động.** Với bản 2.1.283 trở lên, tài liệu ghi terminal khởi động ở chế độ `auto` (một mô hình duyệt thay bạn, bạn sẽ ít thấy câu hỏi hơn). Khi học, nên nhấn `Shift + Tab` về chế độ thủ công để tự đọc từng câu xin quyền. Nếu khi agent làm việc bạn **không thấy câu xin quyền nào**, rất có thể đang ở chế độ này: nhìn dòng chế độ ngay dưới khung nhập và đổi sang chế độ hỏi từng lần. **Chưa kiểm** cần nhấn `Shift + Tab` mấy lần.
 
 **Thư mục tin cậy.** Lần đầu mở trong một thư mục chưa tin, Claude Code hiện hộp hỏi có tin thư mục đó không. Chỉ đồng ý cho thư mục bạn tạo để làm việc. Mở trực tiếp trong thư mục gốc của người dùng thì lựa chọn "tin" chỉ nhớ trong phiên đó; hãy bắt đầu từ một thư mục con. Chúng tôi chưa kiểm chữ chính xác của hộp hỏi này trên màn hình.
 
@@ -187,7 +187,7 @@ Bản cài "native" tự cập nhật nền. Cập nhật tay: `claude update`. 
 
 **Chưa kiểm:** chạy lệnh cài từ đầu trên máy sạch; màn hình đăng nhập lần đầu; chữ chính xác của hộp "tin thư mục" và của câu xin quyền; phím thoát trong giao diện; cài trên macOS/Linux thật.
 
-## Checklist cuối bài 1
+## Checklist cuối bài 2
 
 - [ ] `claude --version` in ra số phiên bản trong cửa sổ PowerShell mới.
 - [ ] `claude doctor` không báo vấn đề cài đặt.

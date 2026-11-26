@@ -1,4 +1,4 @@
-# Bài 3. Làm quen với cửa sổ dòng lệnh
+# Bài 1. Làm quen với cửa sổ dòng lệnh
 
 !!! info "Bài này"
     - **Bạn làm gì:** mở cửa sổ dòng lệnh (PowerShell), biết mình đang ở thư mục nào, đi vào thư mục, xem file, tạo thư mục, chép file, chạy một script Python, dán lệnh và dừng lệnh.
@@ -165,6 +165,9 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 81: chara
 
 (Phần đường dẫn đã rút gọn thành `…`.) **[Đo được]** Trên Windows của chúng tôi, Python mặc định đọc file bằng bảng mã cp1252 nên vỡ chữ Việt. Trong bài toán đối soát sao kê của chuỗi này, Claude Code cũng gặp lỗi mã hóa tương tự hai lần và tự sửa bằng cách thêm `-X utf8`.
 
+!!! stuck "Chưa có Python, hoặc gõ `python --version` báo không tìm thấy?"
+    Các bài toán thực hành cần **Python 3** (agent viết và chạy script Python). Theo tài liệu chính thức, trên Windows cách cài hiện nay là **Python install manager**: tải từ [python.org/downloads](https://www.python.org/downloads/) hoặc cài từ ứng dụng Microsoft Store. Cài xong, **mở cửa sổ dòng lệnh mới** và gõ lại `python --version`. **[Nguồn]** [Using Python on Windows](https://docs.python.org/3/using/windows.html), đọc ngày 2026-11-26. **Chưa kiểm:** chúng tôi chưa cài Python từ đầu trên một máy sạch; máy soạn bài đã có sẵn Python.
+
 ### Bước 7. Đường dẫn có dấu cách
 
 Tên thư mục có dấu cách (`bao cao thang 11`) phải **đặt trong ngoặc kép**, nếu không PowerShell hiểu mỗi từ là một thứ riêng:
@@ -253,7 +256,7 @@ Nhiều lệnh dòng lệnh **im lặng khi thành công** (`cd`, `copy`, `mkdir
 
 Script sinh dữ liệu: `du-lieu/sinh_du_lieu_thu.py` (hạt giống cố định 20261121; chạy `python -X utf8 sinh_du_lieu_thu.py` trong thư mục `du-lieu` sẽ ghi lại đúng hai file dữ liệu cũ).
 
-## Checklist cuối bài 3
+## Checklist cuối bài 1
 
 - [ ] Mở được PowerShell và nhận ra dòng `PS ...>`.
 - [ ] Gõ `pwd` và biết mình đang ở thư mục nào.
