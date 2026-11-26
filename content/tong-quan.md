@@ -26,6 +26,24 @@ Ví dụ xuyên suốt là hệ thống tra cứu thông tin nội bộ. Nó đi
 | [Tri thức tổ chức](tri-thuc-to-chuc/00-README.md) | Biên bản họp, SOP từ người giỏi, bàn giao, giữ tài liệu cập nhật | 8 cấp | Tài liệu và SOP đã duyệt (đầu vào cho các nhóm khác) |
 | [Quy trình nhiều bước](quy-trinh-nhieu-buoc/00-README.md) | Vẽ quy trình, định tuyến, báo cáo định kỳ, chuỗi bước có duyệt | Q0 đến Q6 | Quy trình chạy tự động có điểm duyệt và số đo trước và sau |
 
+## Chuỗi thực hành làm thật với coding agent
+
+Ngoài năm nhóm theo thang cấp độ ở trên, có một chuỗi **thực hành**: mỗi bài toán là một việc văn phòng lặp lại, có dữ liệu giả giống thật, prompt sao chép được, lần chạy thật bằng hai coding agent (Claude Code và Antigravity), bộ chấm bằng đáp án và bài tập tự làm. Người chưa dùng dòng lệnh bắt đầu từ nhóm đầu tiên.
+
+| Nhóm bài | Việc cần giải |
+|---|---|
+| [Bắt đầu với coding agent](th-bat-dau-voi-coding-agent/00-README.md) | Cài agent, làm quen dòng lệnh, giao việc đầu tiên và quy tắc an toàn |
+| [Đối soát sao kê ngân hàng](th-doi-soat-sao-ke-ngan-hang/00-README.md) | Ghép sao kê với sổ đơn hàng, tìm tiền thiếu, thừa, trùng |
+| [Làm sạch danh bạ khách hàng](th-lam-sach-danh-ba-khach-hang/00-README.md) | Gộp khách trùng, chuẩn hóa số điện thoại, không xóa dữ liệu |
+| [Mô tả sản phẩm hàng loạt](th-mo-ta-san-pham-hang-loat/00-README.md) | Viết mô tả cho sàn từ bảng thông số mà không bịa |
+| [Phân tích đánh giá của khách](th-phan-tich-danh-gia-khach-hang/00-README.md) | Từ hàng trăm đánh giá ra chủ đề, ca nguy cấp, việc nên sửa |
+| [Lập báo giá từ email yêu cầu](th-bao-gia-tu-email-yeu-cau/00-README.md) | Báo giá từ yêu cầu lộn xộn, tiền do code tính |
+| [Kiểm tra bảng chấm công](th-kiem-tra-bang-cham-cong/00-README.md) | Tìm bất thường trước khi tính lương, trên dữ liệu đã ẩn danh |
+| [Tồn kho và đề xuất nhập hàng](th-ton-kho-va-de-xuat-nhap-hang/00-README.md) | Phân loại ABC, tồn kho an toàn, đề xuất nhập kèm tiền vốn |
+| [Gộp báo cáo từ nhiều chi nhánh](th-gop-bao-cao-chi-nhanh/00-README.md) | Gộp nhiều file Excel mỗi nơi một kiểu, kiểm tổng, chạy lại hằng tháng |
+
+Các bài thực hành đang ở trạng thái **Đang soạn**. Muốn biết cách chúng tôi chạy, chấm và đọc kết quả, xem [Phương pháp](phuong-phap.md). Không chắc nên chọn bài nào, thử trang [Chọn bài toán phù hợp](chon-bai-toan.html).
+
 Danh sách này tiếp tục được bổ sung. Xem [tất cả bài toán](bai-toan.html) để thấy bài mới và bài đang soạn.
 
 !!! proposal "Nên bắt đầu từ đâu? (đề xuất của SIPTech, không có nguồn đo)"

@@ -1,80 +1,121 @@
-# Bài 1: Chuẩn bị dữ liệu và giao việc cho agent
+# Bài 1. Chuẩn bị bảng thông số và giao việc viết mô tả cho agent
 
-> Dữ liệu trong bài là giả để học (shop "Vườn Nhỏ" không có thật). Ngày làm: 2026-11-20.
+!!! info "Bài này"
+    - **Bạn làm gì:** tải bảng thông số 40 sản phẩm giả, mở agent trong một thư mục riêng, dán prompt giao việc viết tiêu đề, mô tả, 5 gạch đầu dòng và từ khóa cho cả 40 sản phẩm.
+    - **Mất bao lâu:** khoảng 20 phút chuẩn bị. Agent chạy thêm vài phút **[Đo được]** (lần chạy của chúng tôi, 40 sản phẩm: Claude Code 241 giây và 298 giây, Antigravity 756 giây).
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file.
+    - **Kết quả:** file `nhap_hang_loat.csv` và `.xlsx` (40 dòng), một script kiểm `kiem.py`, một báo cáo `bao_cao_kiem.md`. Cách kiểm đúng sai ở bài 2.
 
-## Mục tiêu đo được
+> Dữ liệu trong bài là **dữ liệu giả để học**: shop "Vườn Nhỏ", tên sản phẩm, số phiếu công bố `DEMO-xxxx`, dung tích, xuất xứ đều bịa, sinh bằng script có hạt giống cố định. Không có doanh nghiệp, sản phẩm hay giấy tờ thật nào.
 
-Sau bài này bạn có trong một thư mục: bảng thông số 40 sản phẩm, bộ quy định của shop, danh sách từ cấm, và một prompt giao việc 6 phần. Bạn đo được thành công bằng ba câu hỏi có đáp án đúng/sai, không phải bằng cảm giác "đọc thấy ổn":
+## Bài toán trong một phút
 
-1. File nộp có đủ 40 dòng, mỗi dòng đủ 5 gạch không?
-2. Có con số, tên thành phần, chứng nhận nào trong mô tả mà bảng thông số **không có** không?
-3. 9 sản phẩm thiếu thông số có được gắn `CẦN BỔ SUNG` đúng trường không?
+Một shop mỹ phẩm nhỏ nhập hàng từ nhà cung cấp (NCC) qua Zalo và bảng tính. Chủ shop có bảng thông số 40 sản phẩm và cần nhập lên sàn (Shopee, TikTok Shop, website). Mỗi sản phẩm cần: tiêu đề, mô tả, đúng 5 gạch đầu dòng, từ khóa. Viết tay mất cả buổi và dễ lệch giọng. Giao cho coding agent thì nhanh, nhưng có ba chỗ dễ hỏng:
 
-## Bước 1. Hiểu bảng thông số bạn đang có
+1. **Bịa cho đẹp.** Agent, cũng như người viết vội, thích thêm "lành tính", "chính hãng", "an toàn cho da nhạy cảm" hay một con số nồng độ nghe hợp lý. Mô tả bán hàng không được nói quá sự thật.
+2. **Thiếu thông số.** Có sản phẩm bảng để trống, ghi `?`, `N/A`, `chưa rõ`, `liên hệ NCC`. Người vội sẽ điền đại. Agent phải ghi `CẦN BỔ SUNG`, không đoán.
+3. **Lời đồn lẫn vào sự thật.** Cột ghi chú nội bộ có câu như "bán chạy số 1", "nghe nói đạt chuẩn FDA", "chữa khỏi viêm da". Chép sang mô tả là tự đưa shop vào rủi ro.
 
-Mở `du-lieu/thong_so.csv` bằng Excel (hoặc `thong_so.xlsx`). Mỗi dòng là một sản phẩm, mỗi cột một thông tin:
+!!! warning "Quy tắc xuyên suốt cả chuỗi bài"
+    **Đừng đọc 40 dòng bằng mắt để tin.** Kiểm bằng code, và dùng một cái thước kiểm **không do agent viết**. Bài 2 sẽ cho thấy vì sao: agent tự báo "sạch 0 lỗi" trong cả bốn lần chạy, trong đó một lần bỏ lọt cụm "chính hãng" ở 40 sản phẩm.
 
-| Nhóm cột | Cột | Vai trò |
-|---|---|---|
-| Nhận diện | `sku`, `ten_san_pham`, `nhom` | tên và mã |
-| Sự thật được dùng | `dung_tich`, `thanh_phan_noi_bat`, `loai_da_phu_hop`, `mui_huong`, `xuat_xu`, `han_su_dung`, `chi_so_chong_nang`, `cong_dung_tren_bao_bi`, `cach_dung`, `so_phieu_cong_bo` | những gì được phép viết ra |
-| Lời đồn | `ghi_chu_noi_bo` | **không phải sự thật**, chỉ để người trong shop trao đổi |
+## Các bước làm
 
-Ý tưởng cốt lõi: tách "sự thật" khỏi "lời đồn" ngay trong dữ liệu. Nếu bạn để lời đồn chung một ô với thông số, không ai (kể cả agent) biết được đâu là chuẩn.
+### Bước 1. Tải và giải nén dữ liệu mẫu
 
-![Bảng thông số đầu vào mẫu](anh/03-du-lieu-dau-vao.webp)
+Tải [du-lieu.zip](du-lieu.zip), bấm chuột phải chọn **Extract All** (Windows) hoặc bấm đúp (macOS). Bạn có thư mục `du-lieu/` gồm:
 
-*Ảnh dựng từ `thong_so.csv`. Dữ liệu giả để học.*
+| File | Nội dung |
+|---|---|
+| `thong_so.csv` và `thong_so.xlsx` | 40 sản phẩm, 14 cột. Cột `ghi_chu_noi_bo` là lời đồn chưa kiểm chứng |
+| `quy_dinh_shop.md` | giọng thương hiệu, giới hạn độ dài (giả định của shop), nguyên tắc sự thật, định dạng file nộp |
+| `tu_cam.txt` | 28 cụm từ cấm do shop đặt |
+| `mau_dau_ra.csv` | dòng tiêu đề cột của file cần nộp |
+| `prompt-giao-viec.txt` | prompt ở Bước 6, dạng file |
+| `kiem_hang_ngay.py` | thước kiểm dùng hằng ngày (bài 3) |
+| `sinh_du_lieu.py`, `sinh_mau_thuan.py` | sinh lại dữ liệu, hạt giống cố định (không cần dùng ở bài này) |
+| `thong_so_mau_thuan.csv` | bảng 6 dòng có thông số mâu thuẫn, dùng ở bài 4 |
 
-Hãy tự nhìn các dòng bẫy trong ảnh:
+### Bước 2. Mở xem bảng thông số
 
-- **VN-007**: thiếu gần hết mọi thứ. Agent không có gì để viết ngoài tên.
-- **VN-009**: thiếu xuất xứ; ghi chú "bán chạy số 1 khu vực, nhớ ghi vào" là từ cấm.
-- **VN-012**: bảng ghi vitamin C 10%, ghi chú nói "thực ra 15%". Hai nguồn mâu thuẫn, chỉ người có phiếu kiểm nghiệm mới quyết được.
-- **VN-019**: thành phần ghi "liên hệ NCC", công dụng trống.
-- **VN-024**: ghi chú "chữa khỏi viêm da nếu dùng đều" (một lời cam kết điều trị, cấm).
-- **VN-027**: số phiếu ghi "đang chờ duyệt": chưa phải đã công bố.
+Bấm đúp `thong_so.xlsx` để mở bằng Excel. Mỗi dòng là một sản phẩm. Các cột chia hai nhóm:
 
-Chuyện "thiếu" được ghi nhiều kiểu: ô trống, `?`, `N/A`, `chưa rõ`, `liên hệ NCC`, `chưa có`. Đó là thực tế: mỗi người nhập một kiểu. Quy định của shop nói rõ tất cả các kiểu đó nghĩa là **không có thông tin**.
+- **Sự thật được dùng:** `dung_tich`, `thanh_phan_noi_bat`, `loai_da_phu_hop`, `mui_huong`, `xuat_xu`, `han_su_dung`, `chi_so_chong_nang`, `cong_dung_tren_bao_bi`, `cach_dung`, `so_phieu_cong_bo`.
+- **Lời đồn:** `ghi_chu_noi_bo`, chỉ để người trong shop trao đổi, **không phải sự thật**.
 
-## Bước 2. Hiểu quy định của shop và quy định thật của sàn
+Ý cốt lõi: tách "sự thật" khỏi "lời đồn" ngay trong dữ liệu. Để chung một ô thì không ai, kể cả agent, biết đâu là chuẩn.
 
-### 2.1. Quy định của shop (file `quy_dinh_shop.md`)
+![Bảng thông số đầu vào mẫu, 8 trong 40 dòng](anh/03-du-lieu-dau-vao.webp)
 
-File này viết ra những gì trước đây nằm trong đầu chủ shop:
+*Ảnh dựng từ `thong_so.csv` (HTML sang PNG). Dữ liệu giả để học. Ô đỏ là thông tin bắt buộc bị thiếu, cột vàng là lời đồn.*
 
-- **Giọng thương hiệu:** xưng "Vườn Nhỏ", gọi khách là "bạn"; không emoji; không viết hoa cả từ; tối đa một dấu chấm than mỗi mô tả; không dùng "quý khách", "chị em", "chúng tôi".
-- **Độ dài (giả định):** tiêu đề 25 đến 100 ký tự; mô tả 200 đến 1500; mỗi gạch tối đa 120; từ khóa 6 đến 10 cụm, mỗi cụm tối đa 30.
-- **Cấu trúc tiêu đề:** thương hiệu + tên sản phẩm + dung tích (nếu có trong bảng).
-- **Từ cấm:** `tu_cam.txt` gồm 28 cụm, ví dụ "chữa khỏi", "số 1", "tốt nhất", "bán chạy", "đối thủ", "cam kết".
-- **Nguyên tắc sự thật** và **định dạng file nộp** (11 cột đúng thứ tự: `sku, tieu_de, mo_ta, gach_1..gach_5, tu_khoa, trang_thai, truong_can_bo_sung`).
+!!! see "Bạn sẽ thấy"
+    40 dòng, 14 cột. Hãy tự tìm vài dòng bẫy: **VN-007** thiếu gần hết mọi thứ; **VN-012** bảng ghi vitamin C 10% nhưng ghi chú nói "thực ra 15%"; **VN-024** có ghi chú "chữa khỏi viêm da nếu dùng đều"; **VN-027** số phiếu ghi "đang chờ duyệt". "Thiếu" được ghi nhiều kiểu (ô trống, `?`, `N/A`, `chưa rõ`, `liên hệ NCC`, `chưa có`): thực tế mỗi người nhập một kiểu.
 
-Quan trọng: các giới hạn độ dài ở trên là **giả định** của shop giả này. Bạn dùng shop thật thì phải kiểm lại.
+### Bước 3. Đọc quy định của shop
 
-### 2.2. Tìm quy định thật của sàn (đã làm, kết quả cụ thể)
+Mở `quy_dinh_shop.md` bằng Notepad. File viết ra những gì trước đây nằm trong đầu chủ shop:
 
-Mất khoảng 10 phút tìm và đọc. Kết quả, ghi đúng mức độ chắc chắn:
+- **Giọng:** xưng "Vườn Nhỏ", gọi khách là "bạn"; không emoji; không viết hoa cả từ; tối đa một dấu chấm than mỗi mô tả; không dùng "quý khách", "chị em", "chúng tôi".
+- **Độ dài:** tiêu đề 25 đến 100 ký tự, mô tả 200 đến 1500, mỗi gạch tối đa 120, từ khóa 6 đến 10 cụm.
+- **Từ cấm:** `tu_cam.txt`, ví dụ "chữa khỏi", "số 1", "tốt nhất", "bán chạy", "đối thủ", "cam kết".
+- **Nguyên tắc sự thật** và **định dạng file nộp** (11 cột đúng thứ tự: `sku, tieu_de, mo_ta, gach_1` đến `gach_5, tu_khoa, trang_thai, truong_can_bo_sung`).
 
-- **[Nguồn]** Shopee Việt Nam, trang trợ giúp "Quy định về đăng bán sản phẩm trên Shopee" (bản trước, cập nhật 15/3/2024): [liên kết](https://help.shopee.vn/portal/4/article/107999-QUY-%C4%90%E1%BB%8ANH-V%E1%BB%80-%C4%90%C4%82NG-B%C3%81N-S%E1%BA%A2N-PH%E1%BA%A8M-TR%C3%8AN-SHOPEE-(phi%C3%AAn-b%E1%BA%A3n-tr%C6%B0%E1%BB%9Bc)). Trang này **không** ghi số ký tự tối đa cho tên. Nó yêu cầu tên tiếng Việt có dấu, không ký tự đặc biệt, không viết tắt, khớp hình ảnh; cấm các từ như "Sản phẩm hot", "Bán chạy", "Giảm giá", "Miễn phí vận chuyển" trong tên. Mô tả phải trung thực, không lập lờ. Không được so sánh trực tiếp giá, chất lượng với người bán khác. (Nội dung này đọc qua công cụ tóm tắt trang, bạn nên mở link đọc lại nguyên văn.)
-- **Chưa xác minh:** số ký tự tối đa hiện hành của tiêu đề và mô tả Shopee Việt Nam. Trang Seller Education Hub không tải được nội dung. Một tài liệu mass upload Shopee Malaysia (từ kết quả tìm kiếm) nêu tên 20 đến 120, mô tả 20 đến 3000 ký tự, nhưng đó là thị trường khác.
-- **Chưa xác minh (đọc qua kết quả tìm kiếm, chưa đọc trọn trang):** [Trung tâm người bán TikTok Shop Việt Nam](https://seller-vn.tiktok.com/university/essay?knowledge_id=10008556&lang=en) nói tiêu đề tối thiểu 25 ký tự, mỗi ý bán hàng trong mô tả dưới 250 ký tự.
-- Danh sách từ cấm chính thức của sàn: **chưa tìm thấy**. Nhiều bài blog liệt kê nhưng không phải nguồn chính thức.
+!!! warning "Giới hạn độ dài trong file là giả định"
+    Các con số độ dài do shop giả đặt ra, **không phải quy định của sàn**. Chúng tôi chưa xác minh được giới hạn hiện hành của Shopee Việt Nam (chi tiết ở phần Đào sâu bên dưới). Dùng shop thật thì bạn phải tự thử trên Kênh Người Bán.
 
-Hệ quả thực tế: giới hạn trong `quy_dinh_shop.md` an toàn vì nó hẹp hơn các con số mà bạn thấy ở nguồn tham khảo. Nhưng trước khi dùng thật, hãy tự thử trên Kênh Người Bán.
+### Bước 4. Tạo thư mục riêng cho agent
 
-### 2.3. Nguyên tắc về sự thật (không trích điều luật)
+Mỗi lần chạy dùng **một thư mục riêng**, chỉ chép đúng bốn file đầu vào. Đây là hàng rào đơn giản nhất để agent không động vào thứ khác.
 
-Mô tả bán hàng không được nói nhiều hơn sự thật. Chuyện này là nguyên tắc chung với mọi quảng cáo, và chính trang trợ giúp Shopee cũng yêu cầu mô tả trung thực. Bài này **không trích điều luật cụ thể** vì chưa đọc nguồn. Việc cần làm: nhờ kế toán, luật sư hoặc người phụ trách pháp chế xem lại quy định về quảng cáo mỹ phẩm và công bố mỹ phẩm trước khi đăng thật.
+Windows (PowerShell), chạy trong thư mục chứa `du-lieu/`:
 
-## Bước 3. Viết prompt giao việc (6 phần)
+```lenh
+mkdir lan-chay-1
+copy du-lieu\thong_so.csv lan-chay-1\
+copy du-lieu\quy_dinh_shop.md lan-chay-1\
+copy du-lieu\tu_cam.txt lan-chay-1\
+copy du-lieu\mau_dau_ra.csv lan-chay-1\
+```
 
-Prompt dưới đây dùng đúng khung: Vai trò, Bối cảnh, Nhiệm vụ, Các bước, Định dạng ra, Ràng buộc. **Đây là bản đã dùng thật, nguyên văn, không sửa sau khi thấy kết quả** (file `ket-qua/prompt-v1.txt`).
+macOS hoặc Linux:
 
-![Prompt giao việc](anh/01-prompt-giao-viec.webp)
+```lenh
+mkdir lan-chay-1
+cp du-lieu/thong_so.csv du-lieu/quy_dinh_shop.md du-lieu/tu_cam.txt du-lieu/mau_dau_ra.csv lan-chay-1/
+```
 
-*Ảnh dựng từ nội dung `prompt-v1.txt` (HTML sang PNG), không phải ảnh chụp trực tiếp cửa sổ agent.*
+`mkdir` tạo thư mục, `copy` hoặc `cp` chép file.
 
-```text
+!!! warning "Đừng để file đáp án và máy kiểm trong thư mục này"
+    Ở bài 2 bạn dùng file đáp án (`dap-an.json`) và bộ chấm để kiểm. Chúng **không bao giờ** nằm trong `lan-chay-1`. Agent chạy được lệnh liệt kê file, thấy đáp án thì phép đo vô nghĩa. **[Đo được]** Trong bài toán báo giá của chuỗi này, một lần Antigravity đã đi mở file đáp án nằm ngoài thư mục làm việc.
+
+### Bước 5. Mở agent trong thư mục vừa tạo
+
+Mở cửa sổ dòng lệnh **đúng thư mục `lan-chay-1`**, rồi gõ một trong hai lệnh:
+
+```lenh
+cd lan-chay-1
+claude
+```
+
+hoặc, nếu dùng Antigravity:
+
+```lenh
+cd lan-chay-1
+agy
+```
+
+`cd` là đi vào thư mục. `claude` hoặc `agy` mở agent tại thư mục đó. Chưa cài? Xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md).
+
+!!! see "Bạn sẽ thấy"
+    Một khung chat trong cửa sổ dòng lệnh, chờ bạn gõ. Nếu agent hỏi bạn có tin tưởng thư mục này không, chỉ đồng ý khi đúng là `lan-chay-1`. Mở nhầm thư mục thì thoát agent (cách thoát: xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)) rồi `cd` lại.
+
+### Bước 6. Dán prompt giao việc
+
+Bấm **Sao chép**, dán vào khung chat của agent, nhấn Enter. Prompt có 6 phần: vai trò, bối cảnh, nhiệm vụ, các bước, định dạng ra, ràng buộc. **Đừng sửa** nếu bạn muốn đối chiếu với bài 2.
+
+```prompt
 # Vai trò
 Bạn là nhân viên nội dung sàn thương mại điện tử của shop mỹ phẩm "Vườn Nhỏ" (shop giả để học). Bạn viết cẩn thận, không bao giờ nói điều bảng thông số không nói.
 
@@ -107,74 +148,87 @@ Các file: nhap_hang_loat.csv, nhap_hang_loat.xlsx, kiem.py, bao_cao_kiem.md, đ
 - Giữ giọng thương hiệu nhất quán cho cả 40 sản phẩm.
 ```
 
-Vì sao từng phần quan trọng:
+![Prompt giao việc](anh/01-prompt-giao-viec.webp)
 
-- **Vai trò** đặt chuẩn mực "cẩn thận, không nói điều bảng không nói" ngay từ câu đầu.
-- **Bối cảnh** nói rõ file nào là sự thật, file nào là lời đồn. Thiếu câu về `ghi_chu_noi_bo` thì agent có thể coi đó là thông tin.
-- **Các bước** có bước 5 bắt agent viết script tự kiểm. Đây là cách buộc agent tự tìm lỗi chứ không chỉ "viết xong".
-- **Ràng buộc** có điều "không chắc thì ghi `CẦN BỔ SUNG` hoặc `CẦN NGƯỜI QUYẾT`, không đoán". Lệnh này quan trọng nhất của cả bài.
+*Prompt trên, dựng lại từ nội dung `prompt-giao-viec.txt` (HTML sang PNG), không phải ảnh chụp trực tiếp cửa sổ agent.*
 
-## Bước 4. Chuẩn bị thư mục cho agent
+!!! see "Bạn sẽ thấy"
+    Agent đọc bốn file, viết 40 dòng bằng một script, viết `kiem.py` để tự kiểm, chạy, rồi báo cáo. Nó có thể **xin quyền** ghi file hoặc chạy lệnh: chọn cho phép (chỉ trong `lan-chay-1`). Khi xong, thư mục có thêm `nhap_hang_loat.csv`, `nhap_hang_loat.xlsx`, `kiem.py`, `bao_cao_kiem.md`.
 
-Luôn cho agent làm trong một thư mục riêng, chỉ chứa những gì nó cần:
+!!! stuck "Agent xin quyền hoài, hoặc chữ tiếng Việt báo lỗi khi chạy Python?"
+    - **Xin quyền nhiều lần:** bình thường. Đọc câu nó xin, chỉ đồng ý nếu nằm trong `lan-chay-1`. Nó đòi sửa file ngoài thư mục hoặc dùng internet thì từ chối.
+    - **`UnicodeEncodeError` (cp1252) trên Windows:** Python in tiếng Việt lỗi. Gõ: "Chạy lại bằng `python -X utf8`".
+    - **Agent chạy lâu:** Antigravity mất 756 giây ở lần có log. Chưa thấy lỗi thì cứ chờ.
 
-1. Tạo thư mục trống, ví dụ `runs\claude`.
-2. Chép vào đúng 4 file: `thong_so.csv`, `quy_dinh_shop.md`, `tu_cam.txt`, `mau_dau_ra.csv`.
-3. **Không chép** `dap-an.json` hay `sinh_du_lieu.py` vào đó. Đáp án đúng để ngoài, chỉ dùng khi chấm. Đây là cách giữ cho phép đo công bằng.
+### Bước 7. Xem nhanh rồi sang bài 2
 
-## Bước 5. Giao việc
+Chưa cần chấm. Mở `bao_cao_kiem.md` đọc báo cáo của agent, rồi mở `nhap_hang_loat.xlsx` xem vài dòng. **Chưa tin con số nào, kể cả câu "đã sạch 0 lỗi"** cho đến khi chấm ở bài 2.
 
-Bạn có hai cách.
+## Vì sao prompt viết như vậy
 
-**Cách A, dùng giao diện (không cần gõ lệnh dài).** Mở thư mục đó trong Claude Code hoặc Antigravity, dán nguyên prompt ở trên vào ô chat, chờ. Khi agent hỏi quyền ghi file thì chọn cho phép trong thư mục này.
+| Chỗ trong prompt | Để làm gì |
+|---|---|
+| Vai trò: "không bao giờ nói điều bảng thông số không nói" | Đặt chuẩn mực ngay câu đầu |
+| Bối cảnh nói rõ `ghi_chu_noi_bo` là lời đồn | Thiếu câu này, agent có thể coi lời đồn là thông tin |
+| Bước 2 liệt kê các kiểu ghi "thiếu" (`?`, `N/A`...) | Để agent không coi `?` là một giá trị |
+| Bước 5 bắt viết `kiem.py` tự kiểm | Buộc agent tự tìm lỗi, nhưng nó chỉ tìm được lỗi nó nghĩ ra (bài 2) |
+| Ràng buộc "không chắc thì ghi `CẦN BỔ SUNG` / `CẦN NGƯỜI QUYẾT`" | Câu quan trọng nhất của cả bài |
 
-**Cách B, chạy bằng lệnh (để lưu log và lặp lại được).** Gom prompt vào file `prompt-v1.txt`, rồi trong cửa sổ PowerShell, đứng trong thư mục làm việc, chạy:
+**Prompt không đổi sau khi thấy kết quả.** Chúng tôi không chỉnh prompt cho agent làm đẹp hơn. Nếu bạn sửa prompt, giữ cả hai bản và ghi rõ đã sửa gì (ví dụ `prompt-v2`).
 
-```powershell
-# Claude Code: -p nghĩa là chạy một lần rồi thoát (không hội thoại), --allowedTools cho phép đúng các công cụ cần
-claude -p (Get-Content prompt-v1.txt -Raw) --permission-mode acceptEdits --allowedTools "Read,Write,Edit,Glob,Grep,Bash"
+## Đào sâu: quy định thật của sàn, tìm được gì và chưa xác minh gì
 
-# Antigravity: cờ này bỏ hỏi quyền, nên CHỈ dùng trong thư mục riêng chỉ chứa dữ liệu giả
-agy -p (Get-Content prompt-v1.txt -Raw) --dangerously-skip-permissions
+Chúng tôi mất khoảng 10 phút tìm và đọc. Kết quả, ghi đúng mức chắc chắn:
+
+- **[Nguồn]** Shopee Việt Nam, trang trợ giúp "Quy định về đăng bán sản phẩm trên Shopee" (bản trước, cập nhật 15/3/2024): [liên kết](https://help.shopee.vn/portal/4/article/107999-QUY-%C4%90%E1%BB%8ANH-V%E1%BB%80-%C4%90%C4%82NG-B%C3%81N-S%E1%BA%A2N-PH%E1%BA%A8M-TR%C3%8AN-SHOPEE-(phi%C3%AAn-b%E1%BA%A3n-tr%C6%B0%E1%BB%9Bc)). Trang **không** ghi số ký tự tối đa cho tên. Nó yêu cầu tên tiếng Việt có dấu, không ký tự đặc biệt, không viết tắt, khớp hình ảnh; cấm các từ như "Sản phẩm hot", "Bán chạy", "Giảm giá", "Miễn phí vận chuyển" trong tên. Mô tả phải trung thực, không lập lờ; không so sánh trực tiếp giá, chất lượng với người bán khác. Nội dung này chúng tôi đọc qua công cụ tóm tắt trang, bạn nên mở link đọc lại nguyên văn. Bản này tự ghi là "phiên bản trước", có thể đã cũ.
+- **Chưa xác minh:** giới hạn số ký tự hiện hành của tiêu đề và mô tả trên Shopee Việt Nam. Trang Seller Education Hub tải về không có nội dung đọc được. Một tài liệu mass upload của Shopee Malaysia (từ kết quả tìm kiếm, chưa mở file) nêu tên 20 đến 120 ký tự, mô tả 20 đến 3000 ký tự, nhưng đó là thị trường khác, không dùng làm căn cứ cho Việt Nam.
+- **Chưa xác minh (đọc qua kết quả tìm kiếm, chưa đọc trọn trang):** [Trung tâm người bán TikTok Shop Việt Nam](https://seller-vn.tiktok.com/university/essay?knowledge_id=10008556&lang=en) nói tiêu đề tối thiểu 25 ký tự, mỗi ý bán hàng trong mô tả dưới 250 ký tự. Không tìm thấy mức tối đa chính thức.
+- **Chưa tìm thấy:** danh sách từ cấm chính thức, đầy đủ của sàn. Nhiều bài blog liệt kê nhưng không phải nguồn chính thức. Danh sách trong bài là **của shop**.
+- **Nguyên tắc về sự thật:** mô tả bán hàng không được nói nhiều hơn sự thật. Bài này **không trích điều luật cụ thể** vì chưa đọc nguồn; nhờ người phụ trách pháp chế hoặc luật sư xem quy định về quảng cáo và công bố mỹ phẩm trước khi đăng thật.
+
+Việc cần làm trước khi đăng thật: mở trang đăng sản phẩm trên Kênh Người Bán, thử dán một tiêu đề dài và một mô tả dài để biết giới hạn hiện hành, rồi sửa `quy_dinh_shop.md`.
+
+## Đào sâu: cách B, chạy không cần ngồi cạnh (cách chúng tôi dùng để ghi log)
+
+`-p` là chế độ "nhận một prompt, làm xong rồi thoát", `stream-json` ghi từng sự kiện thành một dòng JSON để giữ log gốc. Trong thư mục `lan-chay-1` (PowerShell):
+
+```lenh
+claude -p (Get-Content ..\du-lieu\prompt-giao-viec.txt -Raw) --output-format stream-json --verbose --permission-mode acceptEdits --allowedTools "Read,Write,Edit,Glob,Grep,Bash"
 ```
 
-Giải thích từng phần:
+Chúng tôi đã chạy thử dạng lệnh này với một prompt một từ: kết thúc mã 0 và in ra các dòng JSON. Với Antigravity, chúng tôi dùng dạng `agy -p "<nội dung prompt>" --output-format stream-json --dangerously-skip-permissions`.
 
-- `claude -p` / `agy -p`: đưa prompt cho agent và để nó làm một mạch.
-- `--permission-mode acceptEdits`: cho phép sửa file mà không hỏi từng lần.
-- `--allowedTools ...`: chỉ cho dùng các công cụ liệt kê (đọc, ghi, tìm, chạy lệnh).
-- `--dangerously-skip-permissions`: bỏ toàn bộ hỏi quyền. Đúng như tên gọi, **nguy hiểm**: agent chạy toàn quyền trên máy. Prompt có câu "chỉ đọc và ghi trong thư mục hiện tại", nhưng đó chỉ là lời dặn, không phải rào chắn. Hãy tự chạy trong máy hoặc thư mục sao lưu, không dùng dữ liệu thật.
-
-Trong bài này chúng tôi dùng script `agent_run.py` bọc quanh hai lệnh trên để lưu log gốc (`*.raw.jsonl`) và bản chuẩn hóa (`*.json`). Ảnh "đang làm" ở bài 2 được dựng từ các log đó.
+**Cẩn thận:** `--dangerously-skip-permissions` cho agent chạy lệnh không hỏi. Chỉ dùng trong thư mục riêng, với dữ liệu giả. Câu "chỉ đọc và ghi trong thư mục hiện tại" trong prompt chỉ là lời dặn, chưa phải hàng rào thật.
 
 ## Lỗi thường gặp ở bước chuẩn bị
 
-| Lỗi | Hậu quả | Cách tránh |
-|---|---|---|
-| Lời đồn nằm chung cột với thông số | agent chép lời đồn thành mô tả | tách cột riêng và nói rõ trong prompt |
-| Không nói ô "?" nghĩa là thiếu | agent coi "?" là một giá trị | liệt kê các kiểu ghi "không có" |
-| Để đáp án trong thư mục agent làm việc | phép đo vô nghĩa | giữ `dap-an.json` ở nơi khác |
-| Sửa prompt cho "đẹp" sau khi thấy kết quả | không còn so sánh được | đổi prompt thì đặt tên `prompt-v2`, giữ cả hai |
-| Tin giới hạn ký tự trong blog | đăng lỗi hoặc cắt tiêu đề | thử trực tiếp trên Kênh Người Bán |
+| Triệu chứng | Cách xử lý |
+|---|---|
+| Lời đồn nằm chung cột với thông số, agent chép lời đồn | Tách cột riêng và nói rõ trong prompt |
+| Agent coi "?" là một giá trị | Liệt kê các kiểu ghi "không có" trong prompt |
+| Để đáp án trong thư mục agent làm việc | Giữ `dap-an.json` ở nơi khác (xem Bước 4) |
+| Sửa prompt "cho đẹp" sau khi thấy kết quả | Đổi prompt thì đặt tên `prompt-v2`, giữ cả hai để so |
+| Tin giới hạn ký tự trong blog | Thử trực tiếp trên Kênh Người Bán |
+| `UnicodeEncodeError` (cp1252) trên Windows | Thêm `-X utf8` vào lệnh `python` |
 
 ## Checklist cuối bài 1
 
-- [ ] Đã mở `thong_so.csv` và tìm được ít nhất 5 dòng bẫy trong ảnh.
-- [ ] Đã đọc `quy_dinh_shop.md` và phân biệt giả định của shop với quy định của sàn.
-- [ ] Đã tạo thư mục riêng cho agent, chỉ chứa 4 file đầu vào.
-- [ ] Đã lưu prompt vào `prompt-v1.txt` và **không** sửa nó từ đây.
-- [ ] `dap-an.json` nằm ngoài thư mục agent.
+- [ ] Mở được `thong_so.xlsx`, thấy 40 dòng, và tìm được ít nhất 5 dòng bẫy.
+- [ ] Đã đọc `quy_dinh_shop.md`, phân biệt giả định của shop với quy định của sàn.
+- [ ] Tạo thư mục riêng cho lần chạy, chỉ có bốn file đầu vào.
+- [ ] `dap-an.json` và máy kiểm nằm ngoài thư mục agent.
+- [ ] Đã dán prompt 6 phần, không sửa nội dung, và agent tạo đủ bốn file kết quả.
 
 ## Việc cần người làm
 
 - Chủ shop xác nhận giọng thương hiệu và danh sách từ cấm.
 - Người phụ trách sàn kiểm giới hạn độ dài hiện hành trên Kênh Người Bán.
-- Người phụ trách pháp chế/ luật sư xem lại các cụm "đã công bố", "chính hãng", "an toàn" trước khi cho phép dùng.
-- Người nhập liệu điền thông số còn thiếu (9 SKU trong bài này).
+- Người phụ trách pháp chế hoặc luật sư xem lại các cụm "đã công bố", "chính hãng", "an toàn" trước khi cho phép dùng.
+- Người nhập liệu điền thông số còn thiếu (9 sản phẩm trong bài này).
 
 ## Giới hạn
 
-- Dữ liệu là giả và gọn (40 SKU, 14 cột). Bảng thật của bạn sẽ lộn xộn hơn.
-- Bẫy trong bài là bẫy chúng tôi chủ động cài; bẫy thật ngoài đời đa dạng hơn.
-- Giới hạn độ dài là giả định; quy định sàn chưa xác minh đầy đủ.
+- Dữ liệu giả và gọn (40 sản phẩm, 14 cột). Bảng thật của bạn sẽ lộn xộn hơn; bẫy trong bài là bẫy chúng tôi chủ động cài.
+- Giới hạn độ dài là giả định; quy định của sàn chưa xác minh đầy đủ (xem phần Đào sâu).
 - Bài này không đánh giá chuyện mô tả có "hay", có thuyết phục bán hàng hay không; chỉ đo chuyện đúng với bảng.
+- Kết quả chạy và cách chấm ở **bài 2** ([cap-01-chay-that-va-kiem-tra.md](cap-01-chay-that-va-kiem-tra.md)).

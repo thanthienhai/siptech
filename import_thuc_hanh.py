@@ -2,7 +2,7 @@
 
 Dùng:  python import_thuc_hanh.py <thư mục thuc-hanh-coding-agent>
 Mỗi bài toán thành một thư mục content/th-<tên>/ gồm:
-  meta.json, 00-README.md, cap-00/01/02-*.md (từ bai-1/2/3), anh/*.webp, du-lieu.zip, bo-cham.zip
+  meta.json, 00-README.md, cap-00..03-*.md (từ bai-1..4), anh/*.webp, du-lieu.zip, bo-cham.zip (nếu có)
 KHÔNG đưa lên site: logs/ (log gốc của agent), runs/, bất cứ file nào ngoài du-lieu/, ket-qua/, anh/.
 Chạy lại được: xóa và ghi đè content/th-*.
 """
@@ -15,6 +15,11 @@ DST = Path(__file__).parent / "content"
 UPDATED = "2026-11-21"
 
 META = {
+    "00-bat-dau-voi-coding-agent": dict(name="Bắt đầu với coding agent", icon="zap", order=59, code="4 bài",
+        tag="Cài và dùng Claude Code hoặc Antigravity khi chưa biết code",
+        desc="Cài một coding agent, làm quen cửa sổ dòng lệnh, giao việc đầu tiên trong thư mục riêng và các quy tắc an toàn trước khi làm các bài toán thực hành.",
+        out="Một agent chạy được trên máy bạn, một thư mục thử an toàn, một prompt giao việc đầu tiên",
+        tags=["cài đặt", "claude code", "antigravity", "dòng lệnh", "người mới"]),
     "01-doi-soat-sao-ke-ngan-hang": dict(name="Đối soát sao kê ngân hàng", icon="bars", order=60,
         tag="Ghép từng dòng sao kê với sổ đơn hàng, tìm tiền thiếu, thừa, trùng",
         desc="Dùng coding agent viết script đối soát; số tiền do code tính, ca mơ hồ chuyển người quyết. Có dữ liệu giả, lần chạy thật và bảng chấm.",
@@ -74,14 +79,21 @@ def zip_dir(src_dir, out_zip, skip=()):
                 z.write(f, f.relative_to(src_dir.parent).as_posix())
 
 
+DOWNLOAD_TAIL = "\nLog gốc của các lần chạy không được đăng ở đây. Bấm vào ảnh trong bài để xem cỡ lớn.\n"
+
 for old in DST.glob("th-*"):
     shutil.rmtree(old)
 
 for folder, m in META.items():
     sdir = SRC / folder
+    if not sdir.exists():
+        print("bỏ qua (chưa có thư mục nguồn):", folder)
+        continue
     slug = "th-" + re.sub(r"^\d+-", "", folder)
     d = DST / slug
     d.mkdir(parents=True)
+    has_data = (sdir / "du-lieu").is_dir()
+    has_grader = (sdir / "ket-qua").is_dir()
     # đặt tên file mới: bai-N-x.md -> cap-0(N-1)-x.md
     lessons = sorted(sdir.glob("bai-*.md"))
     rename = {}
@@ -95,19 +107,25 @@ for folder, m in META.items():
         text = re.sub(r"(anh/[\w.\-]+)\.png", r"\1.webp", text)
         text = text.replace("../../an-toan-du-lieu-va-phap-ly-vn.md", "../an-toan-du-lieu-va-phap-ly-vn.md")
         if f.name == "00-README.md":
-            text = text.rstrip() + (
-                "\n\n## Tải về\n\n"
-                "- [Dữ liệu mẫu (du-lieu.zip)](du-lieu.zip): dữ liệu giả, kèm script sinh dữ liệu và bản giao việc.\n"
-                "- [Bộ chấm và kết quả mẫu (bo-cham.zip)](bo-cham.zip): đáp án, script chấm và đầu ra của các lần chạy. "
-                "Nếu bạn tự chạy agent, đừng để file này trong thư mục làm việc của agent.\n\n"
-                "Log gốc của các lần chạy không được đăng ở đây.\n")
+            if has_data or has_grader:
+                dl = "\n\n## Tải về\n\n"
+                if has_data:
+                    dl += "- [Dữ liệu mẫu (du-lieu.zip)](du-lieu.zip): dữ liệu giả, kèm script sinh dữ liệu và bản giao việc.\n"
+                if has_grader:
+                    dl += ("- [Bộ chấm và kết quả mẫu (bo-cham.zip)](bo-cham.zip): đáp án, script chấm và đầu ra của các lần chạy. "
+                           "Nếu bạn tự chạy agent, đừng để file này trong thư mục làm việc của agent.\n")
+                text = text.rstrip() + dl + DOWNLOAD_TAIL
             (d / "00-README.md").write_text(text, encoding="utf-8")
         else:
             (d / rename[f.name]).write_text(text, encoding="utf-8")
-    convert_images(sdir / "anh", d / "anh")
-    zip_dir(sdir / "du-lieu", d / "du-lieu.zip")
-    zip_dir(sdir / "ket-qua", d / "bo-cham.zip", skip=("runs",))
-    meta = dict(name=m["name"], code="3 bài", icon=m["icon"], order=m["order"], status="draft", updated=UPDATED,
+    if (sdir / "anh").is_dir():
+        convert_images(sdir / "anh", d / "anh")
+    if has_data:
+        zip_dir(sdir / "du-lieu", d / "du-lieu.zip")
+    if has_grader:
+        zip_dir(sdir / "ket-qua", d / "bo-cham.zip", skip=("runs",))
+    meta = dict(name=m["name"], code=m.get("code", "4 bài"), icon=m["icon"], order=m["order"], status="draft", kind="thuc-hanh", updated=UPDATED,
                 tag=m["tag"], desc=m["desc"], out=m["out"], tags=m["tags"], step=None, step_label="")
     (d / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(slug, len(rename), "bài,", len(list((d / "anh").glob("*.webp"))), "ảnh")
+    n_img = len(list((d / "anh").glob("*.webp"))) if (d / "anh").exists() else 0
+    print(slug, len(rename), "bài,", n_img, "ảnh")

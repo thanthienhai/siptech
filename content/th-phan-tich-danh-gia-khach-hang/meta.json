@@ -1,9 +1,10 @@
 {
   "name": "Phân tích đánh giá của khách",
-  "code": "3 bài",
+  "code": "4 bài",
   "icon": "chat",
   "order": 63,
   "status": "draft",
+  "kind": "thuc-hanh",
   "updated": "2026-11-21",
   "tag": "Từ hàng trăm review đời thường ra chủ đề, ca nguy cấp và việc nên sửa trước",
   "desc": "Dùng coding agent phân tích 250 đánh giá; số đếm do code, mọi trích dẫn kiểm nguyên văn, mỉa mai chuyển người đọc.",

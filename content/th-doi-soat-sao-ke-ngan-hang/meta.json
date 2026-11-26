@@ -1,9 +1,10 @@
 {
   "name": "Đối soát sao kê ngân hàng",
-  "code": "3 bài",
+  "code": "4 bài",
   "icon": "bars",
   "order": 60,
   "status": "draft",
+  "kind": "thuc-hanh",
   "updated": "2026-11-21",
   "tag": "Ghép từng dòng sao kê với sổ đơn hàng, tìm tiền thiếu, thừa, trùng",
   "desc": "Dùng coding agent viết script đối soát; số tiền do code tính, ca mơ hồ chuyển người quyết. Có dữ liệu giả, lần chạy thật và bảng chấm.",

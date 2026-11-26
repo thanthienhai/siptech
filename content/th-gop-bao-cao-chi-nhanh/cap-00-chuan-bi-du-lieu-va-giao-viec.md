@@ -1,108 +1,141 @@
-# Bài 1: Chuẩn bị dữ liệu và giao việc cho agent
+# Bài 1. Chuẩn bị dữ liệu và giao việc gộp báo cáo chi nhánh
 
-> Dữ liệu dùng trong bài là **dữ liệu giả để học** (công ty "Mẫu An Phát", 6 chi nhánh bịa). Xem `00-README.md`.
+!!! info "Bài này"
+    - **Bạn làm gì:** xem 6 file Excel doanh thu "mỗi nơi một kiểu", chụp mã băm để chứng minh không sửa file gốc, rồi dán prompt giao việc gộp báo cáo cho agent.
+    - **Mất bao lâu:** khoảng 30 phút chuẩn bị **[Đề xuất, chưa đo]**. Agent chạy thêm 12 đến 17 phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 718 giây, Antigravity 1.045 giây, n=1).
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel để xem file, Python 3 để chạy lại script ở bài 3.
+    - **Kết quả:** thư mục `lan-chay-1` có script `gop.py` và thư mục `ra/` gồm 7 file: bảng hợp nhất, 3 bảng tổng hợp, việc cần hỏi chi nhánh, bảng kiểm tra tổng, báo cáo. Chấm đúng sai ở bài 2.
 
-## Mục tiêu đo được
+> Dữ liệu trong bài là **dữ liệu giả để học**: công ty "Mẫu An Phát", 6 chi nhánh, mã hàng, số chứng từ và số tiền đều do chương trình `sinh_du_lieu.py` bịa ra với hạt giống cố định. Không có dữ liệu của doanh nghiệp thật.
 
-Sau bài này bạn có:
+## Bài toán trong một phút
 
-1. Một thư mục làm việc an toàn: 6 file chi nhánh để trong `goc/` (chỉ đọc), danh mục sản phẩm/chi nhánh, và một bản **mã băm SHA-256** của 6 file để sau này chứng minh "không sửa file gốc".
-2. Hiểu 6 file lộn xộn theo 6 kiểu khác nhau và liệt kê được các "bẫy" trước khi giao cho agent.
-3. Một prompt giao việc theo khung 6 phần, dùng được ngay.
-4. Một **đáp án** (do người, không do agent, cất ngoài thư mục agent làm việc) để chấm ở bài 2.
+Công ty có 6 chi nhánh: Hà Nội (HN), Hải Phòng (HP), Đà Nẵng (DN), Cần Thơ (CT), Biên Hòa (BH), Nha Trang (NT). Cuối tháng, mỗi nơi gửi về một file Excel doanh thu. Không ai thống nhất mẫu:
 
-Thời gian ước tính cho người mới: 30 đến 45 phút nếu chỉ làm theo bài **[Đề xuất, chưa đo]**; dữ liệu mẫu tải sẵn trong `du-lieu/`.
+- nơi thì tiêu đề nằm ở dòng 7 vì phía trên có dòng giới thiệu;
+- nơi thì ô ngày gộp theo ngày, nơi thì số tiền là **chữ** (`1.250.000đ`) nên Excel không cộng được;
+- nơi thì ngày thành `10/05/2026` mà không ai biết là mùng 5 tháng 10 hay mùng 10 tháng 5.
 
-## 1. Bài toán một câu
+Kế toán trung tâm thường mất một hai ngày chép tay vào file tổng, rồi vẫn không chắc tổng có khớp với tổng từng chi nhánh. Việc này giao cho **agent** (chương trình AI tự đọc file, viết và chạy code) theo cách: agent viết **một script** `gop.py`, script mới là thứ đọc file và cộng tiền.
 
-Cuối tháng 6 chi nhánh gửi 6 file Excel doanh thu tháng 10/2026, mỗi nơi một kiểu. Ta cần: (a) một bảng hợp nhất chuẩn, (b) báo cáo tháng theo chi nhánh và theo sản phẩm, (c) danh sách việc phải hỏi lại chi nhánh, (d) bảng kiểm tra "tổng từng file có khớp tổng hợp nhất không; lệch ở đâu thì nêu rõ".
+!!! warning "Nguyên tắc số một: không sửa file gốc"
+    File chi nhánh gửi là **chứng cứ**. Nếu bạn mở rồi bấm Lưu, Excel có thể đổi định dạng ô hoặc cách lưu ngày, và về sau không ai chứng minh được chi nhánh đã gửi gì. Vì vậy: file gốc để riêng một thư mục `goc/`, agent **chỉ đọc**, mọi thứ agent tạo ra nằm chỗ khác, và chúng ta so mã băm trước và sau để chứng minh.
 
-## 2. Nguyên tắc số một: không sửa file gốc
+Hai nguyên tắc nữa xuyên suốt cả bài toán: **số tiền do code tính** (agent không "nhẩm" tổng) và **không chắc thì ghi CẦN NGƯỜI QUYẾT** (ví dụ ngày `10/09/2026` có thể là 10/9 hoặc 9/10: không có căn cứ thì để người chọn, không đoán thầm).
 
-File chi nhánh gửi là chứng cứ. Nếu bạn mở rồi bấm Lưu, Excel có thể đổi định dạng ô, đổi cách lưu ngày, thêm thông tin; về sau không còn chứng minh được chi nhánh đã gửi gì. Ba lớp bảo vệ, từ dễ đến chắc:
+## Các bước làm
 
-1. **Để file gốc trong một thư mục riêng tên `goc/`** và bảo agent trong prompt "chỉ đọc, không ghi" (chúng tôi làm điều này).
-2. **Chụp mã băm trước khi giao việc, so lại sau khi xong.** Mã băm là "dấu vân tay" của file; chỉ cần đổi một chữ là mã băm đổi. Lệnh trên Windows PowerShell:
-   ```powershell
-   cd thang-10
-   Get-FileHash goc\*.xlsx -Algorithm SHA256 | Select-Object Hash, Path | Out-File goc-truoc.txt
-   ```
-   Giải thích: `Get-FileHash` tính dấu vân tay từng file `.xlsx` trong `goc`; `Select-Object` chỉ giữ cột mã và đường dẫn; `Out-File` lưu vào `goc-truoc.txt`. Sau khi agent làm xong, chạy lại lệnh, lưu ra `goc-sau.txt` rồi so hai file: giống hệt là chưa bị sửa.
-3. **Đặt thuộc tính chỉ-đọc cho file gốc** (`attrib +R goc\*.xlsx` trên Windows). **[Đề xuất]**: chúng tôi *không* làm bước này trong lần chạy thật, vì muốn kiểm xem agent có tuân thủ lời dặn không; bạn dùng thật nên bật thêm lớp này.
+### Bước 1. Tải và giải nén dữ liệu mẫu
 
-Trong bài 2, `cham.py` so mã băm `goc/` của thư mục agent đã làm với bản gốc ban đầu. Kết quả **[Đo được]**: cả hai agent để nguyên file gốc.
+Tải [du-lieu.zip](du-lieu.zip), bấm chuột phải chọn **Extract All** (Windows) hoặc bấm đúp (macOS). Bạn có thư mục `du-lieu/` gồm:
 
-## 3. Xem từng file ở dạng thô: 6 chi nhánh, 6 kiểu
+| Thư mục / file | Nội dung |
+|---|---|
+| `thang-10/goc/` | 6 file `.xlsx` của 6 chi nhánh, tháng 10/2026 |
+| `thang-10/danh_muc_san_pham.csv`, `danh_muc_chi_nhanh.csv` | Mã và tên chuẩn của 8 sản phẩm, 6 chi nhánh |
+| `thang-11/`, `thang-11-doi-dinh-dang/` | Tháng 11 (dùng ở bài 3) |
+| `prompt-giao-viec.txt` | Prompt ở Bước 5, dạng file |
+| `sinh_du_lieu.py` | Script sinh lại dữ liệu giả (không cần dùng ở bài này) |
 
-Mở từng file bằng Excel (hoặc đọc ảnh dưới đây), **chưa sửa gì**. Hãy tự hỏi: hàng tiêu đề ở dòng nào? Cột nào là cột nào? Số tiền là số hay chữ? Ngày là ngày thật hay chữ? Cuối bảng có gì?
+File **đáp án** để chấm nằm riêng ở `ket-qua/dap-an-T10.json`. Đừng chép nó vào thư mục của agent (xem Bước 3).
 
-| CN | File | Kiểu lộn xộn (đã cài sẵn trong dữ liệu giả) |
-|---|---|---|
-| HN Hà Nội | `BC doanh thu T10 - HN.xlsx` | Ô **ngày gộp theo ngày** (ngày chỉ ghi ở dòng đầu của nhóm). **Tổng cuối bảng gõ tay, sai +100.000** so với tổng các dòng. Có ghi chú cuối bảng. |
-| HP Hải Phòng | `DoanhThu_HP_102026.xlsx` | Số dạng chữ `1.250.000đ`. Ngày dạng chữ `dd/mm/yyyy`. Dòng lộn xộn thứ tự. **3 dòng trùng số HĐ**. **4 đơn tháng 9 nhập trễ** (ngoài kỳ). **3 dòng ngày gõ kiểu `10/09/2026`** mà không có căn cứ để biết là 10/9 hay 9/10. |
-| DN Đà Nẵng | `Bao cao thang 10 - DN (final).xlsx` | Tiêu đề **tiếng Anh** (`Date`, `Qty`, `Unit price (VND)`, `Amount`). Ngày chữ **`mm/dd/yyyy`** cả file. Có 1 dòng **trả hàng** (số âm). |
-| CT Cần Thơ | `CT_T10_DoanhThu.xlsx` | **Hàng tiêu đề ở dòng 7** (phía trên là dòng giới thiệu). **Thiếu cả tuần 15-21/10**. 2 dòng sản phẩm **"Combo quà Tết 2026" không có trong danh mục**. Tổng cuối là công thức. |
-| BH Biên Hòa | `BienHoa-102026.xlsx` | Ô ngày là ngày thật nhưng **3 dòng bị đảo ngày/tháng** (ví dụ 4/10 thành 10/4). Có **dòng "Cộng tuần"** xen giữa dữ liệu (nếu cộng vào sẽ tính đôi). |
-| NT Nha Trang | `NhaTrang_doanhthu_T10.xlsx` | **Tiêu đề 2 tầng ô gộp**. Ngày `dd-mm-yy`. Số chữ kiểu `1,250,000`. **2 dòng thành tiền lệch SL x đơn giá** (+50.000). **2 dòng trùng chứng từ**. |
+### Bước 2. Mở xem 6 file ở dạng thô
 
-Chung cho cả 6 file: **tên sản phẩm viết nhiều kiểu** (`Gạo ST25 túi 5kg`, `Gao ST25 5kg`, `GẠO ST25 5KG`, `ST25 5kg`...), tiêu đề cột khác nhau (`Ngày`/`Ngày bán`/`Date`/`Ngày GD`; `SL`/`Số lượng`/`Qty`), có dòng ghi chú cuối bảng.
+Mở từng file trong `du-lieu/thang-10/goc/` bằng Excel, **chưa sửa gì, đừng bấm Lưu**. Hãy tự hỏi: hàng tiêu đề ở dòng nào? Số tiền là số hay chữ? Ngày là ngày thật hay chữ? Cuối bảng có gì?
+
+| CN | Kiểu lộn xộn chính (đã cài sẵn) |
+|---|---|
+| HN | Ô **ngày gộp** theo ngày; **tổng cuối bảng gõ tay, sai +100.000** |
+| HP | Số và ngày dạng **chữ**; 3 dòng **trùng** số HĐ; 4 đơn tháng 9 nhập trễ; 3 dòng ngày `10/09/2026` **mơ hồ** |
+| DN | Tiêu đề **tiếng Anh**; ngày kiểu Mỹ `mm/dd/yyyy`; 1 dòng **trả hàng** (số âm) |
+| CT | **Hàng tiêu đề ở dòng 7**; **thiếu cả tuần 15-21/10**; 2 dòng "Combo quà Tết 2026" **không có trong danh mục** |
+| BH | Xen dòng **"Cộng tuần"** (cộng vào sẽ tính đôi); 3 dòng ngày bị **đảo ngày/tháng** |
+| NT | **Tiêu đề 2 tầng** ô gộp; số chữ `1,250,000`; 2 dòng thành tiền **lệch** SL x đơn giá; 2 dòng trùng |
+
+Chung cho cả 6 file: tên sản phẩm viết nhiều kiểu (`Gạo ST25 túi 5kg`, `Gao ST25 5kg`, `GẠO ST25 5KG`...) và tiêu đề cột khác nhau (`Ngày`, `Ngày bán`, `Date`...).
 
 ![File Hà Nội: ô ngày gộp, tổng cuối bảng gõ tay](anh/02-du-lieu-HN.webp)
-*Hà Nội (dữ liệu giả). Dựng lại từ file .xlsx giả bằng code, không phải ảnh chụp cửa sổ Excel. Cột A: ngày gộp ô, dòng 151: tổng gõ tay 263.036.000.*
 
-![File Hải Phòng: số dạng chữ, ngày dạng chữ](anh/03-du-lieu-HP.webp)
-*Hải Phòng (dữ liệu giả). Dựng lại từ file giả bằng code. Số tiền là chữ `165.000đ`, ngày là chữ `24/10/2026`, dòng lộn xộn thứ tự.*
+*Hà Nội (dữ liệu giả), dựng lại từ file .xlsx giả bằng code, không phải ảnh chụp cửa sổ Excel. Cột A: ngày gộp ô. Dòng 151: tổng gõ tay 263.036.000.*
+
+![File Hải Phòng: số và ngày dạng chữ](anh/03-du-lieu-HP.webp)
+
+*Hải Phòng (dữ liệu giả), dựng lại từ file giả bằng code. Số tiền là chữ `165.000đ`, ngày là chữ `24/10/2026`, thứ tự dòng lộn xộn.*
 
 ![File Cần Thơ: hàng tiêu đề ở dòng 7, tổng là công thức](anh/04-du-lieu-CT.webp)
-*Cần Thơ (dữ liệu giả). Hàng tiêu đề ở dòng 7; dòng cuối là công thức `SUM`. Tuần 15-21/10 không có dòng nào (khó thấy bằng mắt khi bảng dài).*
 
-![File Nha Trang: tiêu đề 2 tầng, số dạng chữ](anh/05-du-lieu-NT.webp)
-*Nha Trang (dữ liệu giả). Tiêu đề 2 tầng ô gộp, ngày `01-10-26`, số `68,000` là chữ.*
+*Cần Thơ (dữ liệu giả), dựng lại từ file giả bằng code. Hàng tiêu đề ở dòng 7; dòng cuối là công thức `SUM`. Tuần 15-21/10 không có dòng nào, rất khó thấy bằng mắt khi bảng dài.*
 
-![File Biên Hòa: dòng Cộng tuần xen giữa dữ liệu](anh/06-du-lieu-BH.webp)
-*Biên Hòa (dữ liệu giả). Dòng "Cộng tuần" xen kẽ dòng bán hàng; ô ngày là ngày thật.*
+!!! see "Bạn sẽ thấy"
+    6 file, mỗi file một kiểu như bảng trên. Ba file còn lại (NT, BH, DN) xem ở mục "Đào sâu" cuối bài.
 
-![File Đà Nẵng: tiêu đề tiếng Anh, ngày mm/dd](anh/07-du-lieu-DN.webp)
-*Đà Nẵng (dữ liệu giả). Ngày `10/01/2026` thực ra là mùng 1 tháng 10 (kiểu Mỹ `mm/dd`).*
+### Bước 3. Tạo thư mục riêng cho agent và chụp mã băm file gốc
 
-## 4. Ca khó nhất: ngày dd/mm hay mm/dd
+Mỗi lần chạy dùng **một thư mục riêng**. Chép nguyên thư mục tháng 10 sang (gồm `goc/` và hai file danh mục). Windows (PowerShell), chạy trong thư mục chứa `du-lieu/`:
 
-Trong báo cáo tháng 10, ô `10/05/2026` ở file Đà Nẵng nghĩa là **mùng 5 tháng 10** (kiểu Mỹ: tháng trước, ngày sau). Còn ở file Hải Phòng (kiểu Việt: ngày trước, tháng sau) `05/10/2026` mới là mùng 5 tháng 10. Hai cách đọc khác hẳn nhau; công cụ như `pandas` mặc định đọc **tháng trước** nên bị đảo với chuỗi kiểu Việt **[Nguồn]** (link trong README).
-
-Cách xử lý đúng gồm ba loại, và đây cũng là cách chúng ta sẽ chấm:
-
-- **Suy ra có căn cứ rồi nói rõ căn cứ.** Ví dụ Đà Nẵng: mọi ô đều có dạng `10/..`; kỳ báo cáo là tháng 10 nên số đầu là tháng, tức `mm/dd`. Ví dụ Biên Hòa: ô ngày là ngày thật nhưng nằm giữa các dòng cùng ngày 4/10, và số phiếu tăng dần theo thời gian, nên ngày `2026-04-10` thực ra là 4/10 bị đảo.
-- **Không có căn cứ thì CẦN NGƯỜI QUYẾT.** Ví dụ Hải Phòng: 3 dòng `10/09/2026` trong một file kiểu `dd/mm`. Nếu theo `dd/mm` thì là **10/9** (ngoài kỳ; file có chú thích gồm 4 đơn tháng 9 nhập trễ nên không phi lý), nếu gõ nhầm kiểu `mm/dd` thì là **9/10** (trong kỳ). Số HĐ ngẫu nhiên, thứ tự dòng lộn xộn, không có cách nào chắc chắn. Việc đúng là **để trống ngày, ghi CẦN NGƯỜI QUYẾT, nêu cả hai cách đọc, hỏi chi nhánh**.
-- **Không bao giờ đoán thầm** rồi cộng tiền vào tổng.
-
-## 5. Dựng thư mục làm việc cho agent
-
-Mỗi lần chạy một agent dùng **một thư mục riêng** để các lần chạy không lẫn nhau. Cấu trúc:
-
+```lenh
+Copy-Item -Recurse du-lieu\thang-10 lan-chay-1
 ```
-runs/<tên-agent>/
-  goc/                       6 file .xlsx gốc (chép từ du-lieu/thang-10/goc)
-  danh_muc_san_pham.csv
-  danh_muc_chi_nhanh.csv
+
+macOS hoặc Linux:
+
+```lenh
+cp -r du-lieu/thang-10 lan-chay-1
 ```
-**Không để file đáp án trong thư mục này** (nếu agent nhìn thấy đáp án thì phép thử vô nghĩa). Đáp án `dap-an-T10.json` cất ở `ket-qua/`, ngoài thư mục agent. Chúng tôi dùng cả hai agent trên **cùng dữ liệu, cùng prompt**.
 
-Lệnh chép (PowerShell):
-```powershell
-Copy-Item -Recurse du-lieu\thang-10 runs\claude
-Copy-Item -Recurse du-lieu\thang-10 runs\agy
+Lệnh chép cả thư mục `thang-10` thành `lan-chay-1`. Tiếp theo chụp **mã băm** (SHA-256) của 6 file gốc, như "dấu vân tay": chỉ cần đổi một chữ trong file là mã đổi. Ghi ra file **bên ngoài** `lan-chay-1` để agent không động tới. Windows:
+
+```lenh
+Get-FileHash lan-chay-1\goc\*.xlsx | Select-Object Hash, @{Name='Tep';Expression={Split-Path $_.Path -Leaf}} | Out-File goc-truoc.txt
 ```
-Mỗi lệnh chép toàn bộ thư mục `thang-10` (gồm `goc/` và hai file danh mục) sang thư mục chạy riêng.
 
-## 6. Prompt giao việc (khung 6 phần)
+macOS hoặc Linux:
 
-Đây là prompt **dùng nguyên văn** (file `du-lieu/prompt-gop.txt`); chúng tôi **không sửa sau khi thấy kết quả**. Khung 6 phần: Vai trò, Bối cảnh, Nhiệm vụ, Các bước, Định dạng ra, Ràng buộc. Điểm đáng chú ý:
+```lenh
+shasum -a 256 lan-chay-1/goc/*.xlsx > goc-truoc.txt
+```
 
-- **Bước 2 bắt buộc viết một script `gop.py`** chạy lại được bằng lệnh `python gop.py goc ra --thang 2026-10`. Đây là bản lề của bài 3: tháng sau không cần agent.
-- **Định dạng ra** nêu đúng tên file và tên cột, để chấm bằng code được.
-- **Ràng buộc** có điều "không sửa file gốc", "số do code tính", và "không chắc thì ghi CẦN NGƯỜI QUYẾT".
+`Get-FileHash` (hoặc `shasum`) tính mã băm từng file `.xlsx`; kết quả lưu vào `goc-truoc.txt`. Bài 2 sẽ chạy lại lệnh này để so.
 
-```text
+```ketqua
+Hash                                                             Tep
+----                                                             ---
+4B06966A2DED2DA4CB67E1748E9068D491AA1F959767B8E2B9E07635658FDF8C Bao cao thang 10 - DN (final).xlsx
+713925394714A11F357060715C057685C29273A046998F34B5A984FFFD676EF0 BC doanh thu T10 - HN.xlsx
+46FCD14906A528942208F2C9259FA9F00D2CB6F5380B0CBB0788BF37597433F4 BienHoa-102026.xlsx
+...
+```
+
+!!! warning "Hai điều không được làm"
+    - **Đừng để file đáp án trong `lan-chay-1`.** Agent chạy được lệnh liệt kê file; thấy đáp án thì bài kiểm vô nghĩa. **[Đo được]** Trong bài toán báo giá của chuỗi này, một lần Antigravity đã đi mở file đáp án nằm ngoài thư mục làm việc.
+    - **Đừng mở file trong `goc/` rồi bấm Lưu.** Muốn xem thì mở bản trong `du-lieu/`. **[Đề xuất]** Khi dùng thật, đặt thêm thuộc tính chỉ-đọc cho file gốc (Windows: `attrib +R lan-chay-1\goc\*.xlsx`). Lần chạy của chúng tôi **không** bật lớp này, vì muốn kiểm xem agent có tuân thủ lời dặn không.
+
+### Bước 4. Mở agent trong thư mục vừa tạo
+
+Mở Terminal hoặc PowerShell **đúng thư mục `lan-chay-1`**, rồi gõ một trong hai lệnh:
+
+```lenh
+cd lan-chay-1
+claude
+```
+
+hoặc, nếu dùng Antigravity:
+
+```lenh
+cd lan-chay-1
+agy
+```
+
+`cd` là đi vào thư mục; `claude` hoặc `agy` mở agent tại thư mục đó. Chưa cài? Xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md).
+
+!!! see "Bạn sẽ thấy"
+    Một khung chat chờ bạn gõ. Nếu agent hỏi có tin tưởng thư mục này không, chỉ đồng ý khi đúng là `lan-chay-1`. Mở nhầm thư mục thì thoát agent (cách thoát: xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)) rồi `cd` lại.
+
+### Bước 5. Dán prompt giao việc
+
+Bấm **Sao chép**, dán vào khung chat của agent, nhấn Enter. Prompt có 6 phần (vai trò, bối cảnh, nhiệm vụ, các bước, định dạng ra, ràng buộc). **Đừng sửa** nếu bạn muốn đối chiếu kết quả với bài 2.
+
+```prompt
 ## 1. Vai trò
 Bạn là trợ lý kế toán quản trị của một công ty phân phối thực phẩm đóng gói (công ty giả "Mẫu An Phát"). Bạn làm việc cẩn thận, không đoán mò, và luôn chỉ ra chỗ mình không chắc.
 
@@ -142,41 +175,103 @@ Gộp 6 file thành một bảng hợp nhất chuẩn, lập báo cáo tổng h�
 - Nếu một chi nhánh thiếu dữ liệu một khoảng ngày thì nêu rõ khoảng ngày thiếu trong viec_can_hoi.csv, không tự điền số.
 ```
 
-![Prompt giao việc](anh/01-prompt-giao-viec.webp)
-*Prompt thật `du-lieu/prompt-gop.txt`, dựng thành ảnh để dễ đọc.*
+!!! see "Bạn sẽ thấy"
+    Agent xem từng file, viết `gop.py`, chạy, mở kết quả ra đọc lại, rồi báo cáo. Nó có thể **xin quyền** tạo file hoặc chạy lệnh: chỉ đồng ý khi việc nằm trong `lan-chay-1`. Khi xong, thư mục có thêm `gop.py` và `ra/` với 7 file: `hop_nhat.csv`, `tong_hop_chi_nhanh.csv`, `tong_hop_san_pham.csv`, `tong_hop_chi_nhanh_san_pham.csv`, `viec_can_hoi.csv`, `kiem_tra.csv`, `bao_cao.md`.
 
-## 7. Đáp án (để chấm ở bài 2)
+!!! stuck "Agent xin quyền hoài, chạy lâu, hoặc báo thiếu thư viện?"
+    - **Xin quyền nhiều lần:** bình thường, mỗi lần là một việc khác nhau. Đọc câu nó xin; thấy nó đòi sửa file trong `goc/`, ghi ra ngoài `lan-chay-1`, hoặc dùng internet thì từ chối.
+    - **Chạy lâu:** hai lần chạy của chúng tôi mất 12 và 17 phút. Chưa thấy lỗi thì cứ chờ.
+    - **`ModuleNotFoundError: No module named 'openpyxl'`:** thiếu thư viện đọc Excel. Gõ `pip install openpyxl` rồi bảo agent chạy lại *(chưa kiểm trên máy sạch)*.
 
-`du-lieu/sinh_du_lieu.py` sinh dữ liệu và sinh luôn `ket-qua/dap-an-T10.json` (đáp án đúng, biết chính xác từng dòng thật). Đáp án gồm: **901 dòng bán hàng xác nhận**, tổng **1.523.468.000 đ** (chia theo chi nhánh và theo sản phẩm), **3 dòng ngày mơ hồ** (tổng 2.391.000 đ, không tính vào tổng), 5 dòng trùng, 4 dòng ngoài kỳ, các ca đặc biệt (tổng sai, thiếu tuần, sản phẩm lạ, lệch thành tiền, dòng cộng tuần, trả hàng). Quy ước chấm:
+### Bước 6. Xem nhanh rồi sang bài 2
 
-- Dòng ngày mơ hồ: **đúng** nếu để trống ngày + CAN_NGUOI_QUYET + có trong `viec_can_hoi.csv`; không tính vào tổng.
+Chưa cần chấm. Mở `ra/bao_cao.md` đọc báo cáo, rồi mở `ra/kiem_tra.csv` và `ra/viec_can_hoi.csv` bằng Excel. **Chưa tin con số nào** cho đến khi chấm ở bài 2: agent có thể tự báo "đã khớp" mà vẫn sai.
+
+## Ngày dd/mm hay mm/dd: ca khó nhất
+
+Ô `10/05/2026` ở file Đà Nẵng nghĩa là mùng 5 tháng 10 (kiểu Mỹ, tháng trước ngày sau); ở file Hải Phòng (kiểu Việt) `05/10/2026` mới là mùng 5 tháng 10. Công cụ như `pandas` mặc định đọc **tháng trước** nên bị đảo với chuỗi kiểu Việt **[Nguồn]** (link ở `00-README.md`). Có ba cách xử lý, và đây cũng là cách chúng ta chấm:
+
+- **Suy ra có căn cứ rồi nói rõ căn cứ** (trạng thái `SUY_RA`).
+- **Không có căn cứ thì CẦN NGƯỜI QUYẾT:** để trống ngày, nêu cả hai cách đọc, hỏi chi nhánh.
+- **Không bao giờ đoán thầm** rồi cộng tiền vào tổng.
+
+Chi tiết từng ca ở mục "Đào sâu" bên dưới; bài 4 có prompt nhờ agent giải thích một dòng cụ thể.
+
+## Vì sao prompt viết như vậy
+
+| Chỗ trong prompt | Để làm gì |
+|---|---|
+| Bước 2: "viết MỘT script `gop.py` chạy lại được bằng `python gop.py goc ra --thang 2026-10`" | Bản lề của bài 3: tháng sau không cần agent, chỉ chạy lại script |
+| Định dạng ra có tên cột cụ thể | Để chấm bằng code được. Chỉ nói "lập báo cáo" thì mỗi lần ra một kiểu, không so được |
+| Ràng buộc "TUYỆT ĐỐI không sửa file trong `goc/`" | Hàng rào lời nói cho nguyên tắc số một; hàng rào thật là mã băm ở Bước 3 |
+| "Không chắc thì ghi CẦN NGƯỜI QUYẾT", "không được đoán thầm" ngày | Phần quan trọng nhất. Không có nó, agent có xu hướng chọn một cách đọc cho "đẹp" |
+| `kiem_tra.csv`: "khoản nào chưa giải thích được thì ghi CHƯA GIẢI THÍCH" | Để agent không làm tròn cho các con số khớp nhau |
+
+**Prompt không đổi sau khi thấy kết quả.** Chúng tôi không chỉnh prompt cho agent làm đẹp hơn. Nếu bạn sửa prompt sau lần chạy đầu, giữ cả hai bản và ghi rõ đã sửa gì.
+
+## Đào sâu: ba file còn lại
+
+![File Nha Trang: tiêu đề 2 tầng, số dạng chữ](anh/05-du-lieu-NT.webp)
+
+*Nha Trang (dữ liệu giả), dựng lại từ file giả bằng code. Tiêu đề 2 tầng ô gộp, ngày `01-10-26`, số `68,000` là chữ.*
+
+![File Biên Hòa: dòng Cộng tuần xen giữa dữ liệu](anh/06-du-lieu-BH.webp)
+
+*Biên Hòa (dữ liệu giả), dựng lại từ file giả bằng code. Dòng "Cộng tuần" xen kẽ dòng bán hàng; ô ngày là ngày thật.*
+
+![File Đà Nẵng: tiêu đề tiếng Anh, ngày mm/dd](anh/07-du-lieu-DN.webp)
+
+*Đà Nẵng (dữ liệu giả), dựng lại từ file giả bằng code. Ngày `10/01/2026` thực ra là mùng 1 tháng 10 (kiểu Mỹ `mm/dd`).*
+
+## Đào sâu: cách xử lý ngày, từng ca
+
+- **Đà Nẵng, suy ra được:** mọi ô đều có dạng `10/..`; kỳ báo cáo là tháng 10 nên số đầu là tháng, tức `mm/dd`.
+- **Biên Hòa, suy ra được:** ô ngày là ngày thật nhưng nằm giữa các dòng cùng ngày 4/10, và số phiếu tăng dần theo thời gian, nên ngày `2026-04-10` thực ra là 4/10 bị đảo.
+- **Hải Phòng, không suy ra được:** 3 dòng `10/09/2026` trong một file kiểu `dd/mm`. Theo `dd/mm` là **10/9** (ngoài kỳ; file có chú thích gồm 4 đơn tháng 9 nhập trễ nên không phi lý). Nếu gõ nhầm kiểu `mm/dd` thì là **9/10** (trong kỳ). Số HĐ ngẫu nhiên, thứ tự dòng lộn xộn, không có cách nào chắc chắn. Việc đúng: để trống ngày, ghi CẦN NGƯỜI QUYẾT, nêu cả hai cách đọc, hỏi chi nhánh.
+
+## Đào sâu: đáp án và quy ước chấm
+
+Chương trình `du-lieu/sinh_du_lieu.py` sinh dữ liệu **và** đáp án `ket-qua/dap-an-T10.json` (biết chính xác từng dòng thật): **901 dòng bán hàng xác nhận**, tổng **1.523.468.000 đ**, **3 dòng ngày mơ hồ** (tổng 2.391.000 đ, không tính vào tổng), 5 dòng trùng, 4 dòng ngoài kỳ, và các ca đặc biệt (tổng sai, thiếu tuần, sản phẩm lạ, lệch thành tiền, dòng cộng tuần, trả hàng). Quy ước chấm, **chúng tôi quyết trước khi chạy**:
+
+- Dòng ngày mơ hồ: đúng nếu để trống ngày + CAN_NGUOI_QUYET + có trong `viec_can_hoi.csv`; không tính vào tổng.
 - Dòng sản phẩm lạ: vẫn tính vào doanh thu với mã `CHUA_XAC_DINH`.
 - Thành tiền lệch SL x giá: giữ số chi nhánh ghi, đưa vào việc cần hỏi.
 
-Sinh lại bằng: `python -X utf8 du-lieu\sinh_du_lieu.py` (giải thích: chạy chương trình bằng Python, `-X utf8` để tiếng Việt không bị lỗi font; hạt giống cố định nên ra đúng dữ liệu như trong bài).
+Sinh lại dữ liệu (cần Python 3 và thư viện `xlsxwriter`, `openpyxl`), chạy trong thư mục `du-lieu`:
 
-## Lỗi thường gặp
+```lenh
+python -X utf8 sinh_du_lieu.py
+```
 
-- **Mở file gốc rồi Lưu**: đổi định dạng ô. Dùng bản sao và chỉ-đọc.
-- **Để đáp án trong thư mục agent làm việc**: kết quả không còn đáng tin.
-- **Sửa prompt sau khi thấy kết quả để "đẹp hơn"**: mất khả năng so sánh. Nếu buộc sửa, giữ cả hai bản và ghi rõ.
-- **Chỉ nhìn 10 dòng đầu mỗi file**: bỏ sót dòng tổng, ghi chú, dòng cộng tuần, và khoảng thiếu giữa tháng (CT thiếu 15-21/10 chỉ lộ ra khi kiểm theo từng ngày).
+Hạt giống cố định nên luôn ra đúng bản cũ. `-X utf8` giúp Windows in tiếng Việt không lỗi.
 
-## Checklist trước khi giao việc
+## Lỗi thường gặp ở bước chuẩn bị
 
-- [ ] 6 file ở `goc/`, đã chụp SHA-256 (`goc-truoc.txt`)
-- [ ] Mỗi agent có thư mục riêng, không có đáp án trong đó
-- [ ] Đã mở xem thô từng file, ghi lại kiểu lộn xộn của từng nơi
-- [ ] Prompt có đủ 6 phần, có điều "không sửa file gốc", "CẦN NGƯỜI QUYẾT", "số do code tính"
-- [ ] Đã quyết quy ước chấm (ngày mơ hồ, sản phẩm lạ, lệch thành tiền) *trước* khi chạy
+| Triệu chứng | Cách xử lý |
+|---|---|
+| Mở file gốc rồi lỡ bấm Lưu | Chép lại file từ `du-lieu/`; với dữ liệu thật, giữ bản lưu và so mã băm |
+| Để đáp án chung thư mục với agent | Đừng. Chuyển đáp án ra ngoài `lan-chay-1`, chạy lại từ đầu |
+| Agent làm việc ở thư mục khác | Mở terminal đúng thư mục `lan-chay-1` trước khi gõ `claude` hoặc `agy` |
+| Chỉ xem 10 dòng đầu mỗi file | Bỏ sót dòng tổng, ghi chú, dòng cộng tuần và khoảng thiếu (CT thiếu 15-21/10 chỉ lộ ra khi kiểm theo từng ngày) |
+| Sửa prompt sau khi thấy kết quả cho "đẹp hơn" | Mất khả năng so sánh. Giữ cả hai bản và ghi rõ |
+| Muốn thử bằng báo cáo thật | Chạy trên máy của bạn, ẩn danh trước, xem [An toàn dữ liệu và pháp lý](../an-toan-du-lieu-va-phap-ly-vn.md) |
+
+## Checklist cuối bài 1
+
+- [ ] Mở được 6 file trong `du-lieu/thang-10/goc/` và ghi lại kiểu lộn xộn của từng nơi.
+- [ ] Có thư mục `lan-chay-1` chứa `goc/` và hai file danh mục, **không có đáp án**.
+- [ ] Đã chụp mã băm vào `goc-truoc.txt` (nằm ngoài `lan-chay-1`).
+- [ ] Đã dán prompt 6 phần, không sửa nội dung.
+- [ ] Agent đã tạo `gop.py` và đủ 7 file trong `ra/`.
 
 ## Việc cần người làm
 
-- Quyết quy ước nghiệp vụ trước khi giao: dòng ngày mơ hồ có tính vào tổng không (chúng tôi chọn: không), sản phẩm lạ tính hay loại (chúng tôi chọn: tính, mã `CHUA_XAC_DINH`), thành tiền lệch thì theo số nào (chúng tôi chọn: số chi nhánh ghi). **Cần kiểm với kế toán trưởng** của doanh nghiệp bạn.
-- Chụp mã băm file gốc, bật chỉ-đọc, giữ bản lưu.
+- Quyết quy ước nghiệp vụ **trước khi** giao: dòng ngày mơ hồ có tính vào tổng không (chúng tôi chọn: không), sản phẩm lạ tính hay loại (chúng tôi chọn: tính, mã `CHUA_XAC_DINH`), thành tiền lệch thì theo số nào (chúng tôi chọn: số chi nhánh ghi). **Cần kiểm với kế toán trưởng** của doanh nghiệp bạn.
+- Quyết ai duyệt kết quả cuối tháng (kế toán trưởng hay chủ doanh nghiệp).
+- Với dữ liệu thật: chụp mã băm, giữ bản lưu file gốc, đừng đưa lên chỗ chung.
 
 ## Giới hạn
 
-- Dữ liệu giả, sạch hơn thực tế: không có mật khẩu, công thức tham chiếu sheet khác, nhiều sheet, file `.xls` cũ.
+- Dữ liệu giả sạch hơn thực tế: không có mật khẩu, công thức tham chiếu sheet khác, nhiều sheet, file `.xls` cũ.
 - Đáp án do chính người ra đề đặt; "đúng" chỉ nghĩa là khớp đáp án này.
-- Bài này chưa nói đến kết quả chạy; xem bài 2.
+- Bài này chỉ chuẩn bị. Kết quả chạy thật và cách chấm ở **bài 2**.

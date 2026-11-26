@@ -559,5 +559,5 @@ def glossary_html():
     items = sorted(GLOSSARY, key=lambda g: g[1].lower())
     out = []
     for gid, name, _, short, long_ in items:
-        out.append(f'<div class="gterm" id="{gid}"><h3>{html.escape(name)}</h3><p>{html.escape(long_)}</p></div>')
+        out.append(f'<div class="gterm" id="{gid}"><h2>{html.escape(name)}</h2><p>{html.escape(long_)}</p></div>')
     return "".join(out)

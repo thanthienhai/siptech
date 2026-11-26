@@ -1,77 +1,121 @@
-# Bài 1: Chuẩn bị dữ liệu và giao việc cho agent
+# Bài 1. Chuẩn bị dữ liệu và giao việc cho agent
 
-> Dữ liệu GIẢ để học. Nhãn: **[Đo được]** kết quả chạy của chúng tôi 2026-11-20, **[Nguồn]** có link, **[Đề xuất]** ý kiến người viết.
+!!! info "Bài này"
+    - **Bạn làm gì:** tải dữ liệu giả của một cửa hàng 60 mã hàng, xem bằng Excel, mở agent trong thư mục riêng và dán prompt đề xuất nhập hàng cho tháng 11/2026.
+    - **Mất bao lâu:** khoảng 30 phút chuẩn bị. Agent chạy thêm vài phút đến vài chục phút **[Đo được]** (lần chạy của chúng tôi: Claude Code 660 giây, Antigravity 1.525 giây).
+    - **Cần có:** máy đã cài một coding agent (xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md)), Excel hoặc Notepad để xem file.
+    - **Kết quả:** một thư mục có bảng đề xuất nhập hàng kèm tổng tiền vốn, bảng cảnh báo hàng sắp hết, danh sách lỗi nhập liệu và báo cáo cho chủ cửa hàng. Cách kiểm đúng sai ở bài 2.
 
-## Mục tiêu đo được
+> Dữ liệu trong bài là **dữ liệu giả để học**: tên hàng, giá vốn, nhà cung cấp, số lượng đều bịa, sinh bằng script có hạt giống cố định. Không có dữ liệu của doanh nghiệp thật. Con số tiền ngân sách (30.000.000 đ) cũng chỉ là tham số học tập.
 
-Sau bài này bạn có:
+## Bài toán trong một phút
 
-1. Một thư mục làm việc sạch gồm 7 file đầu vào, mở được bằng Excel, và bạn **tự tìm ra ít nhất 5 loại lỗi** trong nhật ký bằng mắt hoặc bộ lọc trước khi nhờ agent.
-2. Một bản prompt 6 phần dùng được thật (nguyên văn ở dưới, chúng tôi đã dùng đúng bản này cho cả hai agent).
-3. Hai lệnh chạy được: một cho Claude Code (`claude`), một cho Antigravity (`agy`), kèm giải thích từng phần của lệnh.
-4. Một danh sách "đáp án" của riêng bạn (để chấm agent sau này), giữ **ngoài** thư mục agent làm việc.
+Một cửa hàng tạp hóa, vật tư và mỹ phẩm có 60 mã hàng. Cuối tháng chủ cửa hàng cần biết: mã nào đem lại phần lớn tiền, mã nào sắp hết hoặc đã hết, tháng tới nên nhập bao nhiêu mỗi mã, và **tổng tiền vốn phải bỏ ra có vượt số tiền mặt đang có không**.
 
-Thời gian ước tính: 30 đến 45 phút nếu chưa từng dùng agent.
+Việc khó nằm ở dữ liệu nhập tay: gõ thừa số 0, số âm không rõ là khách trả hàng hay gõ nhầm, dòng bị nhập hai lần, ngày viết ba kiểu. Và có một cái bẫy tinh vi: **mã hết hàng thì doanh số về 0, nhưng 0 đó không có nghĩa là khách không mua**. Lấy trung bình "ngây thơ" thì mã vừa hết hàng bị đề xuất nhập ít đi, rồi lại hết hàng tiếp.
 
-## Bước 1. Tải dữ liệu và xem bằng mắt
+Một coding agent (chương trình AI tự đọc file, viết và chạy code) có thể viết script làm phần máy móc trong vài phút. Phần còn lại, những ca không chắc, agent phải **đưa cho người quyết**.
 
-Dữ liệu mẫu nằm trong thư mục `du-lieu/`. Tạo một thư mục mới cho lần chạy, ví dụ `kho-lan-1`, và chép **7 file** sau vào đó (đừng chép `sinh_du_lieu.py`, vì file đó chứa cả logic cài lỗi và đáp án):
+!!! warning "Quy tắc xuyên suốt cả chuỗi bài"
+    **Công thức do chủ cửa hàng đặt, phép tính do code làm, số cuối cùng do chủ cửa hàng quyết.** Mô hình ngôn ngữ có thể cộng sai một con số mà vẫn viết rất tự tin. Báo cáo của agent chỉ là đề xuất. Ngân sách nhập hàng là một **tham số** của chủ cửa hàng, không phải con số agent tự biết.
 
+## Các bước làm
+
+### Bước 1. Tải và giải nén dữ liệu mẫu
+
+Tải [du-lieu.zip](du-lieu.zip), bấm chuột phải chọn **Extract All** (Windows) hoặc bấm đúp (macOS). Bạn có thư mục `du-lieu/`. **Bảy file** đầu tiên trong bảng là thứ agent được xem:
+
+| File | Nội dung |
+|---|---|
+| `nhat-ky-xuat-nhap.csv` | 11.128 dòng xuất, nhập, điều chỉnh từ 2025-11 đến 2026-10 (có lỗi cài sẵn) |
+| `danh-muc-hang.csv` | 60 mã: giá vốn, bội số đặt, thời gian giao (ngày), trạng thái |
+| `ton-dau-ky-2025-11-01.csv`, `ton-kiem-ke-2026-10-31.csv` | tồn đầu kỳ và tồn kiểm kê cuối kỳ |
+| `hang-dang-ve.csv` | 10 dòng đơn đang trên đường về |
+| `tham-so.json` | mức phục vụ 95%, các ngưỡng cảnh báo, **ngân sách nhập tháng 2026-11** |
+| `quy-uoc.md` | công thức cố định của chủ cửa hàng |
+| `sinh_du_lieu.py`, `prompt-giao-viec.txt` và các file `.py` khác | **không** đưa cho agent (xem Bước 4) |
+
+### Bước 2. Mở xem dữ liệu bằng Excel
+
+Mở `danh-muc-hang.csv` bằng Excel: mỗi mã có **bội số đặt hàng** (gạo đặt theo bộ 4 túi) và **thời gian giao**. Rồi mở `nhat-ky-xuat-nhap.csv`, bật bộ lọc (Ctrl+Shift+L) và thử ba việc:
+
+1. Lọc cột `so_luong` lấy số **âm**: có dòng ghi chú `khach tra` (trả hàng hợp lệ) và dòng không ghi chú (nghi gõ nhầm).
+2. Sắp xếp `so_luong` giảm dần: số rất lớn có thể là gõ thừa số 0 hoặc là đơn sỉ thật.
+3. Lọc `ghi_chu` chứa `huy` hoặc `noi bo`: là xuất kho nhưng **không phải bán hàng**.
+
+![Danh mục hàng và tồn kiểm kê, trích 10 trên 60 mã](anh/05-du-lieu-danh-muc.webp)
+
+*Ảnh dựng từ `du-lieu/danh-muc-hang.csv` và `ton-kiem-ke-2026-10-31.csv`. Dữ liệu giả để học.*
+
+![Nhật ký xuất nhập, trích các dòng có bẫy](anh/04-du-lieu-nhat-ky.webp)
+
+*Ảnh dựng từ `du-lieu/nhat-ky-xuat-nhap.csv`. Cột cuối là chú thích của chúng tôi, file thật không có. Dữ liệu giả để học.*
+
+!!! see "Bạn sẽ thấy"
+    Nhật ký có 11.128 dòng. **[Đo được]** (đếm bằng code): 7.787 dòng ngày kiểu `2026-03-13`, 2.240 dòng `13/03/2026`, 1.101 dòng `13/3/26`; 809 dòng có mã hàng viết thường, có dấu gạch hoặc thừa khoảng trắng; 4 dòng thiếu mã hàng. Hãy ghi lại những lỗi bạn thấy vào một file **ngoài** thư mục của agent. Đó là đáp án của riêng bạn để so sau.
+
+!!! stuck "Gặp lỗi?"
+    Chữ tiếng Việt bị vỡ dấu khi mở CSV bằng Excel: dùng *Data > From Text/CSV* và chọn mã hóa UTF-8. File của chúng tôi có dấu BOM nên thường mở thẳng được.
+
+### Bước 3. Đọc công thức trong quy-uoc.md
+
+Agent **không** được tự nghĩ ra công thức. Mở `quy-uoc.md` và hiểu năm điểm:
+
+1. **Dự báo tháng tới** = trung bình 3 tháng hợp lệ gần nhất. "Hợp lệ" nghĩa là tháng đó mặt hàng có bán và **không hết hàng từ 7 ngày trở lên**.
+2. **Vì sao bỏ tháng hết hàng?** Mã bình thường bán 100 mỗi tháng, tháng 5 hết hàng 3 tuần nên chỉ bán 30. Tính 30 vào trung bình thì dự báo thấp, nhập ít, lại hết hàng. Bỏ tháng đó đi mới đúng.
+3. **Tồn an toàn** = Z × độ lệch chuẩn × √(thời gian giao / 30), với Z = 1,645 cho mức phục vụ 95%. Nhu cầu càng dao động và hàng về càng chậm thì cần dự phòng càng nhiều.
+4. **Điểm đặt lại** = dự báo / 30 × thời gian giao + tồn an toàn. Tồn xuống bằng hoặc dưới mức này là phải đặt.
+5. **Số cần nhập** = dự báo + tồn an toàn − tồn kiểm kê − hàng đang về, làm tròn **lên** theo bội số đặt, không âm.
+
+Để biết công thức có đáng tin không, ta so với cách đơn giản nhất: **"tháng này bán bằng tháng trước"** (mốc ngây thơ). Ta giấu hai tháng cuối (2026-09 và 2026-10) khi dự báo rồi xem dự báo cách thực tế bao nhiêu. Phần nguồn tham chiếu của công thức nằm ở mục Đào sâu bên dưới.
+
+### Bước 4. Tạo thư mục riêng cho agent
+
+Mỗi lần chạy dùng **một thư mục riêng**, chỉ chép **bảy file** đầu vào. Đây là hàng rào đơn giản nhất để agent không động vào thứ khác.
+
+Windows (PowerShell), chạy trong thư mục chứa `du-lieu/`:
+
+```lenh
+mkdir kho-lan-1
+copy du-lieu\*.csv kho-lan-1\
+copy du-lieu\tham-so.json kho-lan-1\
+copy du-lieu\quy-uoc.md kho-lan-1\
 ```
-danh-muc-hang.csv   nhat-ky-xuat-nhap.csv   ton-dau-ky-2025-11-01.csv
-ton-kiem-ke-2026-10-31.csv   hang-dang-ve.csv   tham-so.json   quy-uoc.md
+
+macOS hoặc Linux:
+
+```lenh
+mkdir kho-lan-1
+cp du-lieu/*.csv du-lieu/tham-so.json du-lieu/quy-uoc.md kho-lan-1/
 ```
 
-Mở `danh-muc-hang.csv` bằng Excel: mỗi mã có giá vốn, **bội số đặt hàng** (ví dụ gạo đặt theo bộ 4 túi), **thời gian giao** (ngày) và trạng thái. Hai mã trạng thái `ngung_nhap` là hàng đã ngừng nhập; ba mã có ghi chú "mặt hàng mới".
+`mkdir` tạo thư mục, `copy` hoặc `cp` chép file. Lệnh `*.csv` chép đúng năm file CSV, hai lệnh sau chép nốt `tham-so.json` và `quy-uoc.md`.
 
-![Danh mục hàng và tồn kiểm kê (trích 10 trên 60 mã). Dữ liệu giả.](anh/05-du-lieu-danh-muc.webp)
+!!! see "Bạn sẽ thấy"
+    Thư mục `kho-lan-1` có đúng 7 file: 5 file `.csv`, `tham-so.json`, `quy-uoc.md`.
 
-*Ảnh dựng từ file `du-lieu/danh-muc-hang.csv` và `ton-kiem-ke-2026-10-31.csv`. Dữ liệu giả để học.*
+!!! warning "Đừng chép file sinh dữ liệu hay đáp án vào thư mục này"
+    `sinh_du_lieu.py` chứa cả logic cài lỗi và đáp án. Agent chạy được lệnh liệt kê file, nếu thấy thì bài kiểm vô nghĩa. Ở bài 2 bạn dùng file đáp án để chấm, file đó **không bao giờ** nằm trong `kho-lan-1`.
 
-> Nếu mở CSV bằng Excel thấy chữ tiếng Việt bị vỡ dấu: dùng **Data > From Text/CSV** và chọn mã hóa **UTF-8**. File của chúng tôi có dấu BOM nên thường mở thẳng được.
+### Bước 5. Mở agent và dán prompt giao việc
 
-Giờ mở `nhat-ky-xuat-nhap.csv` (11.128 dòng). Bật bộ lọc (Ctrl+Shift+L) và thử ba thao tác:
+Mở Terminal hoặc PowerShell **đúng thư mục `kho-lan-1`**, rồi gõ một trong hai lệnh:
 
-1. Lọc cột `so_luong` lấy số **âm**. Bạn sẽ thấy hai loại: có ghi chú `khach tra` (trả hàng hợp lệ) và **không** ghi chú (nghi gõ nhầm dấu).
-2. Sắp xếp `so_luong` giảm dần. Số rất lớn có thể là gõ thừa số 0 hoặc là đơn sỉ thật (cột `ghi_chu` đôi khi có `Khach si`).
-3. Lọc `ghi_chu` chứa `huy` hoặc `noi bo`: đây là xuất kho nhưng **không phải bán hàng**.
+```lenh
+cd kho-lan-1
+claude
+```
 
-![Nhật ký xuất nhập, trích các dòng có bẫy. Dữ liệu giả.](anh/04-du-lieu-nhat-ky.webp)
+hoặc, nếu dùng Antigravity:
 
-*Ảnh dựng từ file `du-lieu/nhat-ky-xuat-nhap.csv`. Cột cuối là chú thích của chúng tôi, file thật không có. Dữ liệu giả để học.*
+```lenh
+cd kho-lan-1
+agy
+```
 
-Những gì **[Đo được]** về định dạng (đếm bằng code, 11.128 dòng): 7.787 dòng ngày kiểu `yyyy-mm-dd`, 2.240 dòng `dd/mm/yyyy`, 1.101 dòng `d/m/yy`; 809 dòng có mã hàng viết thường, có dấu gạch hoặc thừa khoảng trắng; 4 dòng thiếu mã hàng.
+`cd` là đi vào thư mục, `claude` hoặc `agy` mở agent tại đó. Chưa cài? Xem [Bắt đầu với coding agent](../th-bat-dau-voi-coding-agent/00-README.md). Bấm **Sao chép** ở khung dưới, dán vào khung chat của agent, nhấn Enter. Prompt có 6 phần (vai trò, bối cảnh, nhiệm vụ, các bước, định dạng ra, ràng buộc). **Đừng sửa** nếu bạn muốn đối chiếu với bài 2.
 
-**Việc cần làm ngay ở bước này:** ghi vào một file riêng (ngoài thư mục `kho-lan-1`) những lỗi bạn thấy. Đó là đáp án của bạn. Sau này bạn so với báo cáo của agent.
-
-## Bước 2. Hiểu công thức trước khi giao việc
-
-Agent **không** được tự nghĩ ra công thức. Công thức do chủ cửa hàng đặt, viết trong `quy-uoc.md`. Đọc file đó và hiểu năm điểm:
-
-1. **Dự báo tháng tới F** = trung bình 3 tháng hợp lệ gần nhất. "Hợp lệ" nghĩa là tháng đó mặt hàng có bán và **không bị hết hàng quá 7 ngày**.
-2. **Vì sao bỏ tháng hết hàng?** Giả sử mã A bình thường bán 100 mỗi tháng, tháng 5 hết hàng 3 tuần nên chỉ bán 30. Nếu tính 30 vào trung bình thì dự báo giảm, nhập ít đi, rồi lại hết hàng. Bỏ tháng đó đi mới đúng.
-3. **Tồn an toàn** SS = Z × σ × √(T/30). σ là độ lệch chuẩn của nhu cầu theo tháng, T là thời gian giao (ngày), Z = 1,645 ứng với mức phục vụ 95%. Ý nghĩa: nhu cầu càng dao động và hàng về càng chậm thì cần dự phòng càng nhiều.
-4. **Điểm đặt lại** = F/30 × T + SS. Khi tồn xuống bằng hoặc dưới mức này thì phải đặt.
-5. **Số cần nhập** = F + SS − tồn kiểm kê − hàng đang về, làm tròn **lên** theo bội số đặt, và không âm.
-
-**[Nguồn]** Các công thức tồn an toàn và điểm đặt lại là kiến thức quản trị tồn kho thông dụng; chúng tôi đối chiếu với NC State (<https://scm.ncsu.edu/scm-articles/article/safety-stock>, chỉ đọc qua tóm tắt vì trang trả 403), Shopify (<https://www.shopify.com/blog/safety-stock>) và Zoho (<https://zoho.com/inventory/tour/safety-stock-formula.pdf>, qua tóm tắt). Có nhiều biến thể (biến động nhu cầu, biến động thời gian giao, cả hai); **chúng tôi chọn biến thể chỉ có biến động nhu cầu** và ghi rõ giả định thời gian giao cố định. ABC tham khảo Wikipedia (<https://en.wikipedia.org/wiki/ABC_analysis>), nơi ghi rõ không có ngưỡng cố định. Ngưỡng 80%/95% là **[Đề xuất]** của chúng tôi.
-
-**Dự báo ngây thơ làm mốc.** Để biết công thức có đáng tin không, ta so với cách đơn giản nhất: "tháng này bán bằng tháng trước". Nếu công thức không hơn mốc này thì không có lý do dùng nó. Mốc "cùng kỳ năm trước" chỉ làm được cho tháng 2026-11 (có 2025-11), **không** làm được cho hai tháng giữ lại vì chỉ có 12 tháng dữ liệu.
-
-**Hold-out (giữ lại 2 tháng cuối).** Ta giấu tháng 2026-09 và 2026-10 khi dự báo, rồi xem dự báo cách thực tế bao nhiêu. Đo bằng **WAPE** = tổng sai lệch tuyệt đối chia tổng bán thực tế. Chú ý **n nhỏ**: chỉ 2 tháng và khoảng 54 mã mỗi tháng.
-
-## Bước 3. Viết prompt theo khung 6 phần
-
-Khung: **Vai trò, Bối cảnh, Nhiệm vụ, Các bước, Định dạng ra, Ràng buộc.** Điểm đáng chú ý trong prompt dưới:
-
-- Ràng buộc "không chắc thì CẦN NGƯỜI QUYẾT, không bịa".
-- Ràng buộc "Công thức, ngưỡng, ngân sách lấy đúng từ quy-uoc.md. Không đổi."
-- Ràng buộc "Không giấu kết quả xấu" (để agent không lờ đi chuyện công thức thua mốc ngây thơ).
-- Tên cột của mọi file kết quả được ghi sẵn để chấm bằng code được.
-
-Đây là **nguyên văn** prompt đã dùng cho cả hai agent (lưu ở `logs/prompt.txt`). **Prompt không được sửa sau khi thấy kết quả.**
-
-```text
+```prompt
 # Vai trò
 Bạn là trợ lý kho cho một cửa hàng nhỏ (tạp hóa, vật tư, mỹ phẩm). Bạn làm việc cẩn thận với số liệu, không bịa, và để người chủ quyết định số cuối cùng.
 
@@ -109,75 +153,100 @@ Làm sạch dữ liệu, chạy đúng công thức trong quy-uoc.md bằng CODE
 - Chủ cửa hàng là người quyết định số cuối cùng; báo cáo chỉ là đề xuất.
 ```
 
-![Prompt giao việc, dựng từ log lần chạy claude-1.](anh/01-claude-1-prompt.webp)
+![Prompt giao việc, dựng từ log lần chạy claude-1](anh/01-claude-1-prompt.webp)
 
-*Dựng lại từ log thật của lần chạy `claude-1`, không phải ảnh chụp trực tiếp cửa sổ TUI.*
+*Dựng lại từ log thật của lần chạy `claude-1`, không phải ảnh chụp trực tiếp cửa sổ terminal.*
 
-## Bước 4. Chạy agent
+!!! see "Bạn sẽ thấy"
+    Agent đọc `quy-uoc.md`, xem định dạng ngày và mã hàng, viết `tinh_ton_kho.py`, chạy, rồi viết báo cáo. Nó có thể **xin quyền** tạo file hoặc chạy lệnh: chọn cho phép, chỉ trong thư mục `kho-lan-1`. Khi xong, thư mục có thêm `tinh_ton_kho.py`, `loi-du-lieu.csv`, `phan-loai-tinh-toan.csv`, `de-xuat-nhap.csv`, `giu-lai-do-loi.csv` và `bao-cao.md`.
 
-Hai cách: gõ trực tiếp trong terminal, hoặc dùng script `agent_run.py` của chúng tôi để lưu log. Dưới đây là cách thứ nhất (đơn giản, dành cho người mới).
+!!! stuck "Agent xin quyền hoài, chạy lâu, hoặc báo lỗi tiếng Việt?"
+    - **Xin quyền nhiều lần:** bình thường. Đọc câu nó xin, chỉ đồng ý nếu nằm trong `kho-lan-1`. Nó đòi sửa file ngoài thư mục hoặc dùng internet thì từ chối.
+    - **`UnicodeEncodeError` (cp1252) trên Windows:** gõ "Chạy lại bằng `python -X utf8`".
+    - **Chạy lâu:** **[Đo được]** 11 phút (Claude Code) và 25 phút (Antigravity). Chưa thấy lỗi thì cứ chờ. Nếu bạn chạy bằng script có giới hạn thời gian, đặt giới hạn rộng: lần đầu của `agy` bị cắt ở 900 giây.
 
-**Claude Code.** Mở terminal, đi vào thư mục làm việc rồi gõ `claude`. Dán nguyên văn prompt vào và Enter. Claude Code sẽ hỏi quyền khi đọc, ghi file và chạy lệnh; chấp nhận từng việc trong thư mục này. Lệnh không tương tác mà chúng tôi dùng để lưu log:
+### Bước 6. Xem nhanh rồi sang bài 2
 
-```bash
-cd kho-lan-1
-claude -p "<prompt>" --output-format stream-json --verbose \
-  --permission-mode acceptEdits --allowedTools Read,Write,Edit,Glob,Grep,Bash
+Chưa cần chấm. Mở `bao-cao.md` đọc báo cáo, rồi mở `de-xuat-nhap.csv` bằng Excel. **Chưa tin con số nào** cho đến khi chấm ở bài 2: agent có thể báo "khớp" mà vẫn sai.
+
+## Vì sao prompt viết như vậy
+
+| Chỗ trong prompt | Để làm gì |
+|---|---|
+| "Công thức là của người chủ, bạn không được đổi" | Không khóa, agent có thể "cải tiến" công thức, kết quả không so được giữa các lần |
+| Tên cột của mọi file kết quả ghi sẵn | Để chấm bằng code được. Chỉ nói "lập bảng" thì mỗi lần ra một kiểu |
+| "Không chắc thì CẦN NGƯỜI QUYẾT, không bịa" | Phần quan trọng nhất. Thiếu nó, agent tự bịa số cho dòng thiếu số lượng |
+| "Không giấu kết quả xấu" | Để agent không lờ đi chuyện công thức thua mốc ngây thơ |
+| "Đề xuất nhập luôn kèm tổng tiền vốn, không vượt ngân sách" | Đề xuất đẹp mà không ai có đủ tiền thì vô ích |
+| "Chủ cửa hàng là người quyết định số cuối cùng" | Giữ đúng vai: agent đề xuất, người quyết |
+
+**Prompt không đổi sau khi thấy kết quả.** Nếu bạn sửa prompt sau lần chạy đầu, giữ cả hai bản và ghi rõ đã sửa gì.
+
+## Đào sâu: nguồn tham chiếu của công thức
+
+- **Tồn kho an toàn, điểm đặt lại, z-score.** **[Nguồn]** NC State University, Supply Chain Resource Cooperative, "Safety Stock": <https://scm.ncsu.edu/scm-articles/article/safety-stock>. Trang trả mã 403 khi tải trực tiếp nên chúng tôi **chỉ đọc qua tóm tắt tìm kiếm**: z = 1,29 / 1,65 / 2,33 cho mức phục vụ 90% / 95% / 99%.
+- **[Nguồn]** Shopify, "Safety stock": <https://www.shopify.com/blog/safety-stock> (đã đọc). Các công thức ở đó nói về **biến động thời gian giao**; công thức của chúng tôi (Z × σ nhu cầu × √(T/30)) là bản **biến động nhu cầu**.
+- **[Nguồn]** Zoho Inventory, "Safety stock formula": <https://zoho.com/inventory/tour/safety-stock-formula.pdf> (chỉ đọc qua tóm tắt tìm kiếm), gần nhất với công thức của chúng tôi.
+- **Phân loại ABC.** **[Nguồn]** Wikipedia, "ABC analysis": <https://en.wikipedia.org/wiki/ABC_analysis> (đã đọc): không có ngưỡng cố định. Ngưỡng 80% và 95% của chúng tôi là **[Đề xuất]**.
+- **Định dạng lỗi dữ liệu bán lẻ.** **[Nguồn]** UCI Machine Learning Repository, "Online Retail" (CC BY 4.0, DOI 10.24432/C5BW33): <https://archive.ics.uci.edu/dataset/352/online+retail>. Chỉ tham chiếu dạng lỗi (hóa đơn hủy số lượng âm), không dùng dữ liệu của họ.
+- **Hold-out và WAPE.** Hold-out là giấu hai tháng cuối khi dự báo. WAPE = tổng |dự báo − thực tế| / tổng thực tế. Định nghĩa trong `quy-uoc.md`, là cách làm của chúng tôi.
+
+## Đào sâu: các bẫy đã cài trong dữ liệu
+
+Đáp án nằm ở `ket-qua/dap-an.json`, **không** đưa cho agent.
+
+| Bẫy | Số lượng |
+|---|---|
+| Mùa vụ: hàng Tết, mùa nóng, mùa mưa, tựu trường | nhiều mã |
+| Hàng bán chậm (1 đến 3 đơn vị/tháng), hàng ngừng nhập còn tồn, 3 mặt hàng mới (2 đến 5 tháng dữ liệu) | vài mã |
+| Hết hàng làm doanh số về 0 giả tạo | 10 mã, 33 mã-tháng "cụt" |
+| Lỗi nhập liệu cần phát hiện: 11 trùng, 6 số âm không ghi chú, 6 số lượng gấp 10, 3 thiếu số lượng, 2 phiếu nhập ngày 12/2026 (sau ngày cuối dữ liệu) | 28 dòng |
+| Hợp lệ nhưng dễ nhầm: 30 số âm có ghi chú "khách trả", 16 hủy hàng hết hạn, 18 xuất dùng tại quán, 55 điều chỉnh kiểm kê, 5 đơn sỉ một lần | 124 dòng |
+| Định dạng lẫn lộn: 3 kiểu ngày, mã `th017`, `TH-017`, `TH017 `, 4 dòng thiếu mã chỉ có tên không dấu | cả file |
+| **Bẫy MP002:** hết hàng, đơn đang về nhưng ngày dự kiến là **2026-12-27**, tức sau tháng đề xuất. Công thức vẫn trừ số hàng đang về nên ra 0 | 1 mã |
+| 5 dòng bị xóa khỏi nhật ký (chỉ lộ ra qua chênh lệch tồn hệ thống và kiểm kê) | 5 dòng |
+
+## Đào sâu: chạy không cần ngồi cạnh (cách chúng tôi ghi log)
+
+`-p` là chế độ "nhận một prompt, làm xong rồi thoát"; `stream-json` ghi từng sự kiện thành một dòng JSON để giữ log gốc. Phiên bản đo ngày 2026-11-20: Claude Code 2.1.329, Antigravity 1.5.13.
+
+```lenh
+claude -p "<nội dung prompt>" --output-format stream-json --verbose --permission-mode acceptEdits --allowedTools Read,Write,Edit,Glob,Grep,Bash
+agy -p "<nội dung prompt>" --output-format stream-json --dangerously-skip-permissions
 ```
 
-Giải thích: `-p` chạy một lần rồi thoát; `--output-format stream-json --verbose` in từng sự kiện ra để lưu log; `--permission-mode acceptEdits` tự chấp nhận sửa file; `--allowedTools` giới hạn các công cụ được dùng. Phiên bản đọc từ `claude --version` ngày 2026-11-20: **Claude Code 2.1.329**.
-
-**Antigravity (`agy`).**
-
-```bash
-cd kho-lan-1
-agy -p "<prompt>" --output-format stream-json --dangerously-skip-permissions
-```
-
-Giải thích: `--dangerously-skip-permissions` **bỏ qua mọi hỏi quyền**, tức agent có toàn quyền trên máy. Chỉ dùng trên thư mục thử, dữ liệu giả, và đã sao lưu. Phiên bản `agy --version`: **1.5.13**.
-
-**Cảnh báo an toàn [Đề xuất]:** cả hai agent chạy toàn quyền trên máy bạn. Với dữ liệu thật, hãy chạy trong thư mục riêng, **chỉ chép vào những cột cần thiết** (nhật ký xuất nhập thường chứa tên khách hoặc số điện thoại trong cột ghi chú; xóa trước khi giao), và không để file đáp án trong thư mục đó.
-
-Cách thứ hai (lưu log): `python -X utf8 agent_run.py <claude|agy> <thư_mục_làm_việc> prompt.txt <tiền_tố_log> <giây_tối_đa>`. Script ghi `<tiền_tố>.raw.jsonl` (log gốc) và `<tiền_tố>.json` (đã chuẩn hóa).
-
-**Bài học thực tế [Đo được]:** giới hạn 900 giây là **quá ngắn** cho bài này. Lượt `claude-1` mất 660 giây. Lượt `agy` đầu bị cắt ở 900 giây trước khi ghi log (script chỉ ghi log khi tiến trình xong), lượt `agy-2` với giới hạn 1.800 giây xong sau 1.525 giây. Nếu bạn dùng script lưu log, hãy đặt giới hạn rộng.
-
-## Bước 5. Chuẩn bị chấm (làm trước khi xem kết quả)
-
-Đáp án của chúng tôi nằm trong `ket-qua/dap-an.json` (có 28 lỗi nhập liệu cài sẵn, ABC, cảnh báo, các tháng cụt hàng, kết quả tham chiếu từng mã). Bạn tự làm dữ liệu thật thì cần đáp án tối thiểu gồm:
-
-- Danh sách vài mã bạn biết chắc đang hết hoặc sắp hết.
-- Danh sách vài dòng nhật ký bạn biết là gõ sai.
-- Tổng tiền tối đa bạn chịu bỏ ra.
-
-Đừng cho agent xem. Chấm tự động: xem `ket-qua/cham.py` ở bài 2.
+**Cẩn thận:** `--dangerously-skip-permissions` của `agy` cho agent chạy lệnh không hỏi, tức toàn quyền trên máy bạn. Chỉ dùng trong thư mục riêng, với dữ liệu giả. Câu "Chỉ đọc và ghi trong thư mục hiện tại" trong prompt **chưa phải rào chắn thật** (xem bài 2).
 
 ## Lỗi thường gặp ở bước chuẩn bị
 
-1. **Chép cả file sinh dữ liệu vào thư mục agent.** Agent sẽ đọc được logic cài lỗi và đáp án, kết quả mất giá trị. Chỉ chép 7 file.
-2. **Không ghi bội số đặt hàng.** Agent đề xuất 7 túi gạo trong khi chỉ đặt được theo bộ 4. Bắt buộc có cột bội số.
-3. **Không nói "không chắc thì hỏi".** Agent sẽ tự bịa số cho dòng thiếu số lượng.
-4. **Để agent đổi công thức.** Nếu không khóa, agent có thể "cải tiến" bằng cách thêm mùa vụ, làm kết quả không so sánh được giữa các tháng.
-5. **Không có thông số ngân sách.** Đề xuất nhập sẽ là con số đẹp nhưng không ai có đủ tiền.
+| Triệu chứng | Cách xử lý |
+|---|---|
+| Chép cả `sinh_du_lieu.py` vào thư mục agent | Agent đọc được logic cài lỗi và đáp án. Chỉ chép 7 file |
+| Không ghi bội số đặt hàng | Agent đề xuất 7 túi gạo trong khi chỉ đặt theo bộ 4. File danh mục phải có cột bội số |
+| Không dặn "không chắc thì hỏi" | Agent tự bịa số cho dòng thiếu số lượng |
+| Không khóa công thức | Agent "cải tiến" bằng cách thêm mùa vụ, kết quả không so được |
+| Không có thông số ngân sách | Đề xuất là con số đẹp mà không ai có đủ tiền |
+| `UnicodeEncodeError` (cp1252) trên Windows | Thêm `-X utf8` vào lệnh `python` |
+| Agent làm việc ở thư mục khác | Mở terminal đúng `kho-lan-1` trước khi gõ `claude` hoặc `agy` |
 
-## Checklist cuối bài
+## Checklist cuối bài 1
 
-- [ ] Thư mục làm việc có đúng 7 file, không có đáp án.
-- [ ] Bạn đã tự tìm được ít nhất 5 loại lỗi trong nhật ký và ghi lại ngoài thư mục.
-- [ ] Bạn hiểu vì sao tháng hết hàng bị loại khỏi trung bình.
-- [ ] Bạn biết mốc ngây thơ là gì và vì sao cần nó.
-- [ ] Prompt có đủ 6 phần, có tên cột kết quả, có câu "không chắc thì CẦN NGƯỜI QUYẾT".
-- [ ] Bạn đã sao lưu thư mục trước khi chạy agent với quyền rộng.
+- [ ] Mở được `danh-muc-hang.csv` và `nhat-ky-xuat-nhap.csv`, thấy 60 mã và 11.128 dòng.
+- [ ] Tự tìm ít nhất 5 loại lỗi trong nhật ký, ghi lại **ngoài** thư mục agent.
+- [ ] Hiểu vì sao tháng hết hàng bị loại khỏi trung bình và mốc ngây thơ là gì.
+- [ ] Thư mục `kho-lan-1` có đúng 7 file, không có file sinh dữ liệu hay đáp án.
+- [ ] Đã dán prompt 6 phần, không sửa, và agent đã tạo đủ 5 file kết quả cùng `tinh_ton_kho.py`.
 
 ## Việc cần người làm
 
-- Quyết ngân sách tháng tới (tham số `ngan_sach_nhap_vnd`). Đây là quyết định tiền mặt của chủ cửa hàng, không phải của agent.
-- Xác nhận thời gian giao của từng nhà cung cấp trong `danh-muc-hang.csv` (nếu dữ liệu thật).
-- Quyết mức phục vụ 95% có hợp với cửa hàng của bạn không (mức cao hơn cần tồn an toàn nhiều hơn, tốn vốn hơn).
+- **Quyết ngân sách tháng tới** (`ngan_sach_nhap_vnd` trong `tham-so.json`). Đây là quyết định tiền mặt của chủ cửa hàng, không phải của agent.
+- Xác nhận thời gian giao của từng nhà cung cấp trong `danh-muc-hang.csv` (nếu là dữ liệu thật).
+- Quyết mức phục vụ 95% có hợp với cửa hàng không: mức cao hơn cần tồn an toàn nhiều hơn, tốn vốn hơn.
+- Ghi đáp án của bạn ra ngoài thư mục agent **trước** khi xem kết quả.
 
 ## Giới hạn
 
-- Dữ liệu là giả; mô hình mùa vụ và nhu cầu do chúng tôi tự đặt, không phản ánh một cửa hàng cụ thể.
-- Công thức có giả định thời gian giao cố định và nhu cầu các tháng độc lập; thực tế có thể khác.
-- Công thức không xét hạn dùng (sữa, trứng, mỹ phẩm) và chi phí đặt hàng.
-- Chưa đo được việc chạy lại nhiều lần có cho kết quả giống nhau hay không (mỗi agent chỉ 1 lần có log).
+- Dữ liệu là giả; mùa vụ và nhu cầu do chúng tôi tự đặt, không phản ánh một cửa hàng cụ thể.
+- Công thức giả định thời gian giao cố định và nhu cầu các tháng độc lập; không xét hạn dùng (sữa, trứng, mỹ phẩm) và chi phí đặt hàng.
+- Chưa đo được việc chạy lại nhiều lần có cho kết quả giống nhau không: mỗi agent chỉ có 1 lần chạy đầy đủ log.
+- Bài này chỉ chuẩn bị. Kết quả chạy thật và cách chấm ở **bài 2**.

@@ -1,9 +1,10 @@
 {
   "name": "Kiểm tra bảng chấm công",
-  "code": "3 bài",
+  "code": "4 bài",
   "icon": "shield",
   "order": 65,
   "status": "draft",
+  "kind": "thuc-hanh",
   "updated": "2026-11-21",
   "tag": "Tìm bất thường trong dữ liệu chấm công trước khi tính lương",
   "desc": "Dùng coding agent kiểm bảng công 25 nhân viên trên dữ liệu đã ẩn danh; giờ do code tính, ngưỡng là tham số của công ty, quản lý xác nhận ngoại lệ.",

@@ -1,0 +1,21 @@
+{
+  "name": "Bắt đầu với coding agent",
+  "code": "4 bài",
+  "icon": "zap",
+  "order": 59,
+  "status": "draft",
+  "kind": "thuc-hanh",
+  "updated": "2026-11-21",
+  "tag": "Cài và dùng Claude Code hoặc Antigravity khi chưa biết code",
+  "desc": "Cài một coding agent, làm quen cửa sổ dòng lệnh, giao việc đầu tiên trong thư mục riêng và các quy tắc an toàn trước khi làm các bài toán thực hành.",
+  "out": "Một agent chạy được trên máy bạn, một thư mục thử an toàn, một prompt giao việc đầu tiên",
+  "tags": [
+    "cài đặt",
+    "claude code",
+    "antigravity",
+    "dòng lệnh",
+    "người mới"
+  ],
+  "step": null,
+  "step_label": ""
+}

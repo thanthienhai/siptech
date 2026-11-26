@@ -1,9 +1,10 @@
 {
   "name": "Mô tả sản phẩm hàng loạt",
-  "code": "3 bài",
+  "code": "4 bài",
   "icon": "file",
   "order": 62,
   "status": "draft",
+  "kind": "thuc-hanh",
   "updated": "2026-11-21",
   "tag": "Viết mô tả cho sàn từ bảng thông số mà không bịa thông số",
   "desc": "Dùng coding agent viết mô tả 40 sản phẩm; kiểm bằng code mọi con số có trong bảng; sản phẩm thiếu thông số phải ghi CẦN BỔ SUNG.",

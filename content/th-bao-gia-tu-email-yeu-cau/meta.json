@@ -1,9 +1,10 @@
 {
   "name": "Lập báo giá từ email yêu cầu",
-  "code": "3 bài",
+  "code": "4 bài",
   "icon": "file",
   "order": 64,
   "status": "draft",
+  "kind": "thuc-hanh",
   "updated": "2026-11-21",
   "tag": "Từ email khách lộn xộn và bảng giá ra báo giá, thư trả lời nháp và câu hỏi làm rõ",
   "desc": "Dùng coding agent lập báo giá cho 12 yêu cầu; tiền do code tính, chiết khấu vượt thẩm quyền chuyển người quyết, không tự hứa ngày giao.",
