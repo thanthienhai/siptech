@@ -137,6 +137,12 @@ Nội dung chuyển khoản do khách tự gõ: thường không dấu, viết t
 - Không dùng dịch vụ bên ngoài, không cần internet.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên hai file và tháng (`sao-ke-t10-2026.csv`, `so-don-hang-t10-2026.xlsx`, "tháng 10/2026").
+    - Tên cột sao kê của **ngân hàng bạn** (`Ngày GD, Số CT, Ghi nợ, Ghi có, Số dư, Nội dung chi tiết` là cột phổ biến chứ không phải của ngân hàng nào) và cột `Hình thức TT`, `Tổng phải thu` của sổ đơn của bạn.
+    - "Shop nhỏ bán đồ gia dụng" và các loại giao dịch (COD, phí ngân hàng...) cho đúng việc kinh doanh của bạn.
+
+
 ![Prompt giao việc 6 phần](anh/01-prompt-giao-viec.webp)
 
 *Prompt trên, dựng lại từ `prompt-giao-viec.txt` (không phải ảnh chụp cửa sổ terminal).*

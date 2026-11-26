@@ -192,6 +192,12 @@ Khi gộp: giữ cả giá trị khác nhau; giá trị tốt nhất (tên có d
 - Khi xong, trả lời ngắn: các file đã tạo, số liệu chính, và việc người cần làm tiếp.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên file và sheet (`danh-ba-goc.xlsx`, `DanhBa`), "khoảng 400 dòng", "5 nguồn" và tên các cột (`Mã dòng`...).
+    - Loại cửa hàng ("bán lẻ nhỏ") và mọi quy tắc gộp riêng của bạn (ví dụ có gộp theo email hay không).
+    - **Dữ liệu thật có thông tin cá nhân:** ẩn danh trước (Bước 3 của bài này).
+
+
 ![Prompt giao việc](anh/01-prompt-giao-viec.webp)
 
 *Dựng từ `du-lieu/prompt-giao-viec.txt` bằng HTML; mục Quy tắc được rút gọn trong ảnh, file thật đầy đủ (không phải ảnh chụp cửa sổ terminal). Đây là bản đã dùng cho cả hai agent, không sửa sau khi thấy kết quả.*

@@ -175,6 +175,12 @@ Gộp 6 file thành một bảng hợp nhất chuẩn, lập báo cáo tổng h�
 - Nếu một chi nhánh thiếu dữ liệu một khoảng ngày thì nêu rõ khoảng ngày thiếu trong viec_can_hoi.csv, không tự điền số.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên công ty giả, sáu chi nhánh (`HN, HP, DN, CT, BH, NT`), "8 sản phẩm" và tháng 10/2026.
+    - Hai file danh mục (`danh_muc_san_pham.csv`, `danh_muc_chi_nhanh.csv`): bạn phải lập danh mục chuẩn của mình (mã và tên chuẩn), vì agent dùng nó để gộp tên sản phẩm lệch nhau.
+    - Giữ các file chi nhánh gốc trong `goc/` và **không sửa** chúng.
+
+
 !!! see "Bạn sẽ thấy"
     Agent xem từng file, viết `gop.py`, chạy, mở kết quả ra đọc lại, rồi báo cáo. Nó có thể **xin quyền** tạo file hoặc chạy lệnh: chỉ đồng ý khi việc nằm trong `lan-chay-1`. Khi xong, thư mục có thêm `gop.py` và `ra/` với 7 file: `hop_nhat.csv`, `tong_hop_chi_nhanh.csv`, `tong_hop_san_pham.csv`, `tong_hop_chi_nhanh_san_pham.csv`, `viec_can_hoi.csv`, `kiem_tra.csv`, `bao_cao.md`.
 

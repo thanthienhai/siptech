@@ -153,6 +153,12 @@ Làm sạch dữ liệu, chạy đúng công thức trong quy-uoc.md bằng CODE
 - Chủ cửa hàng là người quyết định số cuối cùng; báo cáo chỉ là đề xuất.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Số mã hàng và khoảng thời gian ("60 mã hàng, 12 tháng (2025-11 đến 2026-10)") và loại cửa hàng.
+    - File `tham-so.json` (mức phục vụ, ngưỡng cảnh báo, **ngân sách nhập**) và `quy-uoc.md` (công thức): đặt theo cửa hàng của bạn; ngân sách do bạn quyết, không phải agent.
+    - Tên cột trong nhật ký xuất nhập và danh mục theo hệ thống bạn đang dùng.
+
+
 ![Prompt giao việc, dựng từ log lần chạy claude-1](anh/01-claude-1-prompt.webp)
 
 *Dựng lại từ log thật của lần chạy `claude-1`, không phải ảnh chụp trực tiếp cửa sổ terminal.*

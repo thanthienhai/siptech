@@ -32,6 +32,17 @@ bai-toan/
 - **Để đáp án ngoài tầm agent.** Đừng giải nén `bo-cham.zip` trước khi agent chạy xong. Agent có thể đi lên thư mục cha để tìm file; việc này đã xảy ra trong các lần chạy của chúng tôi (xem bài 2).
 - **Cần Python 3** (cách kiểm và cài: [Bài 1 của nhóm Bắt đầu](../th-bat-dau-voi-coding-agent/cap-00-lam-quen-cua-so-dong-lenh.md)). Một số bộ chấm đọc file Excel nên cần thư viện `openpyxl`: nếu thấy `ModuleNotFoundError`, gõ `pip install openpyxl`. **Chưa kiểm** trên máy sạch.
 
+## Khi dùng dữ liệu thật (không có đáp án)
+
+Đáp án và bộ chấm trong bài chỉ có cho dữ liệu giả. Với dữ liệu thật bạn không có "đáp án đúng", nên kiểm theo các bước sau **[Đề xuất]**:
+
+1. Làm trên **bản sao**, đã ẩn danh nếu có thông tin cá nhân (xem [An toàn dữ liệu và pháp lý](../an-toan-du-lieu-va-phap-ly-vn.md)).
+2. Thử trên **20 đến 30 dòng** trước, rồi mới chạy cả file.
+3. Tự làm lại bằng tay **10 dòng ngẫu nhiên** và **mọi dòng agent đánh dấu cần người quyết**: mở dữ liệu gốc, tự tính, so với kết quả của agent.
+4. Đối chiếu **tổng** bằng Excel (cộng cột tiền hoặc đếm dòng ở file gốc và file kết quả). Tổng khớp chưa chứng minh từng dòng đúng, nhưng tổng lệch là dấu hiệu chắc chắn có lỗi.
+5. Chạy lại lần hai trên cùng dữ liệu và so hai kết quả: chỗ khác nhau là chỗ chưa đáng tin.
+6. Người có trách nhiệm (kế toán trưởng, quản lý) duyệt trước khi dùng cho tiền, lương hay khách hàng. Đừng để agent tự gửi hay tự sửa dữ liệu gốc.
+
 ## Dữ liệu mẫu (thư mục `du-lieu/`)
 
 | File | Nội dung |

@@ -62,6 +62,13 @@ Lệnh `python -X utf8` chạy script và bảo Python dùng UTF-8 để tiếng
 
 26 mã là 25 nhân viên cộng một thẻ lạ. Script làm 6 việc: đổi tên thành mã `NV-xxx` theo thứ tự xáo trộn; bỏ cột Họ tên và Phòng ban; bỏ cột Ghi chú của đơn nghỉ (hay chứa chuyện sức khỏe, gia đình); cho cả thẻ lạ một mã riêng; **giữ nguyên** định dạng giờ lẫn lộn (ẩn danh không được "làm sạch giúp"); rồi tìm họ tên, mã gốc, từ khóa phòng ban trong bốn tệp đầu ra, thấy là báo lỗi.
 
+!!! warning "Ẩn danh bằng mã chưa chắc đã ẩn được người"
+    Trong công ty nhỏ, đồng nghiệp vẫn đoán ra người dù chỉ còn mã `NV-xxx`: chỉ có vài người làm ca xoay, ngày nghỉ phép và chi nhánh đã đủ để nhận ra ai. Tự kiểm của script chỉ tìm tên, mã thẻ và từ khóa, **không thấy** kiểu nhận ra gián tiếp này. Vì vậy:
+    - Chỉ giữ những cột phép tính **cần**. Cột loại đơn nghỉ có thể lộ chuyện sức khỏe (ví dụ nghỉ ốm): nếu quy định tính công không cần phân biệt loại, hãy gộp thành "nghỉ có đơn" trước khi đưa cho agent.
+    - Đừng gửi cho cả công ty những bản có mã kèm kết luận về từng người. Bảng tra mã sang tên giữ ở máy bạn, và chỉ người có trách nhiệm được xem.
+    - Nhờ **chính agent** viết script ẩn danh nghĩa là phải cho nó đọc bản có tên thật: phá mục đích của bước này. Hãy dùng `an_danh.py` có sẵn, hoặc nhờ người biết code.
+    - Kết quả của bài chỉ là **gợi ý để quản lý xác nhận**, không phải căn cứ để trừ lương hay xử lý kỷ luật.
+
 ![Ba tệp đi kèm sau khi ẩn danh](anh/02-tep-di-kem.webp)
 
 *Danh sách nhân viên, lịch ca xoay và đơn nghỉ phép sau ẩn danh. Cột Ghi chú đã bị bỏ.*
@@ -160,6 +167,12 @@ Cuối cùng in ra màn hình tóm tắt: số dòng mỗi tệp, số bất th�
 - Trong mọi câu giải thích chỉ dùng mã NV-xxx, không cố đoán danh tính.
 - Mọi số liệu phải do chương trình tính ra từ dữ liệu; không sửa dữ liệu gốc.
 ```
+
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tháng và quy mô ("09/2026", "khoảng 25 nhân viên, 2 chi nhánh") và tên bốn file CSV.
+    - File `quy_dinh_cong_ty.md`: là quy định **giả định** của công ty mẫu. Bạn phải viết quy định của công ty mình (ca, ngưỡng đi trễ, làm thêm giờ, ngày lễ); phần luật lao động hỏi người có chuyên môn.
+    - Dữ liệu thật phải **ẩn danh trước** (ghi chú ở trên).
+
 
 ![Prompt giao việc](anh/03-prompt-giao-viec.webp)
 

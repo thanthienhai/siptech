@@ -7,6 +7,7 @@ Các thay đổi đáng kể của trang, mới nhất ở trên. Sửa lỗi nh
 ## 26/11/2026
 
 - **Rà soát độc lập và sửa theo:** ba lượt đọc thử do agent AI đóng vai người mới và người hoài nghi (không phải người học thật). Đã sửa: nhóm Bắt đầu đặt bài dòng lệnh lên đầu, thêm hướng dẫn cài Python theo tài liệu chính thức, nhắc `cd ..` và thoát agent giữa các bài; chỉ rõ tải `bo-cham.zip` và đặt **ngoài** thư mục của agent; thêm giải nghĩa thuật ngữ (agent, script, CSV, log, hạt giống, mã băm, n = 1, dòng lệnh).
+- **Đọc thử bảy bài toán còn lại và sửa theo:** mỗi trang nhóm bài có mục "Sắp xếp thư mục trước khi làm" (đáp án để ngoài tầm agent), mục "Khi dùng dữ liệu thật (không có đáp án)" và, trong Bài 1, khối "đổi gì trong prompt khi dùng dữ liệu của bạn"; bài chấm công có cảnh báo rằng ẩn danh bằng mã chưa đủ với nhóm nhỏ.
 - **Trang chủ nói đúng mức bằng chứng:** số MAP ghi rõ "86 hệ thống được khảo sát" và "tối đa 10 bước"; số τ-bench ghi rõ mảng bán lẻ, mô hình gpt-4o đời 2024; "36 vs 12" thay cho mũi tên dễ đọc nhầm; "Năm nguyên tắc" ghi là đề xuất của SIPTech; số đếm tách nhóm đã có và nhóm đang soạn.
 - **Hỏi và góp ý:** biểu mẫu dựng sẵn nội dung và mở yêu cầu trên GitHub của dự án (công khai).
 - **Chọn bài toán phù hợp:** trang hỏi bốn câu ngắn rồi gợi ý thứ tự các bài nên đọc. Chạy ngay trong trình duyệt, không gửi câu trả lời đi đâu.

@@ -182,6 +182,12 @@ Với MỖI yêu cầu Rxx, tạo trong thư mục dau-ra/ ba file:
 - Khi xong, trả lời ngắn: đã tạo những file nào và những ca nào bạn thấy cần người xem kỹ.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên công ty giả và mọi file mẫu (`An Phát Demo`, `bang-gia.xlsx` với sheet `BangGia`, `QuyDoi`; `chinh-sach-chiet-khau.docx`; `dieu-kien-giao-hang.txt`; `mau-bao-gia.xlsx`).
+    - Thư mục email yêu cầu (`yeu-cau/R01.txt` ... `R12.txt`): email thật phải được lưu mỗi yêu cầu một file `.txt`, bỏ tên và số điện thoại riêng của khách.
+    - Mức VAT, hiệu lực báo giá và thẩm quyền chiết khấu: là tham số, **hỏi kế toán**; đừng để nguyên giá trị của công ty mẫu.
+
+
 ![Prompt giao việc, nguyên văn, khung 6 phần.](anh/01-prompt-giao-viec.webp)
 
 *Prompt trên, dựng lại từ `prompt-giao-viec.txt` (không phải ảnh chụp cửa sổ terminal).*

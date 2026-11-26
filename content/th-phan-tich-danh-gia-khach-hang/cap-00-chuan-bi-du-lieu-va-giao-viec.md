@@ -161,6 +161,12 @@ RÀNG BUỘC
 - Cuối cùng báo lại ngắn gọn: các file đã tạo, số bài cần người đọc, và việc nào bạn không làm được.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên file và số lượng (`danh-gia.csv`, "khoảng 250 đánh giá"), loại hình ("quán cà phê") và nguồn (Google Maps, Shopee Food, Facebook).
+    - Danh sách chủ đề (`gia`, `phuc_vu`, `chat_luong`, `giao_hang`...): đổi theo ngành của bạn (cửa hàng, spa, khách sạn...).
+    - **Dữ liệu thật có tên khách:** bỏ tên và số điện thoại khỏi đánh giá trước khi đưa cho agent.
+
+
 ![Prompt giao việc 6 phần gồm vai trò, bối cảnh, nhiệm vụ, tám bước, định dạng ra, ràng buộc](anh/a-prompt-giao-viec.webp)
 
 *Prompt trên, dựng lại từ `prompt-giao-viec.txt` (không phải ảnh chụp cửa sổ terminal).*

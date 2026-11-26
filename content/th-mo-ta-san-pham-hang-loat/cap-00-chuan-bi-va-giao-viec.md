@@ -148,6 +148,12 @@ Các file: nhap_hang_loat.csv, nhap_hang_loat.xlsx, kiem.py, bao_cao_kiem.md, đ
 - Giữ giọng thương hiệu nhất quán cho cả 40 sản phẩm.
 ```
 
+!!! tip "Dùng với dữ liệu của bạn: đổi gì trong prompt?"
+    - Tên shop và số sản phẩm ("Vườn Nhỏ", "40 sản phẩm").
+    - File `quy_dinh_shop.md`, `tu_cam.txt`: là quy định và từ cấm của **shop mẫu**. Bạn phải viết bản của shop mình, và giới hạn độ dài, quy tắc của sàn bạn bán (Shopee, TikTok Shop...) lấy từ trang hướng dẫn hiện hành của sàn. **Chưa kiểm** quy định hiện hành của từng sàn.
+    - Tên cột trong `thong_so.csv` theo bảng thông số thật của bạn.
+
+
 ![Prompt giao việc](anh/01-prompt-giao-viec.webp)
 
 *Prompt trên, dựng lại từ nội dung `prompt-giao-viec.txt` (HTML sang PNG), không phải ảnh chụp trực tiếp cửa sổ agent.*
